@@ -17,7 +17,7 @@ function ChatBot() {
 
   return (
     <section className="p-4 max-w-xl mx-auto my-6 bg-white shadow rounded-lg">
-      <h3 className="text-xl font-semibold mb-2">Talk to Mind Mates</h3>
+      <h3 className="text-xl font-semibold mb-2">Talk to Mind Flow AIs</h3>
       <div className="h-60 overflow-y-auto border p-2 rounded mb-3 bg-gray-50">
         {messages.map((msg, idx) => (
           <div key={idx} className={`my-1 ${msg.type === 'user' ? 'text-right' : 'text-left'}`}>

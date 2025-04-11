@@ -18,7 +18,7 @@ function HeroSection() {
             <span className="text-[#8f71ff]">Companion</span>
           </h1>
           <p className="text-lg sm:text-xl mt-6 text-gray-600 max-w-md mx-auto md:mx-0">
-            Mind Mate uses AI to provide personalized mental health support, whenever and wherever you need it. Your safe space to talk, reflect, and grow.
+            Mind Flow AI uses AI to provide personalized mental health support, whenever and wherever you need it. Your safe space to talk, reflect, and grow.
           </p>
         </header>
 
@@ -42,7 +42,7 @@ function HeroSection() {
       >
         <img 
           src={chatImage} 
-          alt="Illustration of Mind Mate Chat UI" 
+          alt="Illustration of Mind Flow AI Chat UI" 
           className="rounded-3xl shadow-xl w-full"
         />
       </motion.div>

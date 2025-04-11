@@ -74,7 +74,7 @@ function HowItWorks() {
       >
         <h2 className="text-4xl font-bold mb-4">How It Works</h2>
         <p className="text-gray-600 text-lg max-w-xl mx-auto">
-          Explore the features of Mind Mates that help you feel better, think clearer, and grow emotionally.
+          Explore the features of Mind Flow AIs that help you feel better, think clearer, and grow emotionally.
         </p>
       </motion.div>
 
