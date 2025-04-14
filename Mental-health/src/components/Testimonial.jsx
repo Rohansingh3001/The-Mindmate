@@ -38,7 +38,7 @@ export default function Testimonial() {
   const loopedTestimonials = [...testimonials, ...testimonials];
 
   return (
-    <div className="bg-[#f5f0ff] py-16 px-6">
+    <div id="testimonials" className="bg-[#f5f0ff] py-16 px-6">
       <h2 className="text-center text-3xl font-bold text-[#8f71ff] mb-12">
         What Our Users Say
       </h2>
@@ -54,7 +54,7 @@ export default function Testimonial() {
         {loopedTestimonials.map((t, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl shadow-md px-6 py-8 mx-4 sm:w-[18rem] md:w-[24rem] lg:w-[32rem] inline-block" // Responsive width
+            className="bg-white rounded-xl shadow-md px-6 py-8 mx-4 sm:w-[18rem] md:w-[24rem] lg:w-[32rem] inline-block"
           >
             <div className="flex gap-1 text-yellow-500 mb-2">
               {Array(5)
@@ -63,14 +63,14 @@ export default function Testimonial() {
                   <svg
                     key={j}
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 fill-yellow-400" // Larger star icons
+                    className="h-6 w-6 fill-yellow-400"
                     viewBox="0 0 20 20"
                   >
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967h4.175c.969 0 1.371 1.24.588 1.81l-3.379 2.455 1.287 3.966c.3.922-.755 1.688-1.54 1.117L10 13.011l-3.379 2.455c-.784.571-1.838-.195-1.539-1.117l1.287-3.966-3.379-2.455c-.784-.57-.38-1.81.588-1.81h4.175L9.05 2.927z" />
                   </svg>
                 ))}
             </div>
-            <p className="text-gray-700 text-base mb-4 break-words">  {/* Adjusted text size */}
+            <p className="text-gray-700 text-base mb-4 break-words">
               "{t.feedback}"
             </p>
             <span className="text-sm font-semibold text-[#8f71ff]">

@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiMenu, FiX } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
-  const navItems = ['Home', 'Doctor', 'Testimonials', 'About'];
+  const navItems = [
+    { name: 'Home', to: '#home', isLink: false },
+    { name: 'Doctor', to: '#doctors', isLink: false },
+    { name: 'Testimonials', to: '#testimonials', isLink: false },
+    { name: 'How It Works', to: '#how-it-works', isLink: false },
+  ];
 
   return (
     <motion.header
@@ -17,7 +22,7 @@ function Header() {
       className="fixed top-0 left-0 w-full z-50 backdrop-blur-xl bg-white/60 border-b border-white/30 shadow-lg"
     >
       <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-        {/* Logo / Brand */}
+        {/* Logo */}
         <motion.h1
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -28,18 +33,39 @@ function Header() {
         </motion.h1>
 
         {/* Desktop Navigation */}
-        <nav className="space-x-8 text-lg hidden md:flex">
+        <nav className="hidden md:flex items-center space-x-8 text-lg">
           {navItems.map((item, index) => (
-            <motion.a
-              key={item}
-              href={`#${item.toLowerCase()}`}
+            <motion.div
+              key={item.name}
               whileHover={{ scale: 1.1 }}
-              className="text-black font-medium relative inline-block transition duration-300 hover:text-[#8f71ff] after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#8f71ff] after:transition-all after:duration-300 hover:after:w-full"
               transition={{ delay: 0.1 * index }}
             >
-              {item}
-            </motion.a>
+              {item.isLink ? (
+                <Link
+                  to={item.to}
+                  className="text-black font-medium relative inline-block transition duration-300 hover:text-[#8f71ff] after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#8f71ff] after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  {item.name}
+                </Link>
+              ) : (
+                <a
+                  href={item.to}
+                  className="text-black font-medium relative inline-block transition duration-300 hover:text-[#8f71ff] after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#8f71ff] after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  {item.name}
+                </a>
+              )}
+            </motion.div>
           ))}
+
+          <Link to="/signup">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              className="bg-[#8f71ff] text-white px-4 py-1.5 rounded-xl shadow-md hover:bg-[#7b5fff] transition"
+            >
+              Sign Up
+            </motion.button>
+          </Link>
         </nav>
 
         {/* Mobile Hamburger */}
@@ -65,15 +91,36 @@ function Header() {
         >
           <div className="flex flex-col items-center py-4 space-y-4">
             {navItems.map((item) => (
-              <motion.a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                className="text-lg text-black font-medium hover:text-[#8f71ff]"
+              <motion.div
+                key={item.name}
                 whileHover={{ scale: 1.1 }}
               >
-                {item}
-              </motion.a>
+                {item.isLink ? (
+                  <Link
+                    to={item.to}
+                    className="text-lg text-black font-medium hover:text-[#8f71ff]"
+                  >
+                    {item.name}
+                  </Link>
+                ) : (
+                  <a
+                    href={item.to}
+                    className="text-lg text-black font-medium hover:text-[#8f71ff]"
+                  >
+                    {item.name}
+                  </a>
+                )}
+              </motion.div>
             ))}
+
+            <Link to="/signup">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                className="bg-[#8f71ff] text-white px-6 py-1.5 rounded-xl shadow-md hover:bg-[#7b5fff] transition"
+              >
+                Sign Up
+              </motion.button>
+            </Link>
           </div>
         </motion.div>
       )}

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import {
   Sparkles, MessageCircle, HeartPulse,
-  BrainCog, Repeat, Gift, CornerRightUp
+  BrainCog, Repeat, Gift
 } from 'lucide-react';
 
 const useCases = [
@@ -63,7 +63,10 @@ const flowSteps = [
 
 function HowItWorks() {
   return (
-    <section className="bg-white py-20 px-6 md:px-20 text-gray-800">
+    <section
+      id="how-it-works" // 🔗 Added ID for nav linking
+      className="bg-white py-20 px-6 md:px-20 text-gray-800"
+    >
       {/* Section Title */}
       <motion.div 
         initial={{ opacity: 0, y: 30 }} 
@@ -99,44 +102,43 @@ function HowItWorks() {
       </div>
 
       {/* Process Flow - Vertical Timeline */}
-<motion.div
-  initial={{ opacity: 0, y: 30 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.7 }}
-  className="text-center"
->
-  <h3 className="text-4xl font-bold mb-14">The Flow</h3>
-  <div className="relative flex flex-col items-center mx-auto max-w-2xl">
-    {flowSteps.map((step, i) => (
       <motion.div
-        key={step.title}
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: i * 0.2 }}
-        className="relative flex items-start mb-16"
+        transition={{ duration: 0.7 }}
+        className="text-center"
       >
-        {/* Vertical Line */}
-        {i !== flowSteps.length - 1 && (
-          <div className="absolute left-8 top-16 h-full w-1 bg-[#8f71ff]"></div>
-        )}
+        <h3 className="text-4xl font-bold mb-14">The Flow</h3>
+        <div className="relative flex flex-col items-center mx-auto max-w-2xl">
+          {flowSteps.map((step, i) => (
+            <motion.div
+              key={step.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.2 }}
+              className="relative flex items-start mb-16"
+            >
+              {/* Vertical Line */}
+              {i !== flowSteps.length - 1 && (
+                <div className="absolute left-8 top-16 h-full w-1 bg-[#8f71ff]"></div>
+              )}
 
-        {/* Icon */}
-        <div className="w-16 h-16 flex-shrink-0 rounded-full bg-[#ebe4ff] text-[#8f71ff] flex items-center justify-center z-10 text-2xl">
-          {step.icon}
-        </div>
+              {/* Icon */}
+              <div className="w-16 h-16 flex-shrink-0 rounded-full bg-[#ebe4ff] text-[#8f71ff] flex items-center justify-center z-10 text-2xl">
+                {step.icon}
+              </div>
 
-        {/* Content */}
-        <div className="ml-8 text-left max-w-md">
-          <h4 className="text-xl font-semibold mb-2">{`${i + 1}. ${step.title}`}</h4>
-          <p className="text-gray-600 text-base">{step.desc}</p>
+              {/* Content */}
+              <div className="ml-8 text-left max-w-md">
+                <h4 className="text-xl font-semibold mb-2">{`${i + 1}. ${step.title}`}</h4>
+                <p className="text-gray-600 text-base">{step.desc}</p>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </motion.div>
-    ))}
-  </div>
-</motion.div>
-
     </section>
   );
 }

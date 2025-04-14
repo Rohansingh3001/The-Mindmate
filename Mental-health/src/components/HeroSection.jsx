@@ -4,7 +4,10 @@ import chatImage from '../assets/image.png';
 
 function HeroSection() {
   return (
-    <section className="bg-[#f7f4fe] min-h-screen flex flex-col md:flex-row items-center justify-between px-6 md:px-20 py-20 gap-y-12 md:gap-x-20">
+    <section
+      id="home" // 🔗 Added this to link from the header nav
+      className="bg-[#f7f4fe] min-h-screen flex flex-col md:flex-row items-center justify-between px-6 md:px-20 py-20 gap-y-12 md:gap-x-20"
+    >
       {/* Left content */}
       <motion.div 
         initial={{ opacity: 0, x: -50 }} 
