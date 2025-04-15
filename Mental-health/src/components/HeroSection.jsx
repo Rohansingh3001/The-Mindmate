@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import chatImage from '../assets/image.png';
+import { Link } from 'react-router-dom';
 
 function HeroSection() {
   return (
@@ -25,15 +26,21 @@ function HeroSection() {
           </p>
         </header>
 
-        {/* CTA buttons */}
-        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-          <button className="bg-[#8f71ff] hover:bg-[#7b60e8] text-white text-lg px-6 py-3 rounded-xl shadow transition-all w-full sm:w-auto">
-            💬 Start Chatting
-          </button>
-          <button className="border border-[#8f71ff] text-[#8f71ff] hover:bg-[#eeeaff] text-lg px-6 py-3 rounded-xl transition-all w-full sm:w-auto">
-            ✨ Learn More
-          </button>
-        </div>
+         {/* CTA buttons */}
+<div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+  <Link to="/signup" className="w-full sm:w-auto">
+    <button className="bg-[#8f71ff] hover:bg-[#7b60e8] text-white text-lg px-6 py-3 rounded-xl shadow transition-all w-full sm:w-auto">
+      💬 Start Chatting
+    </button>
+  </Link>
+
+  <Link to="/signup" className="w-full sm:w-auto">
+    <button className="border border-[#8f71ff] text-[#8f71ff] hover:bg-[#eeeaff] text-lg px-6 py-3 rounded-xl transition-all w-full sm:w-auto">
+      ✨ Learn More
+    </button>
+  </Link>
+</div>
+
       </motion.div>
 
       {/* Right content (Chat Image / Component) */}
