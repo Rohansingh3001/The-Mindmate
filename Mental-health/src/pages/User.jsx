@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaUserCircle, FaSignOutAlt, FaComments, FaBars } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+// or adjust path as necessary
 import { fetchUserDetails } from '../firebase';
+
 import ChatBot from '../components/ChatBot';
 import Scheduler from '../components/Sheduler'; // ✅ Import Scheduler component
 import MentalHealthChart from '../components/MentalHealthChart';
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import MoodTracker from '../components/MoodTracker'; // ✅ new import
 
 const User = () => {
   const navigate = useNavigate();
@@ -30,6 +34,12 @@ const User = () => {
   const handleLogout = () => {
     navigate('/');
   };
+  const handleSaveMood = (moodEntry) => {
+    // Later you can push this to Firestore
+    console.log('Saved Mood:', moodEntry);
+    // For now, optionally append to sampleMoodData
+    // Or refetch from DB
+  };
 
   // ✅ Add your sample mood data here (can later replace with real Firestore mood logs)
   const sampleMoodData = [
@@ -45,39 +55,38 @@ const User = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-[#f0e9ff] p-4 md:p-6 flex flex-col items-center text-gray-800">
       {/* Top Nav Bar */}
-<div className="w-full max-w-5xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
-  {/* Header and Hamburger */}
-  <div className="w-full flex justify-between items-center">
-    <h1 className="text-2xl md:text-3xl font-bold text-[#8f71ff]">MindFlow-AI</h1>
-    
-    {/* Hamburger (Mobile only) */}
-    <button
-      className="md:hidden text-[#8f71ff] text-2xl"
-      onClick={() => setNavOpen(!navOpen)}
-    >
-      <FaBars />
-    </button>
-  </div>
+      <div className="w-full max-w-5xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
+        {/* Header and Hamburger */}
+        <div className="w-full flex justify-between items-center">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#8f71ff]">MindFlow-AI</h1>
 
-  {/* Nav Buttons */}
-  <div className={`flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full md:w-auto transition-all duration-300 ease-in-out ${
-    navOpen ? 'block' : 'hidden'
-  } md:flex`}>
-    <button
-      onClick={() => setShowAccountModal(true)}
-      className="text-[#8f71ff] border border-[#8f71ff] px-4 py-1 rounded-xl hover:bg-[#8f71ff] hover:text-white transition w-full sm:w-auto"
-    >
-      View Account
-    </button>
-    <button
-      onClick={handleLogout}
-      className="flex items-center gap-2 bg-[#8f71ff] hover:bg-[#7b5fff] text-white px-4 py-2 rounded-xl transition w-full sm:w-auto"
-    >
-      <FaSignOutAlt />
-      Logout
-    </button>
-  </div>
-</div>
+          {/* Hamburger (Mobile only) */}
+          <button
+            className="md:hidden text-[#8f71ff] text-2xl"
+            onClick={() => setNavOpen(!navOpen)}
+          >
+            <FaBars />
+          </button>
+        </div>
+
+        {/* Nav Buttons */}
+        <div className={`flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full md:w-auto transition-all duration-300 ease-in-out ${navOpen ? 'block' : 'hidden'
+          } md:flex`}>
+          <button
+            onClick={() => setShowAccountModal(true)}
+            className="text-[#8f71ff] border border-[#8f71ff] px-4 py-1 rounded-xl hover:bg-[#8f71ff] hover:text-white transition w-full sm:w-auto"
+          >
+            View Account
+          </button>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 bg-[#8f71ff] hover:bg-[#7b5fff] text-white px-4 py-2 rounded-xl transition w-full sm:w-auto"
+          >
+            <FaSignOutAlt />
+            Logout
+          </button>
+        </div>
+      </div>
       {/* Welcome Card */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -116,6 +125,10 @@ const User = () => {
           <button className="mt-3 bg-[#8f71ff] hover:bg-[#7b5fff] text-white px-4 py-2 rounded-xl w-full md:w-auto">
             Save Entry
           </button>
+        </div>
+        {/* Mood Tracker */}
+        <div className="mt-6 w-full max-w-5xl">
+          <MoodTracker onSaveMood={handleSaveMood} />
         </div>
 
         {/* Chat Bot Launcher */}

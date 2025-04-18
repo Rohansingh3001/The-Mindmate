@@ -84,7 +84,7 @@ const LoginSignup = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          {isLogin ? 'Welcome Back 👋' : 'Join Mind Flow AI ✨'}
+          {isLogin ? 'Welcome Back 👋' : 'Join Mind Mates ✨'}
         </motion.h2>
 
         <form onSubmit={handleSubmit}>
