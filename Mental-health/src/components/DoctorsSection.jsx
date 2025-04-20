@@ -34,6 +34,22 @@ export default function DoctorsSection() {
       image: "/images/dr-rahul.jpg",
       rating: 4.6,
     },
+    {
+      name: "Dr. Ananya Roy",
+      specialty: "Child Psychologist",
+      description:
+        "Helping children and adolescents navigate emotions, learning difficulties, and developmental challenges.",
+      image: "/images/dr-ananya.jpg",
+      rating: 4.9,
+    },
+    {
+      name: "Dr. Vikram Das",
+      specialty: "Neuropsychologist",
+      description:
+        "Specialist in brain-behavior relationships, cognitive assessments, and neurological rehabilitation.",
+      image: "/images/dr-vikram.jpg",
+      rating: 4.8,
+    },
   ];
 
   return (
@@ -50,14 +66,16 @@ export default function DoctorsSection() {
             <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-blue-200 opacity-30 rounded-3xl"></div>
 
             {/* Star Rating at the Top Right Corner */}
-            <div className="absolute top-4 right-4 flex items-center gap-1">
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center gap-[2px] sm:gap-1">
               <span className="text-yellow-500 flex">
                 {Array.from({ length: 5 }, (_, i) => (
                   <svg
                     key={i}
                     xmlns="http://www.w3.org/2000/svg"
-                    className={`h-5 w-5 sm:h-6 sm:w-6 ${
-                      i < Math.round(doctor.rating) ? "fill-yellow-400" : "fill-gray-300"
+                    className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                      i < Math.round(doctor.rating)
+                        ? "fill-yellow-400"
+                        : "fill-gray-300"
                     }`}
                     viewBox="0 0 20 20"
                   >
@@ -65,8 +83,7 @@ export default function DoctorsSection() {
                   </svg>
                 ))}
               </span>
-
-              <span className="text-gray-500 text-lg font-semibold">
+              <span className="text-gray-500 text-sm sm:text-base font-semibold">
                 ({doctor.rating})
               </span>
             </div>

@@ -1,13 +1,13 @@
 // Home.jsx
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-
+import ConnectSection from "../components/ConnectSection";
 import Header from '../components/Header';
 import HeroSection from '../components/HeroSection';
 import HowItWorks from '../components/HowItWorks';
 import DoctorsSection from '../components/DoctorsSection';
 import Testimonial from '../components/Testimonial';
-
+import HardwareSection from "../components/HardwareSection";
 function Home() {
   const location = useLocation();
   const hideHeaderRoutes = ['/login', '/signup'];
@@ -21,6 +21,10 @@ function Home() {
       <HeroSection />
       <HowItWorks />
       <DoctorsSection />
+      <ConnectSection />
+      <HardwareSection />
+      
+      
       <Testimonial />
     </main>
   );
