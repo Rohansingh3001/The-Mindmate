@@ -43,7 +43,7 @@
 ## 📦 Installation
 
 ```bash
-git clone (https://github.com/Rohansingh3001/Mindmate.git)
+git clone https://github.com/Rohansingh3001/Mindmate.git
 cd mindflow-ai
 npm install
 npm run dev
