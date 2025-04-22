@@ -44,6 +44,6 @@
 
 ```bash
 git clone https://github.com/Rohansingh3001/Mindmate.git
-cd mindflow-ai
+cd Mental-health
 npm install
 npm run dev
