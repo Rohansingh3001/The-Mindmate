@@ -2,16 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaUserCircle, FaSignOutAlt, FaComments, FaBars } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-// or adjust path as necessary
-import { fetchUserDetails } from '../firebase';
 
+import { fetchUserDetails } from '../firebase';
 import ChatBot from '../components/ChatBot';
-import Scheduler from '../components/Sheduler'; // ✅ Import Scheduler component
+import Scheduler from '../components/Sheduler'; 
 import MentalHealthChart from '../components/MentalHealthChart';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import MoodTracker from '../components/MoodTracker'; // ✅ new import
-
+import MoodTracker from '../components/MoodTracker'; 
 const User = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState('User');
@@ -58,7 +56,7 @@ const User = () => {
       <div className="w-full max-w-5xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
         {/* Header and Hamburger */}
         <div className="w-full flex justify-between items-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-[#8f71ff]">MindFlow-AI</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#8f71ff]">MindMates</h1>
 
           {/* Hamburger (Mobile only) */}
           <button

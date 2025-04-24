@@ -9,9 +9,10 @@ function Header() {
 
   const navItems = [
     { name: 'Home', to: '#home', isLink: false },
+    { name: 'How It Works', to: '#how-it-works', isLink: false },
     { name: 'Doctor', to: '#doctors', isLink: false },
     { name: 'Testimonials', to: '#testimonials', isLink: false },
-    { name: 'How It Works', to: '#how-it-works', isLink: false },
+   
   ];
 
   return (
@@ -29,7 +30,7 @@ function Header() {
           transition={{ duration: 1, delay: 0.2 }}
           className="text-3xl font-extrabold tracking-tight text-[#8f71ff]"
         >
-          Mind Flow AI
+          MindMates
         </motion.h1>
 
         {/* Desktop Navigation */}

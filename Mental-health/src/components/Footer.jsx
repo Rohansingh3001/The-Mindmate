@@ -5,9 +5,9 @@ function Footer() {
   return (
     <footer className="bg-[#6a4eeb] text-white py-8">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center">
-        {/* Mind Flow AI Description */}
+        {/* MindMates Description */}
         <div className="text-center md:text-left mb-8 md:mb-0">
-          <h3 className="text-3xl font-bold mb-2">Mind Flow AI</h3>
+          <h3 className="text-3xl font-bold mb-2">MindMates</h3>
           <p className="text-lg">Your AI mental health companion, providing support and guidance whenever you need it.</p>
         </div>
 
@@ -52,7 +52,7 @@ function Footer() {
 
       {/* Footer Copyright */}
       <div className="border-t border-gray-200 pt-4 mt-8 text-center">
-        <p className="text-sm text-gray-300">&copy; 2025 Mind Flow AI. All rights reserved.</p>
+        <p className="text-sm text-gray-300">&copy; 2025 MindMates. All rights reserved.</p>
       </div>
     </footer>
   );
