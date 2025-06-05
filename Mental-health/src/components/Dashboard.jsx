@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "./ui/card";  // fixed import path
+import { Card, CardContent } from "./ui/Card";
+  // fixed import path
 import { Button } from "./ui/Button";            // fixed import path
 import { FaRegSmile } from "react-icons/fa";
 import { IoMdCalendar, IoIosStats } from "react-icons/io";
