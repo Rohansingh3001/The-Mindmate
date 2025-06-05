@@ -4,7 +4,7 @@ import { Button } from "./ui/Button";            // fixed import path
 import { FaRegSmile } from "react-icons/fa";
 import { IoMdCalendar, IoIosStats } from "react-icons/io";
 import { toast } from "react-toastify";
-import { useTheme } from "../context/ThemeContext"; // theme context remains same
+import { useTheme } from "../context/ThemeContext";
 import { Sun, Moon } from "lucide-react";
 
 export default function Dashboard() {
