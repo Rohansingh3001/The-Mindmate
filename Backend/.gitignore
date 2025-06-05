@@ -1,0 +1,43 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Build outputs (if applicable)
+dist/
+build/
+
+# VS Code settings
+.vscode/
+
+# Coverage reports
+coverage/
+
+# PM2 process files
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm/
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Next.js/other framework-specific (if used)
+.next/
+out/
+
+# Debug
+debug.log

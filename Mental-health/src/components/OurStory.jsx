@@ -1,5 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
+import {
+  HeartCrack,
+  Sparkles,
+  Eye,
+  Handshake,
+} from "lucide-react";
 
 const sectionFade = {
   hidden: { opacity: 0, y: 30 },
@@ -10,22 +16,29 @@ const sectionFade = {
   }),
 };
 
+const icons = {
+  "A Generation Under Pressure": <HeartCrack className="text-indigo-600 w-6 h-6" />,
+  "Our Mission": <Sparkles className="text-indigo-600 w-6 h-6" />,
+  "Our Vision": <Eye className="text-indigo-600 w-6 h-6" />,
+  "Our Commitments": <Handshake className="text-indigo-600 w-6 h-6" />,
+};
+
 const OurStory = () => {
   const sections = [
     {
-      title: "💔 A Generation Under Pressure",
+      title: "A Generation Under Pressure",
       content: `In today’s fast-paced world, stress isn’t limited to one phase of life — it’s everywhere. Teenagers are burdened with unrealistic expectations, social pressure, and constant comparison. College students juggle academics, placements, and personal identity struggles while feeling isolated in crowded campuses. Corporate employees face burnout, long hours, and a work culture that often glorifies overexertion. Competitive exam aspirants battle anxiety, fear of failure, and loneliness in silence. As we chase marks, money, and milestones, we’re unknowingly degrading the most crucial asset we have — our mental health. Mind Mates was born to flip this narrative, to say: it’s okay to not be okay, and even better to do something about it.`,
     },
     {
-      title: "🌟 Our Mission",
+      title: "Our Mission",
       content: `At Mind Mates, our mission is to democratize access to compassionate, intelligent mental health support. We aim to build a safe ecosystem where every individual — regardless of language, background, or geography — can find someone (or something) to talk to, lean on, and grow with. Through empathetic AI, human connection, and innovative technology, we strive to empower people to take control of their mental well-being and break the stigma around seeking help.`,
     },
     {
-      title: "🌈 Our Vision",
+      title: "Our Vision",
       content: `We envision a world where mental health care is not a privilege, but a basic right — a world where your location doesn’t decide your access to healing. Our goal is to become India’s most trusted mental wellness companion, seamlessly blending AI-driven support, peer connection, and professional care. From a college hostel in Bihar to a startup office in Bangalore, Mind Mates will be there — listening, learning, and lifting lives.`,
     },
     {
-      title: "🤝 Our Commitments",
+      title: "Our Commitments",
       content: `We are committed to building a platform grounded in empathy, ethics, and inclusivity. We will continuously listen to our users, evolve with science-backed practices, and maintain transparency in how our AI and data function. Above all, we commit to never replacing the human element in healing — only enhancing it. Our promise is simple: to be there when you need us most, without judgment, without delay.`,
     },
   ];
@@ -57,9 +70,9 @@ const OurStory = () => {
             custom={index}
             variants={sectionFade}
           >
-            <h2 className="text-xl sm:text-2xl font-semibold text-indigo-700 mb-2 flex items-start gap-2">
-              <span className="text-2xl">{section.title.split(" ")[0]}</span>
-              <span>{section.title.replace(/^[^\w]+/, "")}</span>
+            <h2 className="text-xl sm:text-2xl font-semibold text-indigo-700 mb-2 flex items-center gap-3">
+              {icons[section.title]}
+              {section.title}
             </h2>
             <p className="text-gray-700 text-base leading-relaxed tracking-wide">
               {section.content}

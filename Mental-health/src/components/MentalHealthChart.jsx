@@ -1,4 +1,3 @@
-// components/MentalHealthChart.jsx
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import {
@@ -14,7 +13,16 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const MentalHealthChart = ({ moodData }) => {
+const MentalHealthChart = ({ moodData = [] }) => {
+  // Guard clause for empty data
+  if (!Array.isArray(moodData) || moodData.length === 0) {
+    return (
+      <div className="text-center text-gray-500 py-10">
+        📉 No mood data available to display the chart.
+      </div>
+    );
+  }
+
   const data = {
     labels: moodData.map(entry => entry.date),
     datasets: [

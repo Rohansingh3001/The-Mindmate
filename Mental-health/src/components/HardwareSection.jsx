@@ -13,10 +13,10 @@ export default function HardwareSection() {
 
       <div className="relative z-10 max-w-6xl mx-auto text-center">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-[#6a4eeb] mb-4">
-          Meet the MindMate Version S Speaker
+          Meet the MindPod Speaker
         </h2>
         <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto mb-10">
-          Your personal wellness companion — the <b>MindMate Version S</b>, a pocket-sized speaker designed to help you stay emotionally balanced, calm, and connected, wherever you are.
+          Your personal wellness companion — the <b>MindPod</b>, a pocket-sized speaker designed to help you stay emotionally balanced, calm, and connected, wherever you are.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
@@ -53,7 +53,7 @@ export default function HardwareSection() {
 
         <div className="mt-10">
           <h3 className="text-2xl font-semibold text-[#6a4eeb] mb-6">
-            Perks of Having the MindMate Version S:
+            Perks of Having the MindPod:
           </h3>
           <ul className="text-left space-y-4">
             <li className="flex items-center text-gray-700">
@@ -81,7 +81,7 @@ export default function HardwareSection() {
 
         <div className="mt-16 bg-[#e8e4ff] py-12 px-6 rounded-xl shadow-lg">
           <h3 className="text-3xl font-semibold text-[#6a4eeb] mb-6">
-            Why Should You Buy the MindMate Version S?
+            Why Should You Buy the MindPod?
           </h3>
           <div className="flex flex-wrap justify-center gap-12">
             <div className="text-center max-w-xs">
