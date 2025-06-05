@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "../components/ui/card";
-import { Button } from "../components/ui/Button";
+import { Card, CardContent } from "./ui/card";  // fixed import path
+import { Button } from "./ui/Button";            // fixed import path
 import { FaRegSmile } from "react-icons/fa";
 import { IoMdCalendar, IoIosStats } from "react-icons/io";
 import { toast } from "react-toastify";
-import { useTheme } from "../context/ThemeContext"; // 🧠 use the theme context
-import { Sun, Moon } from "lucide-react"; // <-- import lucide icons
+import { useTheme } from "../context/ThemeContext"; // theme context remains same
+import { Sun, Moon } from "lucide-react";
 
 export default function Dashboard() {
   const [userName, setUserName] = useState("Rohan");
   const [mood, setMood] = useState("");
-  const { theme, toggleTheme } = useTheme(); // 🧠 extract theme control
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
-    // TODO: Fetch user data
+    // TODO: Fetch user data here if needed
   }, []);
 
   const handleMoodClick = (emoji) => {
@@ -25,16 +25,14 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black text-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-950 dark:to-black p-6 space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black text-white p-6 space-y-8 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-950 dark:to-black">
       {/* Header */}
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">
             Welcome back, <span className="text-purple-400">{userName}</span> 👋
           </h1>
-          <p className="text-gray-400 text-sm mt-1">
-            Your personal wellness companion
-          </p>
+          <p className="text-gray-400 text-sm mt-1">Your personal wellness companion</p>
         </div>
 
         <button
@@ -42,11 +40,7 @@ export default function Dashboard() {
           className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition"
           aria-label="Toggle Theme"
         >
-          {theme === "dark" ? (
-            <Sun className="w-5 h-5" />
-          ) : (
-            <Moon className="w-5 h-5" />
-          )}
+          {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           Toggle to {theme === "dark" ? "Light" : "Dark"} Mode
         </button>
       </header>
@@ -60,9 +54,7 @@ export default function Dashboard() {
               <h2 className="text-xl font-semibold">Today's Mood</h2>
               <FaRegSmile size={24} />
             </div>
-            <p className="text-sm text-gray-400 mb-2">
-              How are you feeling today?
-            </p>
+            <p className="text-sm text-gray-400 mb-2">How are you feeling today?</p>
             <div className="mt-3 flex justify-between">
               {["😊", "😐", "😢", "😠", "😴"].map((emoji) => (
                 <button
