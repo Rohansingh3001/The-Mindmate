@@ -1,4 +1,4 @@
-# 🧠 Mindflow AI
+# 🧠 The Mindmates
 
 **Mindflow AI** is a next-gen mental wellness platform that combines AI therapy, peer support, medical care, and smart tracking to create a safe, connected space for emotional well-being.
 
