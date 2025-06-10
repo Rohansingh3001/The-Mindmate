@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-  Sparkles, MessageCircle, HeartPulse,
-  BrainCog, Repeat, Gift, CalendarCheck, Users
+  MessageCircle, HeartPulse, BrainCog,
+  Gift, CalendarCheck, Users
 } from 'lucide-react';
 
 const useCases = [
@@ -72,12 +72,22 @@ function HowItWorks() {
         whileInView={{ opacity: 1, y: 0 }} 
         viewport={{ once: true }} 
         transition={{ duration: 0.6 }}
-        className="text-center mb-14"
+        className="text-center mb-16"
       >
-        <h2 className="text-4xl font-bold mb-4">How It Works</h2>
+        <h2 className="text-4xl font-bold mb-4">Your Healing Journey</h2>
         <p className="text-gray-600 text-lg max-w-xl mx-auto">
           Discover how Mind Mates empowers you emotionally, socially, and mentally with 360° care.
         </p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-10"
+      >
+        <h3 className="text-3xl font-semibold mb-2">What You Can Do with Mind Mates</h3>
       </motion.div>
 
       <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3 mb-20">
@@ -106,7 +116,7 @@ function HowItWorks() {
         transition={{ duration: 0.7 }}
         className="text-center"
       >
-        <h3 className="text-4xl font-bold mb-14">The Flow</h3>
+        <h3 className="text-3xl font-semibold mb-14">Step-by-Step Support Flow</h3>
         <div className="relative flex flex-col items-center mx-auto max-w-2xl">
           {flowSteps.map((step, i) => (
             <motion.div

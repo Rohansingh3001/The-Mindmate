@@ -7,7 +7,7 @@ import HeroSection from '../components/HeroSection';
 import HowItWorks from '../components/HowItWorks';
 import DoctorsSection from '../components/DoctorsSection';
 import Testimonial from '../components/Testimonial';
-import HardwareSection from "../components/HardwareSection";
+import HardwareSection from "../components/PriceSection";
 import OurStory from '../components/OurStory';
 function Home() {
   const location = useLocation();

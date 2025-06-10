@@ -5,6 +5,10 @@ import {
   Sparkles,
   Eye,
   Handshake,
+  Languages,
+  Bot,
+  Users,
+  ShieldCheck,
 } from "lucide-react";
 
 const sectionFade = {
@@ -22,6 +26,29 @@ const icons = {
   "Our Vision": <Eye className="text-indigo-600 w-6 h-6" />,
   "Our Commitments": <Handshake className="text-indigo-600 w-6 h-6" />,
 };
+
+const whyUsItems = [
+  {
+    title: "Multilingual Support",
+    description: "Mental health care in Hindi, Tamil, and English to ensure everyone can express themselves freely.",
+    icon: <Languages className="w-6 h-6 text-indigo-600" />,
+  },
+  {
+    title: "AI + Human Touch",
+    description: "Smart chatbot for instant help, backed by real human therapists and community support.",
+    icon: <Bot className="w-6 h-6 text-indigo-600" />,
+  },
+  {
+    title: "Community Driven",
+    description: "A safe space for peer conversations, shared healing, and collective growth.",
+    icon: <Users className="w-6 h-6 text-indigo-600" />,
+  },
+  {
+    title: "Privacy First",
+    description: "Secure conversations, anonymous support, and data handled with complete care.",
+    icon: <ShieldCheck className="w-6 h-6 text-indigo-600" />,
+  },
+];
 
 const OurStory = () => {
   const sections = [
@@ -76,6 +103,43 @@ const OurStory = () => {
             </h2>
             <p className="text-gray-700 text-base leading-relaxed tracking-wide">
               {section.content}
+            </p>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Why Us Section */}
+      <div className="max-w-4xl mx-auto text-center mt-20">
+        <motion.h2
+          className="text-3xl sm:text-4xl font-bold text-purple-800 mb-12"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          🌟 Why Choose Mind Mates?
+        </motion.h2>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-8 max-w-5xl mx-auto px-4">
+        {whyUsItems.map((item, index) => (
+          <motion.div
+            key={item.title}
+            className="bg-white rounded-xl p-6 shadow-md border border-purple-100 hover:shadow-lg transition-all duration-300"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            custom={index}
+            variants={sectionFade}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              {item.icon}
+              <h3 className="text-lg font-semibold text-indigo-700">
+                {item.title}
+              </h3>
+            </div>
+            <p className="text-gray-700 text-base leading-relaxed">
+              {item.description}
             </p>
           </motion.div>
         ))}

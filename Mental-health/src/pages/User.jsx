@@ -59,15 +59,7 @@ const User = () => {
         </div>
       </main>
 
-      {/* ChatBot Floating Button */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <ChatBot />
-        {showBotPopup && (
-          <div className="absolute right-16 bottom-1 bg-white border border-indigo-200 px-4 py-2 rounded-lg shadow-md text-sm text-gray-700 animate-fade-in">
-            💡 Need help? Try our AI Assistant!
-          </div>
-        )}
-      </div>
+    
     </div>
   );
 };
