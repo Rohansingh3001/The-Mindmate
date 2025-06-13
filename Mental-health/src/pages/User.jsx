@@ -4,7 +4,7 @@ import { auth } from '../firebase'; // Make sure you export 'auth' from your fir
 import { onAuthStateChanged } from 'firebase/auth';
 import Navbar from '../components/Navbar';
 import ChatBot from '../components/ChatBot';
-
+import AssessmentForm from '../components/AssessmentForm';      
 import MentalHealthChart from '../components/MentalHealthChart';
 import Dashboard from '../components/Dashboard';
 

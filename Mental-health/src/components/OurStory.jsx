@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   HeartCrack,
@@ -51,6 +51,8 @@ const whyUsItems = [
 ];
 
 const OurStory = () => {
+  const [showAll, setShowAll] = useState(false);
+
   const sections = [
     {
       title: "A Generation Under Pressure",
@@ -87,7 +89,7 @@ const OurStory = () => {
       </div>
 
       <div className="max-w-3xl mx-auto space-y-10">
-        {sections.map((section, index) => (
+        {sections.slice(0, showAll ? sections.length : 1).map((section, index) => (
           <motion.div
             key={section.title}
             className="bg-white rounded-xl shadow-md p-6 sm:p-8 hover:shadow-lg transition-all duration-300 border border-purple-100"
@@ -106,44 +108,57 @@ const OurStory = () => {
             </p>
           </motion.div>
         ))}
+
+        {!showAll && (
+          <div className="text-center">
+            <button
+              onClick={() => setShowAll(true)}
+              className="mt-6 px-6 py-2 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition"
+            >
+              Learn More About Us
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Why Us Section */}
-      <div className="max-w-4xl mx-auto text-center mt-20">
-        <motion.h2
-          className="text-3xl sm:text-4xl font-bold text-purple-800 mb-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          🌟 Why Choose Mind Mates?
-        </motion.h2>
-      </div>
+      {showAll && (
+        <>
+          {/* Why Us Section */}
+          <div className="max-w-4xl mx-auto text-center mt-20">
+            <motion.h2
+              className="text-3xl sm:text-4xl font-bold text-purple-800 mb-12"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              🌟 Why Choose Mind Mates?
+            </motion.h2>
+          </div>
 
-      <div className="grid sm:grid-cols-2 gap-8 max-w-5xl mx-auto px-4">
-        {whyUsItems.map((item, index) => (
-          <motion.div
-            key={item.title}
-            className="bg-white rounded-xl p-6 shadow-md border border-purple-100 hover:shadow-lg transition-all duration-300"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={index}
-            variants={sectionFade}
-          >
-            <div className="flex items-center gap-3 mb-3">
-              {item.icon}
-              <h3 className="text-lg font-semibold text-indigo-700">
-                {item.title}
-              </h3>
-            </div>
-            <p className="text-gray-700 text-base leading-relaxed">
-              {item.description}
-            </p>
-          </motion.div>
-        ))}
-      </div>
+          <div className="grid sm:grid-cols-2 gap-8 max-w-5xl mx-auto px-4">
+            {whyUsItems.map((item, index) => (
+              <motion.div
+                key={item.title}
+                className="bg-white rounded-xl p-6 shadow-md border border-purple-100 hover:shadow-lg transition-all duration-300"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                custom={index}
+                variants={sectionFade}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  {item.icon}
+                  <h3 className="text-lg font-semibold text-indigo-700">{item.title}</h3>
+                </div>
+                <p className="text-gray-700 text-base leading-relaxed">
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 };
