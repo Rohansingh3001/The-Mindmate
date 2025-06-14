@@ -1,49 +1,58 @@
-# 🧠 The Mindmates
+# 🧠 The Mindmates – Mindflow AI
 
-**Mindflow AI** is a next-gen mental wellness platform that combines AI therapy, peer support, medical care, and smart tracking to create a safe, connected space for emotional well-being.
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Built with React](https://img.shields.io/badge/Built%20with-React-blue)
+![Firebase](https://img.shields.io/badge/Backend-Firebase-orange)
+
+**THE MINDMATES** is a next-gen mental wellness platform that blends **AI therapy**, **peer support**, **doctor consultations**, and **mood tracking** to create a connected space for mental well-being – especially for teenagers and young adults in India.
+
+---
 
 ## 🌟 Features
 
 ### 1. 🤖 AI Therapist & Talking Buddy
-- Chat with an AI trained in therapeutic conversation
-- Available 24/7 for emotional support
-- Mood-based conversation and activities
+- 24/7 chatbot trained in therapeutic dialogue  
+- Mood-based support and journaling prompts  
+- Multilingual support: Hindi, English, Tamil & more  
 
-### 2. 🩺 Doctor Appointments
-- Schedule sessions with licensed professionals
-- View doctor availability and time slots
-- Secure and private consultations
+### 2. 🩺 Book a Doctor
+- Schedule consultations with licensed professionals  
+- Secure time-slot booking and video call integration  
+- Fully confidential via Firebase Authentication  
 
-### 3. 💡 Smart Mood Tracking
-- Log daily mood and triggers
-- AI-driven suggestions for mental wellness
-- Visual mood trends and personal analytics
+### 3. 📊 Smart Mood Tracker
+- Log daily mood, stressors, and triggers  
+- AI-generated wellness suggestions  
+- Visual analytics and mood charts  
 
-### 4. 🌍 MindConnect – Community Support
-- Join safe circles to talk with peers
-- Attend local meetups and virtual hangouts
-- Real human connection, moderated for safety
+### 4. 🌍 MindConnect – Safe Community
+- Join moderated circles (Teens Circle, Youth Circle, etc.)  
+- Engage in forums and virtual events  
+- AI + human moderation for safety  
 
-### 5. 🔊 Hardware Integration *(Future Scope)*
-- Smart device support for offline stress detection
-- Biofeedback-based recommendations and alerts
+### 5. 🔊 Hardware Integration *(Coming Soon)*
+- Smart device/wearable support  
+- Biofeedback-based alerts and stress monitoring  
 
 ---
 
 ## 🚀 Tech Stack
 
-- **Frontend:** React.js + Tailwind CSS + Framer Motion + ShadCN UI
-- **Backend:** Firebase (Auth + Firestore)
-- **AI Engine:** Rasa, OpenAI (for GPT-based responses)
-- **Animations:** GSAP / Framer Motion
-- **Deployment:** Vercel / Netlify
+| Layer         | Technology                                           |
+|---------------|------------------------------------------------------|
+| **Frontend**  | React.js, Tailwind CSS, ShadCN UI, Framer Motion     |
+| **Backend**   | Firebase (Auth, Firestore)                           |
+| **AI Engine** | Rasa, OpenAI (GPT), IndicTrans for Indian Languages  |
+| **Animations**| GSAP, Framer Motion                                  |
+| **Deployment**| Vercel / Netlify                                     |
 
 ---
 
-## 📦 Installation
+## 📦 Getting Started
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/Rohansingh3001/Mindmate.git
-cd Mental-health
-npm install
-npm run dev
+cd Mindmate
