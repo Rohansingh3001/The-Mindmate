@@ -5,7 +5,7 @@
 ![Built with React](https://img.shields.io/badge/Built%20with-React-blue)
 ![Firebase](https://img.shields.io/badge/Backend-Firebase-orange)
 
-**Mindflow AI** is a next-gen mental wellness platform that blends **AI therapy**, **peer support**, **doctor consultations**, and **mood tracking** to create a connected space for mental well-being – especially for teenagers and young adults in India.
+**THE MINDMATES** is a next-gen mental wellness platform that blends **AI therapy**, **peer support**, **doctor consultations**, and **mood tracking** to create a connected space for mental well-being – especially for teenagers and young adults in India.
 
 ---
 
