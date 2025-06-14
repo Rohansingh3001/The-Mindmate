@@ -4,71 +4,71 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 
 const sections = [
-  {
-    key: "phq9",
-    title: "Depression – PHQ-9",
-    maxScore: 27,
-    questions: [
-      "Little interest or pleasure in doing things",
-      "Feeling down, depressed, or hopeless",
-      "Trouble falling or staying asleep, or sleeping too much",
-      "Feeling tired or having little energy",
-      "Poor appetite or overeating",
-      "Feeling bad about yourself or that you are a failure",
-      "Trouble concentrating on things",
-      "Moving or speaking so slowly people notice or being fidgety",
-      "Thoughts that you would be better off dead or hurting yourself"
-    ],
-    scale: [0, 1, 2, 3],
-    scaleLabels: {
-      0: "Not at all",
-      1: "Several days",
-      2: "More than half the days",
-      3: "Nearly every day"
-    }
-  },
-  {
-    key: "anxiety",
-    title: "Anxiety – GAD-7",
-    maxScore: 21,
-    questions: [
-      "Feeling nervous, anxious or on edge",
-      "Not being able to stop or control worrying",
-      "Worrying too much about different things",
-      "Trouble relaxing",
-      "Being so restless that it’s hard to sit still",
-      "Becoming easily annoyed or irritable",
-      "Feeling afraid as if something awful might happen"
-    ],
-    scale: [0, 1, 2, 3],
-    scaleLabels: {
-      0: "Not at all",
-      1: "Several days",
-      2: "More than half the days",
-      3: "Nearly every day"
-    }
-  },
-  {
-    key: "stress",
-    title: "Stress Assessment",
-    maxScore: 21,
-    questions: [
-      "I find it hard to wind down",
-      "I tend to over-react to situations",
-      "I feel that I am using a lot of nervous energy",
-      "I find myself getting agitated",
-      "I find it difficult to relax",
-      "I feel intolerant of interruptions",
-      "I feel that life is meaningless"
-    ],
-    scale: [0, 1, 2, 3],
-    scaleLabels: {
-      0: "Never",
-      1: "Sometimes",
-      2: "Often",
-      3: "Almost Always"
-    }
+ {
+  key: "phq9",
+  title: "Feeling Sad or Unhappy – PHQ-9",
+  maxScore: 27,
+  questions: [
+    "I don’t enjoy things like I used to.",
+    "I feel sad or unhappy a lot.",
+    "I have trouble sleeping or I sleep too much.",
+    "I feel tired and have no energy.",
+    "I don’t feel like eating, or I eat too much.",
+    "I feel like I’m not good enough or a failure.",
+    "I can’t focus or pay attention easily.",
+    "I move or talk slowly, or I feel very restless.",
+    "Sometimes I feel like I don’t want to be here."
+  ],
+  scale: [0, 1, 2, 3],
+  scaleLabels: {
+    0: "Not at all",
+    1: "Sometimes",
+    2: "Many days",
+    3: "Almost every day"
   }
+},
+ {
+  key: "anxiety",
+  title: "Feeling Nervous or Worried – GAD-7",
+  maxScore: 21,
+  questions: [
+    "I feel nervous or scared a lot.",
+    "I can’t stop worrying, even if I try.",
+    "I worry about lots of things.",
+    "I find it hard to relax or calm down.",
+    "I feel like I always have to move around.",
+    "I get upset or angry easily.",
+    "I feel like something bad might happen."
+  ],
+  scale: [0, 1, 2, 3],
+  scaleLabels: {
+    0: "Not at all",
+    1: "Sometimes",
+    2: "Many days",
+    3: "Almost every day"
+  }
+},
+ {
+  key: "stress",
+  title: "Feeling Stressed or Overwhelmed",
+  maxScore: 21,
+  questions: [
+    "I find it hard to calm down when I’m upset.",
+    "I get really upset or angry over small things.",
+    "I feel like I’m always worried or tense.",
+    "I get angry or annoyed easily.",
+    "It’s hard for me to feel relaxed.",
+    "I don’t like being stopped or interrupted.",
+    "Sometimes I feel like life doesn’t make sense."
+  ],
+  scale: [0, 1, 2, 3],
+  scaleLabels: {
+    0: "Never",
+    1: "Sometimes",
+    2: "Often",
+    3: "Almost Always"
+  }
+}
 ];
 
 const interpretScore = (key, score) => {
@@ -135,29 +135,50 @@ export default function AssessmentForm() {
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text("Mental Health Assessment Report", 14, 20);
-    doc.setFontSize(12);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
 
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(128, 0, 128); // MindMates purple
+    doc.text(" The MindMates", 14, 20);
+
+    // Tagline & date
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Empowering Youth Mental Well-being – themindmate2025.vercel.app", 14, 30);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 36);
+
+    // Section scores
+    let yOffset = 46;
     doc.setFontSize(14);
-    sections.forEach((section, index) => {
-      const y = 40 + index * 20;
+    doc.setTextColor(0, 0, 0);
+    sections.forEach((section) => {
       doc.text(
         `${section.title}: ${scores[section.key]} / ${section.maxScore} – ${interpretScore(
           section.key,
           scores[section.key]
         )}`,
         14,
-        y
+        yOffset
       );
+      yOffset += 10;
     });
 
-    doc.setFontSize(14);
+    // Total score
     doc.setTextColor(91, 55, 183);
-    doc.text(`Total Score: ${totalScore}`, 14, 40 + sections.length * 20);
+    doc.text(`Total Score: ${totalScore}`, 14, yOffset + 10);
 
-    doc.save("Mental_Health_Report.pdf");
+    // Disclaimer
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Disclaimer: This is a self-assessment tool provided by The MindMates.", 14, yOffset + 25);
+    doc.text("It is not intended to replace professional diagnosis or treatment.", 14, yOffset + 30);
+
+    // Footer
+    doc.setTextColor(150, 150, 150);
+    doc.setFontSize(10);
+    doc.text("© The MindMates – All rights reserved", 14, 290);
+
+    doc.save("MindMates_Mental_Health_Report.pdf");
   };
 
   const handleRetake = () => {

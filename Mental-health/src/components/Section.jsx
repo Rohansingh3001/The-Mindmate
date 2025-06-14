@@ -4,7 +4,6 @@ export default function Section({ sectionKey, questions, scale, scaleLabels, onS
   const [responses, setResponses] = useState(Array(questions.length).fill(null));
 
   useEffect(() => {
-    // Reset responses when the sectionKey changes (new section)
     setResponses(Array(questions.length).fill(null));
   }, [sectionKey, questions.length]);
 
@@ -23,23 +22,37 @@ export default function Section({ sectionKey, questions, scale, scaleLabels, onS
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 animate-fade-in">
       {questions.map((question, index) => (
-        <div key={index} className="bg-white/70 p-4 rounded shadow">
-          <p className="font-medium mb-2">{question}</p>
-          <div className="flex flex-wrap gap-4">
-            {scale.map((val) => (
-              <label key={val} className="flex items-center space-x-1">
-                <input
-                  type="radio"
-                  name={`q-${sectionKey}-${index}`}
-                  value={val}
-                  checked={responses[index] === val}
-                  onChange={(e) => handleChange(index, e.target.value)}
-                />
-                <span>{scaleLabels[val]}</span>
-              </label>
-            ))}
+        <div
+          key={index}
+          className="bg-white/80 p-6 rounded-2xl shadow-lg border border-purple-200"
+        >
+          <p className="text-lg font-semibold mb-4 text-gray-800">{question}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {scale.map((val) => {
+              const isChecked = responses[index] === val;
+              return (
+                <label
+                  key={val}
+                  className={`flex items-center p-2 rounded-xl cursor-pointer border-2 transition-all duration-200 ${
+                    isChecked
+                      ? "bg-purple-100 border-purple-500 text-purple-700"
+                      : "bg-white border-gray-300 text-gray-700 hover:border-purple-400 hover:bg-purple-50"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name={`q-${sectionKey}-${index}`}
+                    value={val}
+                    checked={isChecked}
+                    onChange={(e) => handleChange(index, e.target.value)}
+                    className="hidden"
+                  />
+                  <span className="ml-2">{scaleLabels[val]}</span>
+                </label>
+              );
+            })}
           </div>
         </div>
       ))}

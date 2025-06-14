@@ -1,67 +1,57 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth } from '../firebase'; // Make sure you export 'auth' from your firebase.js
-import { onAuthStateChanged } from 'firebase/auth';
-import Navbar from '../components/Navbar';
-import ChatBot from '../components/ChatBot';
-import AssessmentForm from '../components/AssessmentForm';      
-import MentalHealthChart from '../components/MentalHealthChart';
-import Dashboard from '../components/Dashboard';
+// App.jsx
+import React, { useEffect, useState } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase"; // Ensure correct path
+import Navbar from "../components/Navbar";
+import Dashboard from "../components/Dashboard";
+import FullChat from "../components/FullChat";
+import { User } from "lucide-react";
 
-const User = () => {
+function App() {
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState(null);
-  const [showBotPopup, setShowBotPopup] = useState(true);
 
   useEffect(() => {
-    // Listen for auth state changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserDetails({ name: user.displayName || 'User', email: user.email });
+        setUserDetails({
+          name: user.displayName || "User",
+          email: user.email,
+        });
       } else {
-        navigate('/login');
+        navigate("/login");
       }
     });
 
-    // Hide popup after 5 seconds
-    const timer = setTimeout(() => setShowBotPopup(false), 5000);
-
-    return () => {
-      unsubscribe();
-      clearTimeout(timer);
-    };
+    return () => unsubscribe();
   }, [navigate]);
 
   const handleLogout = () => {
     auth.signOut();
-    navigate('/');
+    navigate("/");
   };
 
   const handleViewAccount = () => {
     if (userDetails) {
       alert(`Name: ${userDetails.name}\nEmail: ${userDetails.email}`);
     } else {
-      alert('No user details available.');
+      alert("No user details available.");
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-white to-[#f0e9ff] text-gray-800 relative">
-      {/* Navbar */}
+    <div className="min-h-screen bg-gradient-to-br from-white to-[#f0e9ff] dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100">
       <Navbar onLogout={handleLogout} onViewAccount={handleViewAccount} />
-
-      {/* Fullscreen Dashboard */}
-      <main className="flex-1 flex flex-col w-full">
-        <div className="flex-1 flex flex-col w-full">
-          <Dashboard />
-          {/* The grid below is left empty as requested */}
-         
-        </div>
+      <main className="flex flex-col w-full">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/fullchat" element={<FullChat />} />
+          {/* Add other routes here */}
+        </Routes>
       </main>
-
-    
     </div>
   );
-};
+}
 
-export default User;
+export default App;
