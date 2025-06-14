@@ -8,11 +8,12 @@ import { toast } from "react-toastify";
 import { useTheme } from "../context/ThemeContext";
 import { Sun, Moon } from "lucide-react";
 import AssessmentForm from "./AssessmentForm";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const greetings = ["Hey", "Welcome", "Namaste", "How are you?", "Peace ✌️"];
 
 export default function Dashboard() {
-  const [userName] = useState("Rohan");
+  const [userName, setUserName] = useState("");
   const [mood, setMood] = useState(localStorage.getItem("userMood") || "");
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -20,12 +21,26 @@ export default function Dashboard() {
   const [quote, setQuote] = useState("");
 
   useEffect(() => {
+    // Get current user from Firebase Auth
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const displayName = user.displayName || user.email?.split("@")[0] || "User";
+        setUserName(displayName);
+      } else {
+        navigate("/login"); // Redirect if not logged in
+      }
+    });
+
+    // Set greeting
     setGreeting(greetings[Math.floor(Math.random() * greetings.length)]);
 
-    // Fetch a motivational quote
+    // Fetch motivational quote
     fetch("https://api.quotable.io/random?tags=inspirational|wisdom")
       .then((res) => res.json())
       .then((data) => setQuote(`${data.content} — ${data.author}`));
+
+    return () => unsubscribe();
   }, []);
 
   const handleMoodClick = (emoji) => {

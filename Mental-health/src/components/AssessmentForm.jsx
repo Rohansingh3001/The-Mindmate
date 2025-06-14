@@ -144,7 +144,10 @@ export default function AssessmentForm() {
     sections.forEach((section, index) => {
       const y = 40 + index * 20;
       doc.text(
-        `${section.title}: ${scores[section.key]} / ${section.maxScore} – ${interpretScore(section.key, scores[section.key])}`,
+        `${section.title}: ${scores[section.key]} / ${section.maxScore} – ${interpretScore(
+          section.key,
+          scores[section.key]
+        )}`,
         14,
         y
       );
@@ -165,84 +168,90 @@ export default function AssessmentForm() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-white/10 text-black border border-white/20 rounded-xl p-6 backdrop-blur-md shadow-lg">
-      {!submitted ? (
-        <>
-          <div className="mb-4">
-            <h2 className="text-xl font-bold">
-              {currentSection.title} ({currentIndex + 1} of {sections.length})
-            </h2>
+    <div className="w-full max-w-4xl mx-auto">
+      <h1 className="text-3xl font-extrabold text-center text-purple-800 mb-6">
+        🧠 Take a 5-Minute Self Assessment
+      </h1>
+
+      <div className="bg-white/10 text-black border border-white/20 rounded-xl p-6 backdrop-blur-md shadow-lg">
+        {!submitted ? (
+          <>
+            <div className="mb-4">
+              <h2 className="text-xl font-bold">
+                {currentSection.title} ({currentIndex + 1} of {sections.length})
+              </h2>
+            </div>
+
+            <Section
+              sectionKey={currentSection.key}
+              title={currentSection.title}
+              questions={currentSection.questions}
+              scale={currentSection.scale}
+              scaleLabels={currentSection.scaleLabels}
+              onScore={handleScoreUpdate}
+            />
+
+            <div className="mt-6 flex justify-between">
+              {currentIndex > 0 ? (
+                <button
+                  onClick={handleBack}
+                  className="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-6 rounded"
+                >
+                  Go Back
+                </button>
+              ) : (
+                <span />
+              )}
+              {currentIndex < sections.length - 1 ? (
+                <button
+                  onClick={handleNext}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded"
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  onClick={handleSubmit}
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded"
+                >
+                  Submit
+                </button>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold text-green-700">Assessment Result</h2>
+            <ul className="text-left list-disc pl-6 text-lg">
+              {sections.map((section) => (
+                <li key={section.key}>
+                  <strong>{section.title}</strong>: {scores[section.key]} / {section.maxScore} –{" "}
+                  <span className="text-blue-700 font-semibold">
+                    {interpretScore(section.key, scores[section.key])}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-xl font-semibold">
+              <span className="text-purple-700">Total Score:</span> {totalScore}
+            </p>
+
+            <button
+              onClick={handleDownloadPDF}
+              className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition"
+            >
+              Download Report as PDF
+            </button>
+
+            <button
+              onClick={handleRetake}
+              className="mt-2 bg-gray-200 hover:bg-gray-300 text-black font-semibold py-2 px-6 rounded transition"
+            >
+              Retake Test
+            </button>
           </div>
-
-          <Section
-            sectionKey={currentSection.key}
-            title={currentSection.title}
-            questions={currentSection.questions}
-            scale={currentSection.scale}
-            scaleLabels={currentSection.scaleLabels}
-            onScore={handleScoreUpdate}
-          />
-
-          <div className="mt-6 flex justify-between">
-            {currentIndex > 0 ? (
-              <button
-                onClick={handleBack}
-                className="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-6 rounded"
-              >
-                Go Back
-              </button>
-            ) : (
-              <span />
-            )}
-            {currentIndex < sections.length - 1 ? (
-              <button
-                onClick={handleNext}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded"
-              >
-                Next
-              </button>
-            ) : (
-              <button
-                onClick={handleSubmit}
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded"
-              >
-                Submit
-              </button>
-            )}
-          </div>
-        </>
-      ) : (
-        <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold text-green-700">Assessment Result</h2>
-          <ul className="text-left list-disc pl-6 text-lg">
-            {sections.map((section) => (
-              <li key={section.key}>
-                <strong>{section.title}</strong>: {scores[section.key]} / {section.maxScore} –{" "}
-                <span className="text-blue-700 font-semibold">
-                  {interpretScore(section.key, scores[section.key])}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-4 text-xl font-semibold">
-            <span className="text-purple-700">Total Score:</span> {totalScore}
-          </p>
-
-          <button
-            onClick={handleDownloadPDF}
-            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition"
-          >
-            Download Report as PDF
-          </button>
-
-          <button
-            onClick={handleRetake}
-            className="mt-2 bg-gray-200 hover:bg-gray-300 text-black font-semibold py-2 px-6 rounded transition"
-          >
-            Retake Test
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
