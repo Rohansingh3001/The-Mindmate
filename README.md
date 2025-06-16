@@ -1,5 +1,6 @@
 # 🧠 The Mindmates – Mindflow AI
 
+[![wakatime](https://wakatime.com/badge/user/018ca5a4-e0f2-4fab-834f-1af422477677/project/8b6dd5a0-46a1-42e5-bd66-340b0015760f.svg)](https://wakatime.com/badge/user/018ca5a4-e0f2-4fab-834f-1af422477677/project/8b6dd5a0-46a1-42e5-bd66-340b0015760f)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
 ![Built with React](https://img.shields.io/badge/Built%20with-React-blue)

@@ -1,16 +1,18 @@
-// App.jsx
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase"; // Ensure correct path
+import { auth } from "../firebase";
 import Navbar from "../components/Navbar";
 import Dashboard from "../components/Dashboard";
 import FullChat from "../components/FullChat";
-import { User } from "lucide-react";
+import ChatBot from "../components/ChatBot";
+import AssessmentForm from "../components/AssessmentForm";
+import MentalHealthChart from "../components/MentalHealthChart";
 
-function App() {
+function User() {
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState(null);
+  const [showBotPopup, setShowBotPopup] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -24,7 +26,12 @@ function App() {
       }
     });
 
-    return () => unsubscribe();
+    const timer = setTimeout(() => setShowBotPopup(false), 5000);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
   }, [navigate]);
 
   const handleLogout = () => {
@@ -43,15 +50,25 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-[#f0e9ff] dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100">
       <Navbar onLogout={handleLogout} onViewAccount={handleViewAccount} />
+
       <main className="flex flex-col w-full">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/fullchat" element={<FullChat />} />
-          {/* Add other routes here */}
+          <Route path="/assessment" element={<AssessmentForm />} />
+          <Route path="/chart" element={<MentalHealthChart />} />
+          {/* Add more routes as needed */}
         </Routes>
       </main>
+
+      {/* Optional Bot Popup (can be styled or replaced later) */}
+      {showBotPopup && (
+        <div className="fixed bottom-4 right-4 bg-indigo-600 text-white px-4 py-2 rounded-full shadow-lg animate-bounce">
+          👋 Hi there! Need someone to talk to?
+        </div>
+      )}
     </div>
   );
 }
 
-export default App;
+export default User;

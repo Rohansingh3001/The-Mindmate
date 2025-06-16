@@ -158,9 +158,7 @@ export default function Dashboard() {
         {/* Chatbot Section */}
         <div className="xl:col-span-2">
           <Chatbot />
-          <Button className="mt-4 w-full bg-purple-500 hover:bg-purple-600" onClick={() => navigate("/fullchat")}>
-            Open Full Chat
-          </Button>
+          
         </div>
 
         {/* Journals */}

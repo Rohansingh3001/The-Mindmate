@@ -1,13 +1,15 @@
+// ...same imports
 import React, { useState, useRef, useEffect } from "react";
-import { Send, MessageCircle, X, Monitor } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Send, MessageCircle, X, Monitor, Moon, Sun } from "lucide-react";
+import FullChat from "./FullChat";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isFullChat, setIsFullChat] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const chatContainerRef = useRef();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -15,26 +17,96 @@ const Chatbot = () => {
     }
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (input.trim()) {
-      setMessages([...messages, { text: input, sender: "user" }]);
-      setInput("");
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("chat_theme");
+    if (savedTheme === "dark") setDarkMode(true);
+  }, []);
+
+  const handleSendMessage = async () => {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+
+    const timestamp = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    const userMessage = { role: "user", text: trimmed, sender: "user", time: timestamp };
+    const history = [...messages, userMessage];
+    setMessages(history);
+    setInput("");
+
+    setMessages((prev) => [
+      ...prev,
+      { text: "Typing...", sender: "bot", time: timestamp, loading: true },
+    ]);
+
+    try {
+      const response = await fetch("http://localhost:3000/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a compassionate and friendly mental health assistant. Always reply in the same language the user uses. If the user uses Hindi, reply in simple, clear, and conversational Hindi like a friend would speak — not formal or technical. Only answer questions related to mental health, emotional support, stress, depression, and therapy. Politely redirect if asked anything off-topic.",
+            },
+            ...history.map(({ text, sender }) => ({
+              role: sender === "user" ? "user" : "assistant",
+              content: text,
+            })),
+          ],
+        }),
+      });
+
+      const data = await response.json();
+      setMessages((prev) =>
+        prev.map((msg, i) =>
+          i === prev.length - 1 ? { ...msg, text: data.reply, loading: false } : msg
+        )
+      );
+    } catch (err) {
+      console.error("Groq Error:", err);
+      setMessages((prev) =>
+        prev.map((msg, i) =>
+          i === prev.length - 1
+            ? { ...msg, text: "⚠️ Sorry, something went wrong.", loading: false }
+            : msg
+        )
+      );
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSendMessage();
-    }
+    if (e.key === "Enter") handleSendMessage();
   };
 
-  const openFullChat = () => {
-    navigate("/fullchat");
+  const handleOpenFullChat = () => setIsFullChat(true);
+  const handleCloseFullChat = () => setIsFullChat(false);
+
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => {
+      const next = !prev;
+      localStorage.setItem("chat_theme", next ? "dark" : "light");
+      return next;
+    });
   };
+
+  if (isFullChat) {
+    return (
+      <div className="fixed inset-0 z-[100]">
+        <FullChat
+          messages={messages}
+          setMessages={setMessages}
+          onClose={handleCloseFullChat}
+        />
+      </div>
+    );
+  }
 
   return (
     <>
-      {/* Floating Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-6 z-50 bg-indigo-700 text-white rounded-full p-4 shadow-lg hover:bg-indigo-800"
@@ -42,25 +114,27 @@ const Chatbot = () => {
         {isOpen ? <X className="w-5 h-5" /> : <MessageCircle className="w-6 h-6" />}
       </button>
 
-      {/* Chat Widget Popup */}
       {isOpen && (
-        <div className="fixed bottom-20 right-6 z-50 bg-white text-black rounded-2xl shadow-2xl w-[320px] max-h-[450px] flex flex-col overflow-hidden">
+        <div
+          className={`fixed bottom-20 right-6 z-50 rounded-2xl shadow-2xl w-[320px] max-h-[480px] flex flex-col overflow-hidden transition-all duration-300 ${
+            darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
+          }`}
+        >
           {/* Header */}
-          <div className="bg-indigo-700 text-white p-4 font-semibold flex justify-between items-center">
+          <div
+            className={`p-4 font-semibold flex justify-between items-center ${
+              darkMode ? "bg-gray-800" : "bg-indigo-700 text-white"
+            }`}
+          >
             <span>Chat Assistant</span>
-            <div className="flex gap-2">
-              <button
-                onClick={openFullChat}
-                className="hover:bg-indigo-800 p-1 rounded-full"
-                title="Open in Fullscreen"
-              >
+            <div className="flex gap-2 items-center">
+              <button onClick={toggleDarkMode} title="Toggle Theme">
+                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
+              <button onClick={handleOpenFullChat} title="Fullscreen">
                 <Monitor className="w-4 h-4" />
               </button>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="hover:bg-indigo-800 p-1 rounded-full"
-                title="Close"
-              >
+              <button onClick={() => setIsOpen(false)} title="Close">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -69,35 +143,85 @@ const Chatbot = () => {
           {/* Chat Messages */}
           <div
             ref={chatContainerRef}
-            className="flex-grow overflow-y-auto p-4 bg-gray-50 space-y-4 scrollbar-thin scrollbar-thumb-indigo-400 scrollbar-track-gray-200"
+            className={`flex-grow overflow-y-auto p-4 space-y-3 scrollbar-thin ${
+              darkMode
+                ? "bg-gray-800 text-white scrollbar-thumb-gray-600"
+                : "bg-gray-50 text-black scrollbar-thumb-indigo-400"
+            }`}
           >
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[80%] p-3 rounded-lg text-sm ${
-                    msg.sender === "user"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-200 text-gray-900"
-                  }`}
-                >
-                  {msg.text}
-                </div>
-              </div>
-            ))}
+            {messages.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center mt-4">
+                Start a conversation!
+              </p>
+            ) : (
+              messages.map((msg, idx) => {
+                const isUser = msg.sender === "user";
+                return (
+                  <div
+                    key={idx}
+                    className={`flex items-start ${isUser ? "justify-end" : "justify-start"}`}
+                  >
+                    {!isUser && (
+                      <div className="w-6 h-6 bg-indigo-400 rounded-full flex items-center justify-center text-xs font-bold text-white mr-2">
+                        🤖
+                      </div>
+                    )}
+                    <div
+                      className={`max-w-[80%] p-3 rounded-xl text-sm shadow relative ${
+                        isUser
+                          ? "bg-indigo-600 text-white rounded-br-none"
+                          : darkMode
+                          ? "bg-gray-700 text-white border border-gray-600 rounded-bl-none"
+                          : "bg-white text-gray-800 border border-gray-200 rounded-bl-none"
+                      }`}
+                    >
+                      <div
+                        className={`whitespace-pre-wrap leading-relaxed ${
+                          !isUser ? "text-[0.92rem] space-y-1" : ""
+                        }`}
+                      >
+                        {msg.loading ? (
+                          <span className="typing-dots">
+                            <span>.</span>
+                            <span>.</span>
+                            <span>.</span>
+                          </span>
+                        ) : (
+                          msg.text
+                        )}
+                      </div>
+                      <div className="text-[10px] text-right mt-1 opacity-60">
+                        {msg.time}
+                      </div>
+                      {!isUser && (
+                        <span className="absolute -top-4 left-2 text-[10px] text-gray-400 font-medium">
+                          MindMates AI
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
 
-          {/* Input Section */}
-          <div className="p-3 bg-white border-t border-gray-200 flex gap-2 items-center">
+          {/* Input */}
+          <div
+            className={`p-3 border-t flex gap-2 items-center ${
+              darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"
+            }`}
+          >
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Type a message..."
-              className="flex-grow p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className={`flex-grow p-2 rounded-lg border text-sm ${
+                darkMode
+                  ? "bg-gray-800 text-white border-gray-600 focus:ring-indigo-400"
+                  : "bg-white text-black border-gray-300 focus:ring-indigo-500"
+              } focus:outline-none focus:ring-2`}
             />
             <button
               onClick={handleSendMessage}
@@ -108,6 +232,38 @@ const Chatbot = () => {
           </div>
         </div>
       )}
+
+      {/* Typing animation style */}
+      <style>{`
+        .typing-dots {
+          display: inline-flex;
+          gap: 4px;
+        }
+        .typing-dots span {
+          width: 6px;
+          height: 6px;
+          background: currentColor;
+          border-radius: 999px;
+          display: inline-block;
+          animation: typing 1s infinite ease-in-out;
+        }
+        .typing-dots span:nth-child(2) {
+          animation-delay: 0.2s;
+        }
+        .typing-dots span:nth-child(3) {
+          animation-delay: 0.4s;
+        }
+        @keyframes typing {
+          0%, 100% {
+            opacity: 0.3;
+            transform: translateY(0);
+          }
+          50% {
+            opacity: 1;
+            transform: translateY(-3px);
+          }
+        }
+      `}</style>
     </>
   );
 };

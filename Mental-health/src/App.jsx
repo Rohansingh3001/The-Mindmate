@@ -1,7 +1,6 @@
-// App.jsx
 import { Routes, Route, useLocation } from 'react-router-dom';
 import LoginSignup from './components/Authpage';
-import User from './pages/User';
+import User from './pages/User'; // Make sure this path is correct
 import Home from './pages/Home';
 import Footer from './components/Footer';
 import { Toaster } from 'react-hot-toast';
@@ -20,7 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<LoginSignup />} />
         <Route path="/signup" element={<LoginSignup />} />
-        <Route path="/user" element={<User />} />
+        <Route path="/user/*" element={<User />} /> {/* ✅ Fixed line */}
       </Routes>
 
       {/* Footer (conditionally hidden on login/signup) */}
