@@ -4,94 +4,97 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 
 const sections = [
- {
-  key: "phq9",
-  title: "Feeling Sad or Unhappy – PHQ-9",
-  maxScore: 27,
-  questions: [
-    "I don’t enjoy things like I used to.",
-    "I feel sad or unhappy a lot.",
-    "I have trouble sleeping or I sleep too much.",
-    "I feel tired and have no energy.",
-    "I don’t feel like eating, or I eat too much.",
-    "I feel like I’m not good enough or a failure.",
-    "I can’t focus or pay attention easily.",
-    "I move or talk slowly, or I feel very restless.",
-    "Sometimes I feel like I don’t want to be here."
-  ],
-  scale: [0, 1, 2, 3],
-  scaleLabels: {
-    0: "Not at all",
-    1: "Sometimes",
-    2: "Many days",
-    3: "Almost every day"
-  }
-},
- {
-  key: "anxiety",
-  title: "Feeling Nervous or Worried – GAD-7",
-  maxScore: 21,
-  questions: [
-    "I feel nervous or scared a lot.",
-    "I can’t stop worrying, even if I try.",
-    "I worry about lots of things.",
-    "I find it hard to relax or calm down.",
-    "I feel like I always have to move around.",
-    "I get upset or angry easily.",
-    "I feel like something bad might happen."
-  ],
-  scale: [0, 1, 2, 3],
-  scaleLabels: {
-    0: "Not at all",
-    1: "Sometimes",
-    2: "Many days",
-    3: "Almost every day"
-  }
-},
- {
-  key: "stress",
-  title: "Feeling Stressed or Overwhelmed",
-  maxScore: 21,
-  questions: [
-    "I find it hard to calm down when I’m upset.",
-    "I get really upset or angry over small things.",
-    "I feel like I’m always worried or tense.",
-    "I get angry or annoyed easily.",
-    "It’s hard for me to feel relaxed.",
-    "I don’t like being stopped or interrupted.",
-    "Sometimes I feel like life doesn’t make sense."
-  ],
-  scale: [0, 1, 2, 3],
-  scaleLabels: {
-    0: "Never",
-    1: "Sometimes",
-    2: "Often",
-    3: "Almost Always"
-  }
-}
+  {
+    key: "phq9",
+    title: "Mood Check – PHQ-9",
+    maxScore: 27,
+    questions: [
+      "I’m not enjoying stuff like I used to.",
+      "Lately, I’ve been feeling low or meh.",
+      "Sleep is a mess — too much or barely any.",
+      "Even after rest, I’m still drained.",
+      "Food habits are off — eating too much or skipping.",
+      "I feel like I’m not good enough sometimes.",
+      "Focusing is hard — brain fog is real.",
+      "I either feel too slow or super restless.",
+      "Sometimes I just want to disappear or not exist.",
+    ],
+    scale: [0, 1, 2, 3],
+    scaleLabels: {
+      0: "Not at all 😌",
+      1: "A little 😕",
+      2: "Quite a bit 😟",
+      3: "A lot 😞",
+    },
+  },
+  {
+    key: "anxiety",
+    title: "Anxiety Check – GAD-7",
+    maxScore: 21,
+    questions: [
+      "I’m often on edge or tense.",
+      "My brain won’t stop overthinking.",
+      "Even simple stuff feels stressful.",
+      "I struggle to chill or feel relaxed.",
+      "I feel jumpy or like I need to move.",
+      "I get annoyed or lose it quickly.",
+      "I worry something bad will happen, even if nothing’s wrong.",
+    ],
+    scale: [0, 1, 2, 3],
+    scaleLabels: {
+      0: "Nah, I'm chill 🧘",
+      1: "Sometimes 😬",
+      2: "Quite often 😰",
+      3: "All the time 😩",
+    },
+  },
+  {
+    key: "stress",
+    title: "Stress Levels",
+    maxScore: 21,
+    questions: [
+      "Hard to calm down when upset?",
+      "Small stuff makes me really angry.",
+      "Feel tense or like I’m always alert.",
+      "People get on my nerves easily.",
+      "Relaxing is tough, even when I try.",
+      "Interruptions mess up my flow bad.",
+      "Sometimes I feel like ‘what’s the point?’",
+    ],
+    scale: [0, 1, 2, 3],
+    scaleLabels: {
+      0: "Not really 😌",
+      1: "A little 😣",
+      2: "Quite a lot 😤",
+      3: "All the time 😵‍💫",
+    },
+  },
 ];
 
-const interpretScore = (key, score) => {
+
+const interpretScore = (key, score, maxScore) => {
+  const percentage = Math.round((score / maxScore) * 100);
+  let status = "Balanced";
+
   if (key === "phq9") {
-    if (score <= 4) return "Minimal";
-    if (score <= 9) return "Mild";
-    if (score <= 14) return "Moderate";
-    if (score <= 19) return "Moderately Severe";
-    return "Severe";
+    if (score <= 4) status = "Minimal sadness";
+    else if (score <= 9) status = "Mild sadness";
+    else if (score <= 14) status = "Moderate low mood";
+    else if (score <= 19) status = "Feeling quite low";
+    else status = "Feeling very low";
+  } else if (key === "anxiety") {
+    if (score <= 4) status = "Calm";
+    else if (score <= 9) status = "Mild worry";
+    else if (score <= 14) status = "Anxious often";
+    else status = "High anxiety";
+  } else if (key === "stress") {
+    if (score <= 7) status = "Chilled";
+    else if (score <= 9) status = "Mildly stressed";
+    else if (score <= 12) status = "Pretty stressed";
+    else status = "Very stressed";
   }
-  if (key === "anxiety") {
-    if (score <= 4) return "Minimal";
-    if (score <= 9) return "Mild";
-    if (score <= 14) return "Moderate";
-    return "Severe";
-  }
-  if (key === "stress") {
-    if (score <= 7) return "Normal";
-    if (score <= 9) return "Mild";
-    if (score <= 12) return "Moderate";
-    return "Severe";
-  }
-  return "Unknown";
+
+  return `${status} (${percentage}% intensity)`;
 };
 
 export default function AssessmentForm() {
@@ -102,6 +105,8 @@ export default function AssessmentForm() {
 
   const currentSection = sections[currentIndex];
   const totalScore = Object.values(scores).reduce((acc, val) => acc + val, 0);
+  const maxTotal = sections.reduce((acc, s) => acc + s.maxScore, 0);
+  const totalPercent = Math.round((totalScore / maxTotal) * 100);
 
   const handleScoreUpdate = (key, score) => {
     setScores((prev) => ({ ...prev, [key]: score }));
@@ -110,7 +115,7 @@ export default function AssessmentForm() {
 
   const handleNext = () => {
     if (!answered[currentSection.key]) {
-      alert("Please complete this section before proceeding.");
+      alert("Please answer all questions before proceeding.");
       return;
     }
     if (currentIndex < sections.length - 1) {
@@ -136,49 +141,38 @@ export default function AssessmentForm() {
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
 
-    // Header
     doc.setFontSize(22);
-    doc.setTextColor(128, 0, 128); // MindMates purple
-    doc.text(" The MindMates", 14, 20);
+    doc.setTextColor(128, 0, 128);
+    doc.text("MindMates Emotional Wellness Report", 14, 20);
 
-    // Tagline & date
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
-    doc.text("Empowering Youth Mental Well-being – themindmate2025.vercel.app", 14, 30);
+    doc.text("Generated by The MindMates – themindmate2025.vercel.app", 14, 30);
     doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 36);
 
-    // Section scores
-    let yOffset = 46;
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0);
+    let y = 50;
     sections.forEach((section) => {
-      doc.text(
-        `${section.title}: ${scores[section.key]} / ${section.maxScore} – ${interpretScore(
-          section.key,
-          scores[section.key]
-        )}`,
-        14,
-        yOffset
-      );
-      yOffset += 10;
+      const score = scores[section.key];
+      const result = interpretScore(section.key, score, section.maxScore);
+      doc.setFontSize(13);
+      doc.setTextColor(40, 40, 40);
+      doc.text(`${section.title}: ${score}/${section.maxScore} – ${result}`, 14, y);
+      y += 10;
     });
 
-    // Total score
+    doc.setFontSize(14);
     doc.setTextColor(91, 55, 183);
-    doc.text(`Total Score: ${totalScore}`, 14, yOffset + 10);
+    doc.text(`Overall Positivity: ${100 - totalPercent}%`, 14, y + 10);
 
-    // Disclaimer
     doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text("Disclaimer: This is a self-assessment tool provided by The MindMates.", 14, yOffset + 25);
-    doc.text("It is not intended to replace professional diagnosis or treatment.", 14, yOffset + 30);
+    doc.setTextColor(120, 120, 120);
+    doc.text("This is a self-check. Not a diagnosis. Stay positive and reach out if needed!", 14, y + 25);
 
-    // Footer
+    doc.setFontSize(10);
     doc.setTextColor(150, 150, 150);
-    doc.setFontSize(10);
     doc.text("© The MindMates – All rights reserved", 14, 290);
 
-    doc.save("MindMates_Mental_Health_Report.pdf");
+    doc.save("MindMates_Emotional_Wellness_Report.pdf");
   };
 
   const handleRetake = () => {
@@ -189,19 +183,17 @@ export default function AssessmentForm() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto px-4">
       <h1 className="text-3xl font-extrabold text-center text-purple-800 mb-6">
-        🧠 Take a 5-Minute Self Assessment
+        💬 How Are You Feeling Today?
       </h1>
 
-      <div className="bg-white/10 text-black border border-white/20 rounded-xl p-6 backdrop-blur-md shadow-lg">
+      <div className="bg-white/10 border border-white/20 rounded-xl p-6 backdrop-blur-md shadow-lg text-black">
         {!submitted ? (
           <>
-            <div className="mb-4">
-              <h2 className="text-xl font-bold">
-                {currentSection.title} ({currentIndex + 1} of {sections.length})
-              </h2>
-            </div>
+            <h2 className="text-xl font-bold mb-4">
+              {currentSection.title} ({currentIndex + 1} of {sections.length})
+            </h2>
 
             <Section
               sectionKey={currentSection.key}
@@ -213,16 +205,18 @@ export default function AssessmentForm() {
             />
 
             <div className="mt-6 flex justify-between">
-              {currentIndex > 0 ? (
-                <button
-                  onClick={handleBack}
-                  className="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-6 rounded"
-                >
-                  Go Back
-                </button>
-              ) : (
-                <span />
-              )}
+              <button
+                onClick={handleBack}
+                disabled={currentIndex === 0}
+                className={`py-2 px-6 rounded font-semibold transition ${
+                  currentIndex === 0
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "bg-gray-300 hover:bg-gray-400 text-black"
+                }`}
+              >
+                Go Back
+              </button>
+
               {currentIndex < sections.length - 1 ? (
                 <button
                   onClick={handleNext}
@@ -241,35 +235,38 @@ export default function AssessmentForm() {
             </div>
           </>
         ) : (
-          <div className="text-center space-y-4">
-            <h2 className="text-2xl font-bold text-green-700">Assessment Result</h2>
+          <div className="text-center space-y-5">
+            <h2 className="text-2xl font-bold text-green-700">You're Doing Great! 🌟</h2>
+
             <ul className="text-left list-disc pl-6 text-lg">
               {sections.map((section) => (
                 <li key={section.key}>
-                  <strong>{section.title}</strong>: {scores[section.key]} / {section.maxScore} –{" "}
+                  <strong>{section.title}</strong>: {scores[section.key]} / {section.maxScore} – {" "}
                   <span className="text-blue-700 font-semibold">
-                    {interpretScore(section.key, scores[section.key])}
+                    {interpretScore(section.key, scores[section.key], section.maxScore)}
                   </span>
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-xl font-semibold">
-              <span className="text-purple-700">Total Score:</span> {totalScore}
+
+            <p className="text-xl font-semibold">
+              <span className="text-purple-700">You're {100 - totalPercent}% on the bright side today 💜</span>
             </p>
 
-            <button
-              onClick={handleDownloadPDF}
-              className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition"
-            >
-              Download Report as PDF
-            </button>
-
-            <button
-              onClick={handleRetake}
-              className="mt-2 bg-gray-200 hover:bg-gray-300 text-black font-semibold py-2 px-6 rounded transition"
-            >
-              Retake Test
-            </button>
+            <div className="flex flex-col items-center gap-3 mt-4">
+              <button
+                onClick={handleDownloadPDF}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition"
+              >
+                Download Your Report
+              </button>
+              <button
+                onClick={handleRetake}
+                className="bg-gray-200 hover:bg-gray-300 text-black font-semibold py-2 px-6 rounded transition"
+              >
+                Retake Test
+              </button>
+            </div>
           </div>
         )}
       </div>

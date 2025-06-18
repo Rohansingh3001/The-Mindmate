@@ -26,20 +26,24 @@ export default function Section({ sectionKey, questions, scale, scaleLabels, onS
       {questions.map((question, index) => (
         <div
           key={index}
-          className="bg-white/80 p-6 rounded-2xl shadow-lg border border-purple-200"
+          className="p-6 rounded-2xl shadow-lg border border-purple-200 bg-white/80 dark:bg-gray-900 dark:border-purple-700 transition-colors"
         >
-          <p className="text-lg font-semibold mb-4 text-gray-800">{question}</p>
+          <p className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">
+            {question}
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {scale.map((val) => {
               const isChecked = responses[index] === val;
               return (
                 <label
                   key={val}
-                  className={`flex items-center p-2 rounded-xl cursor-pointer border-2 transition-all duration-200 ${
-                    isChecked
-                      ? "bg-purple-100 border-purple-500 text-purple-700"
-                      : "bg-white border-gray-300 text-gray-700 hover:border-purple-400 hover:bg-purple-50"
-                  }`}
+                  className={`flex items-center p-2 rounded-xl cursor-pointer border-2 transition-all duration-200
+                    ${
+                      isChecked
+                        ? "bg-purple-100 border-purple-500 text-purple-700 dark:bg-purple-800 dark:text-white"
+                        : "bg-white border-gray-300 text-gray-700 hover:border-purple-400 hover:bg-purple-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:border-purple-500 dark:hover:bg-gray-700"
+                    }
+                  `}
                 >
                   <input
                     type="radio"

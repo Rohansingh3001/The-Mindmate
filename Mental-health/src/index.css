@@ -44,3 +44,27 @@
   font-weight: 700;
   font-style: italic;
 }
+.rbc-calendar {
+  background-color: white;
+  color: black;
+}
+
+.dark .rbc-calendar {
+  background-color: #1f2937; /* Tailwind gray-800 */
+  color: white;
+}
+
+.dark .rbc-event {
+  background-color: #4b5563 !important; /* Tailwind gray-600 */
+  color: white !important;
+}
+
+.dark .rbc-toolbar button {
+  background-color: #374151 !important; /* Tailwind gray-700 */
+  color: white !important;
+  border: none;
+}
+
+.dark .rbc-toolbar button.rbc-active {
+  background-color: #6b7280 !important; /* Tailwind gray-500 */
+}

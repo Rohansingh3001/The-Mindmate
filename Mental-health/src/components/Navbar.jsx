@@ -43,7 +43,7 @@ const Navbar = ({ onLogout, onViewAccount }) => {
   };
 
   return (
-    <nav className="w-full bg-gradient-to-r from-white via-[#f8f5ff] to-[#ede7ff] px-4 py-4 shadow-md border-b border-purple-200">
+    <nav className="w-full bg-gradient-to-r from-white via-[#f8f5ff] to-[#ede7ff] px-4 py-3 shadow-sm border-b border-purple-200">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <h1 className="text-2xl font-extrabold text-[#7b5fff] tracking-tight">
           The MindMates
@@ -58,15 +58,15 @@ const Navbar = ({ onLogout, onViewAccount }) => {
                 setNotificationsOpen(!notificationsOpen);
                 handleNotificationClick();
               }}
-              className="relative text-[#7b5fff] hover:text-indigo-700 transition"
+              className="relative text-[#7b5fff] hover:text-indigo-700 transition-all"
             >
               <Bell className="w-6 h-6" />
             </button>
             {notificationsOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white border rounded-xl shadow-lg py-2 z-30 text-sm text-gray-700">
-                <div className="px-4 py-2 hover:bg-gray-100">📢 New update available</div>
-                <div className="px-4 py-2 hover:bg-gray-100">💡 Tip: Try mood logging daily</div>
-                <div className="px-4 py-2 hover:bg-gray-100">🎯 Goal progress saved</div>
+              <div className="absolute right-0 mt-2 w-60 bg-white border border-purple-100 rounded-xl shadow-lg z-30 text-sm">
+                <div className="px-4 py-2 hover:bg-gray-100 transition">📢 New update available</div>
+                <div className="px-4 py-2 hover:bg-gray-100 transition">💡 Try mood logging today</div>
+                <div className="px-4 py-2 hover:bg-gray-100 transition">🎯 Goal progress saved</div>
               </div>
             )}
           </div>
@@ -75,7 +75,7 @@ const Navbar = ({ onLogout, onViewAccount }) => {
           <div className="relative" ref={profileRef}>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="text-[#7b5fff] hover:text-indigo-700 transition"
+              className="text-[#7b5fff] hover:text-indigo-700 transition-all"
             >
               <User className="w-6 h-6" />
             </button>
@@ -95,7 +95,6 @@ const Navbar = ({ onLogout, onViewAccount }) => {
                   Logout
                 </button>
               </div>
-
             )}
           </div>
         </div>
@@ -113,10 +112,10 @@ const Navbar = ({ onLogout, onViewAccount }) => {
 
       {/* Mobile Dropdown */}
       {navOpen && (
-        <div className="md:hidden mt-4 px-3 flex flex-col gap-2">
+        <div className="md:hidden mt-3 px-3 space-y-2 animate-fade-in-down">
           <button
             onClick={handleViewProfile}
-            className="w-full flex items-center justify-between px-4 py-2 border border-[#7b5fff] rounded-xl text-[#7b5fff] hover:bg-[#7b5fff] hover:text-white transition"
+            className="w-full flex items-center justify-between px-4 py-2 border border-[#7b5fff] text-[#7b5fff] rounded-xl hover:bg-[#7b5fff] hover:text-white transition"
           >
             View Profile
             <User className="w-5 h-5" />

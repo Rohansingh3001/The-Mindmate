@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
+
+// Components
 import Navbar from "../components/Navbar";
-import Dashboard from "../components/Dashboard";
-import FullChat from "../components/FullChat";
-import ChatBot from "../components/ChatBot";
-import AssessmentForm from "../components/AssessmentForm";
-import MentalHealthChart from "../components/MentalHealthChart";
+import UserRoutes from "../Routes/UserRoutes.jsx";
+ // ✅ Imported from routes folder
 
 function User() {
   const navigate = useNavigate();
@@ -41,9 +40,9 @@ function User() {
 
   const handleViewAccount = () => {
     if (userDetails) {
-      alert(`Name: ${userDetails.name}\nEmail: ${userDetails.email}`);
+      alert(`👤 Name: ${userDetails.name}\n📧 Email: ${userDetails.email}`);
     } else {
-      alert("No user details available.");
+      alert("⚠️ No user details available.");
     }
   };
 
@@ -52,21 +51,10 @@ function User() {
       <Navbar onLogout={handleLogout} onViewAccount={handleViewAccount} />
 
       <main className="flex flex-col w-full">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/fullchat" element={<FullChat />} />
-          <Route path="/assessment" element={<AssessmentForm />} />
-          <Route path="/chart" element={<MentalHealthChart />} />
-          {/* Add more routes as needed */}
-        </Routes>
+        <UserRoutes /> {/* ✅ Routes moved here */}
       </main>
 
-      {/* Optional Bot Popup (can be styled or replaced later) */}
-      {showBotPopup && (
-        <div className="fixed bottom-4 right-4 bg-indigo-600 text-white px-4 py-2 rounded-full shadow-lg animate-bounce">
-          👋 Hi there! Need someone to talk to?
-        </div>
-      )}
+      
     </div>
   );
 }
