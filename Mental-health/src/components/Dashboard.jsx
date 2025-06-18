@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "./ui/Card";
-import { Button } from "./ui/button";
+import { Button } from "./ui/Button";
 import { FaRegSmile } from "react-icons/fa";
 import { IoMdCalendar, IoIosStats } from "react-icons/io";
 import { toast } from "react-toastify";
