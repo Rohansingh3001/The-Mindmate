@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/card";
-import { Button } from "../components/ui/button";
+import { Button } from "../components/ui/Button";
 import { Textarea } from "../components/ui/textarea";
 
 const JournalsPage = () => {
