@@ -4,7 +4,7 @@ import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
-import { Textarea } from "../components/ui/textarea";
+import { Textarea } from "../components/ui/Textarea";
 
 const JournalsPage = () => {
   const [journals, setJournals] = useState([]);
