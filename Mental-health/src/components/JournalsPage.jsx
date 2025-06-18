@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Card, CardContent } from "./ui/Card";
+import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/textarea";
 
