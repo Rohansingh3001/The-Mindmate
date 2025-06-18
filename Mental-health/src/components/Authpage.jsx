@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  FaUser,
-  FaLock,
-  FaEnvelope,
-  FaEye,
-  FaEyeSlash,
-  FaArrowLeft,
+  FaUser, FaLock, FaEnvelope, FaEye, FaEyeSlash, FaArrowLeft
 } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useNavigate } from 'react-router-dom';
@@ -15,13 +10,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Input = ({
-  icon,
-  type,
-  placeholder,
-  showPassword,
-  togglePassword,
-  isPassword,
-  name,
+  icon, type, placeholder, showPassword, togglePassword, isPassword, name
 }) => (
   <div className="relative w-full mb-5">
     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8f71ff] text-lg">
@@ -61,21 +50,28 @@ const LoginSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const email = e.target.email.value;
+    const email = e.target.email.value.trim();
     const password = e.target.password.value;
-    const fullName = isLogin ? '' : e.target.fullName.value;
+    const fullName = isLogin ? '' : e.target.fullName?.value;
 
     try {
       if (isLogin) {
         await login(email, password);
         toast.success('Login successful!');
+
+        // 🔐 Admin Redirect
+        if (email === 'mindmates@gmail.com' && password === 'mentalhelath@247') {
+          setTimeout(() => navigate('/admin'), 1000);
+        } else {
+          setTimeout(() => navigate('/user'), 1000);
+        }
       } else {
         await signup(email, password, fullName);
         toast.success('Account created successfully!');
+        setTimeout(() => navigate('/user'), 1500);
       }
-      setTimeout(() => navigate('/user'), 1500);
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Something went wrong!');
     }
   };
 
@@ -85,7 +81,7 @@ const LoginSignup = () => {
       toast.success(`Welcome ${user.displayName || 'User'}!`);
       setTimeout(() => navigate('/user'), 1500);
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Google login failed!');
     }
   };
 
@@ -112,8 +108,7 @@ const LoginSignup = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          {isLogin ? 'Back to Balance – Welcome Again ' : 'Unwind Your Mind – Join Us Today '}
-
+          {isLogin ? 'Welcome Back to Balance' : 'Unwind Your Mind – Join Us Today'}
         </motion.h2>
 
         <form onSubmit={handleSubmit}>
@@ -151,7 +146,7 @@ const LoginSignup = () => {
           )}
 
           <motion.button
-            whileHover={agree || isLogin ? { scale: 1.05 } : {}}
+            whileHover={isLogin || agree ? { scale: 1.05 } : {}}
             className={`w-full py-3 rounded-xl text-white font-semibold transition duration-300 ${
               isLogin || agree
                 ? 'bg-[#8f71ff] hover:bg-[#7b5fff]'
@@ -164,13 +159,11 @@ const LoginSignup = () => {
           </motion.button>
         </form>
 
-        {/* Divider */}
         <div className="my-4 text-center relative">
           <div className="absolute left-0 right-0 h-px bg-gray-300 top-1/2 transform -translate-y-1/2" />
           <span className="bg-white/70 relative z-10 px-3 text-gray-500 text-sm">OR</span>
         </div>
 
-        {/* Google Login Button */}
         <button
           onClick={handleGoogleLogin}
           className="w-full py-3 border border-gray-300 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition"
@@ -179,7 +172,6 @@ const LoginSignup = () => {
           <span className="text-sm font-medium text-gray-700">Continue with Google</span>
         </button>
 
-        {/* Toggle Login/Signup */}
         <div className="text-center mt-5 text-sm text-gray-600">
           {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
           <span

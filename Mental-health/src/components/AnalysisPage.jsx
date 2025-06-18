@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosStats } from "react-icons/io";
 import { Sun, Moon } from "lucide-react";
-import { Card, CardContent } from "../components/ui/card";
+import { Card, CardContent } from "./ui/Card";
 
 export default function AnalysisPage() {
   const [moodLogs, setMoodLogs] = useState([]);
