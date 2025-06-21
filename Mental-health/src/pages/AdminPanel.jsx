@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { isAdmin } from "../utils/auth"; // ✅ custom helper to validate admin
+import { isAdmin } from "../utils/auth";
 import Sidebar from "../admin/Sidebar";
 import Dashboard from "../admin/Dashboard";
 import Users from "../admin/Users";
 import Appointments from "../admin/Appointments";
 import Schools from "../admin/Schools";
+import AddPeer from "../admin/AddPeer"; // <-- Fixed import path
 
 export default function AdminPanel() {
   const [user, setUser] = useState(null);
@@ -18,7 +19,7 @@ export default function AdminPanel() {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
       if (u) {
-        const validAdmin = await isAdmin(u.email); // 👈 optional email check
+        const validAdmin = await isAdmin(u.email);
         if (!validAdmin) {
           alert("Access denied. You're not authorized as an admin.");
           navigate("/");
@@ -43,7 +44,6 @@ export default function AdminPanel() {
     );
   }
 
-  // 🧩 Dynamic Section Renderer
   const renderSection = () => {
     switch (activeSection) {
       case "dashboard":
@@ -54,6 +54,8 @@ export default function AdminPanel() {
         return <Appointments />;
       case "schools":
         return <Schools />;
+      case "peer":
+        return <AddPeer />;
       default:
         return <Dashboard />;
     }

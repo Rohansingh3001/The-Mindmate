@@ -7,6 +7,8 @@ import { FcGoogle } from 'react-icons/fc';
 import { useNavigate } from 'react-router-dom';
 import { signup, login, signInWithGoogle } from '../firebaseAuth';
 import { toast, ToastContainer } from 'react-toastify';
+import { doc, setDoc, getDocs, collection } from 'firebase/firestore';
+import { db } from '../firebase';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Input = ({
@@ -59,14 +61,26 @@ const LoginSignup = () => {
         await login(email, password);
         toast.success('Login successful!');
 
-        // 🔐 Admin Redirect
         if (email === 'mindmates@gmail.com' && password === 'mentalhelath@247') {
           setTimeout(() => navigate('/admin'), 1000);
         } else {
-          setTimeout(() => navigate('/user'), 1000);
+          const snapshot = await getDocs(collection(db, 'peers'));
+          const peerEmails = snapshot.docs.map((doc) => doc.data().email);
+          if (peerEmails.includes(email)) {
+            setTimeout(() => navigate('/peer'), 1000);
+          } else {
+            setTimeout(() => navigate('/user'), 1000);
+          }
         }
       } else {
-        await signup(email, password, fullName);
+        const user = await signup(email, password, fullName);
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          email,
+          displayName: fullName,
+          createdAt: new Date()
+        });
+
         toast.success('Account created successfully!');
         setTimeout(() => navigate('/user'), 1500);
       }
@@ -78,8 +92,29 @@ const LoginSignup = () => {
   const handleGoogleLogin = async () => {
     try {
       const user = await signInWithGoogle();
-      toast.success(`Welcome ${user.displayName || 'User'}!`);
-      setTimeout(() => navigate('/user'), 1500);
+
+      let displayName = user.displayName;
+      if (!displayName) {
+        displayName = prompt("Please enter your name:");
+      }
+
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        displayName: displayName || "Anonymous",
+        createdAt: new Date()
+      });
+
+      // ✅ Check if email is of a peer supporter
+      const snapshot = await getDocs(collection(db, 'peers'));
+      const peerEmails = snapshot.docs.map((doc) => doc.data().email);
+      if (peerEmails.includes(user.email)) {
+        toast.success(`Welcome Peer Supporter!`);
+        setTimeout(() => navigate('/peer'), 1000);
+      } else {
+        toast.success(`Welcome ${displayName || 'User'}!`);
+        setTimeout(() => navigate('/user'), 1000);
+      }
     } catch (err) {
       toast.error(err.message || 'Google login failed!');
     }

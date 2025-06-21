@@ -1,17 +1,24 @@
+// AppointmentsPage.jsx
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import STORAGE_KEYS, { getFromStorage, saveToStorage } from "../utils/storage";
-import doctorsList from "../constants/doctors";
-import { Sun, Moon, ArrowLeft } from "lucide-react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import {
+  Sun, Moon, ArrowLeft, CalendarClock, UserPlus, Stethoscope, MapPin, XCircle
+} from "lucide-react";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { enUS } from "date-fns/locale";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { db } from "../firebase";
+import {
+  collection, addDoc, getDocs, Timestamp, deleteDoc, doc
+} from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import doctorsList from "../constants/doctors";
 
 const locales = { "en-US": enUS };
-
 const localizer = dateFnsLocalizer({
   format,
   parse,
@@ -22,86 +29,119 @@ const localizer = dateFnsLocalizer({
 
 export default function AppointmentsPage() {
   const navigate = useNavigate();
-
   const [appointments, setAppointments] = useState([]);
-  const [newAppt, setNewAppt] = useState(() => {
-    const saved = getFromStorage("DRAFT_APPT", null);
-    return saved || { dateTime: null, doctor: "", mode: "Online" };
-  });
+  const [newAppt, setNewAppt] = useState({ dateTime: null, doctor: "", mode: "Online" });
+  const [toastType, setToastType] = useState(null);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("appt_theme") === "dark");
+  const [currentUser, setCurrentUser] = useState(null);
 
-  const [showToast, setShowToast] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => {
-    const savedTheme = localStorage.getItem("appt_theme");
-    return savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  });
-
+  // Theme toggle effect
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("dark", darkMode);
+    document.documentElement.classList.toggle("dark", darkMode);
     localStorage.setItem("appt_theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  const toggleTheme = () => setDarkMode(prev => !prev);
+  const toggleTheme = () => setDarkMode((prev) => !prev);
 
+  // Get current user
   useEffect(() => {
-    const saved = getFromStorage(STORAGE_KEYS.APPOINTMENTS, []);
-    const now = new Date();
-    const filtered = saved.filter(appt => new Date(`${appt.date}T${appt.time}`) >= now);
-    setAppointments(filtered);
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser({
+          uid: user.uid,
+          name: user.displayName || "Anonymous",
+          email: user.email,
+        });
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
+  // Fetch appointments
   useEffect(() => {
-    saveToStorage(STORAGE_KEYS.APPOINTMENTS, appointments);
-  }, [appointments]);
-
-  useEffect(() => {
-    saveToStorage("DRAFT_APPT", newAppt);
-  }, [newAppt]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      setAppointments(prev =>
-        prev.filter(appt => new Date(`${appt.date}T${appt.time}`) >= now)
-      );
-    }, 60000);
-    return () => clearInterval(interval);
+    const fetchAppointments = async () => {
+      const apptRef = collection(db, "appointments");
+      const snapshot = await getDocs(apptRef);
+      const data = snapshot.docs.map((doc) => {
+        const d = doc.data();
+        const dt = d.timestamp?.toDate?.();
+        return {
+          id: doc.id,
+          ...d,
+          timestamp: dt,
+          date: format(dt, "yyyy-MM-dd"),
+          time: format(dt, "HH:mm"),
+        };
+      });
+      setAppointments(data.filter((appt) => appt.timestamp > new Date()));
+    };
+    fetchAppointments();
   }, []);
 
-  const handleSubmit = (e) => {
+  // Handle booking
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { dateTime, doctor, mode } = newAppt;
-    if (!dateTime || !doctor) return;
+
+    if (!dateTime || !doctor || !currentUser) return;
     if (dateTime <= new Date()) {
-      alert("You cannot book an appointment in the past.");
+      alert("Cannot book an appointment in the past.");
       return;
     }
 
     const newEntry = {
-      id: Date.now(),
-      date: format(dateTime, "yyyy-MM-dd"),
-      time: format(dateTime, "HH:mm"),
       doctor,
       mode,
+      timestamp: Timestamp.fromDate(dateTime),
+      userId: currentUser.uid,
+      userName: currentUser.name,
+      userEmail: currentUser.email,
     };
 
-    setAppointments(prev => [...prev, newEntry]);
+    const docRef = await addDoc(collection(db, "appointments"), newEntry);
+
+    setAppointments((prev) => [
+      ...prev,
+      {
+        id: docRef.id,
+        ...newEntry,
+        timestamp: dateTime,
+        date: format(dateTime, "yyyy-MM-dd"),
+        time: format(dateTime, "HH:mm"),
+      },
+    ]);
+
     setNewAppt({ dateTime: null, doctor: "", mode: "Online" });
-    saveToStorage("DRAFT_APPT", null);
-    setShowToast(true);
+    setToastType("booked");
   };
 
+  // Cancel appointment
+  const handleCancelAppointment = async (id) => {
+    if (!window.confirm("Are you sure you want to cancel this appointment?")) return;
+
+    try {
+      await deleteDoc(doc(db, "appointments", id));
+      setAppointments((prev) => prev.filter((appt) => appt.id !== id));
+      setToastType("cancelled");
+    } catch (error) {
+      alert("Failed to cancel appointment.");
+    }
+  };
+
+  // Auto-hide toast
   useEffect(() => {
-    if (showToast) {
-      const timer = setTimeout(() => setShowToast(false), 3000);
+    if (toastType) {
+      const timer = setTimeout(() => setToastType(null), 3000);
       return () => clearTimeout(timer);
     }
-  }, [showToast]);
+  }, [toastType]);
 
+  // Calendar data
   const calendarEvents = appointments.map((appt) => ({
     title: `${appt.doctor} (${appt.mode})`,
-    start: new Date(`${appt.date}T${appt.time}`),
-    end: new Date(new Date(`${appt.date}T${appt.time}`).getTime() + 30 * 60000),
+    start: appt.timestamp,
+    end: new Date(appt.timestamp.getTime() + 30 * 60000),
     allDay: false,
     mode: appt.mode,
   }));
@@ -127,105 +167,109 @@ export default function AppointmentsPage() {
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-indigo-500 hover:underline"
         >
-          <ArrowLeft size={18} />
-          Go Back
+          <ArrowLeft size={18} /> Go Back
         </button>
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white"
-        >
+        <button onClick={toggleTheme} className="p-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white">
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
       </div>
 
       <div className="max-w-6xl mx-auto space-y-10">
-        {/* Appointment Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="p-6 bg-white dark:bg-gray-800 shadow rounded-xl border dark:border-gray-700 space-y-4"
-        >
-          <h2 className="text-xl font-semibold text-indigo-600 dark:text-indigo-400">
-            👩‍⚕️ Book Your Appointment
-          </h2>
-
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            We know reaching out isn't always easy — just fill what you can. 💙
-          </p>
-
-          <div>
-            <label className="block text-sm mb-1">🕐 Date & Time</label>
-            <DatePicker
-              selected={newAppt.dateTime}
-              onChange={(date) => setNewAppt({ ...newAppt, dateTime: date })}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              dateFormat="MMMM d, yyyy h:mm aa"
-              minDate={new Date()}
-              className={`w-full px-3 py-2 border rounded-md ${
-                darkMode
-                  ? "bg-gray-700 text-white border-gray-600"
-                  : "bg-white text-black border-gray-300"
-              }`}
-              placeholderText="Select when you'd like to talk"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1">👩‍⚕️ Choose a Doctor</label>
-            <select
-              value={newAppt.doctor}
-              onChange={(e) => setNewAppt({ ...newAppt, doctor: e.target.value })}
-              className={`w-full px-3 py-2 border rounded-md ${
-                darkMode
-                  ? "bg-gray-700 text-white border-gray-600"
-                  : "bg-white text-black border-gray-300"
-              }`}
-              required
-            >
-              <option value="">Select a doctor</option>
-              {doctorsList.map((doc) => (
-                <option key={doc.name} value={doc.name}>
-                  {doc.name} – {doc.specialty}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1">📍 Mode</label>
-            <select
-              value={newAppt.mode}
-              onChange={(e) => setNewAppt({ ...newAppt, mode: e.target.value })}
-              className={`w-full px-3 py-2 border rounded-md ${
-                darkMode
-                  ? "bg-gray-700 text-white border-gray-600"
-                  : "bg-white text-black border-gray-300"
-              }`}
-            >
-              <option value="Online">Online</option>
-              <option value="In-person">In-person</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md"
-          >
-            ✅ Confirm Appointment
-          </button>
-        </form>
-
-        {/* Calendar */}
+        {/* 📝 Booking Form */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4 text-indigo-500 dark:text-indigo-300">
-            📅 Appointment Calendar
-          </h2>
-          <div
-            className={`rounded-lg p-4 border shadow ${
-              darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-black"
-            }`}
-          >
+  <h2 className="text-3xl font-bold mb-6 text-indigo-600 dark:text-indigo-300 flex items-center gap-2">
+    📝 Book a New Appointment
+  </h2>
+
+  <form
+    onSubmit={handleSubmit}
+    className={`space-y-6 rounded-2xl p-6 md:p-8 shadow-lg border transition-all duration-300 ${
+      darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+    }`}
+  >
+    {/* Doctor Selection */}
+    <div>
+      <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+        👩‍⚕️ Select Doctor
+      </label>
+      <select
+        value={newAppt.doctor}
+        onChange={(e) => setNewAppt({ ...newAppt, doctor: e.target.value })}
+        required
+        className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      >
+        <option value="">-- Choose Doctor --</option>
+        {doctorsList.map((doc) => (
+          <option key={doc.name} value={doc.name}>
+            {doc.name} – {doc.specialty}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* Date & Time Picker */}
+    <div>
+      <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+        📅 Select Date & Time
+      </label>
+      <DatePicker
+        selected={newAppt.dateTime}
+        onChange={(date) => setNewAppt({ ...newAppt, dateTime: date })}
+        showTimeSelect
+        timeIntervals={30}
+        dateFormat="MMMM d, yyyy h:mm aa"
+        minDate={new Date()}
+        required
+        placeholderText="Choose your preferred time"
+        className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      />
+    </div>
+
+    {/* Mode Selection */}
+    <div>
+      <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+        📍 Choose Mode
+      </label>
+      <div className="flex gap-6">
+        <label className="flex items-center gap-2 text-sm font-medium">
+          <input
+            type="radio"
+            name="mode"
+            value="Online"
+            checked={newAppt.mode === "Online"}
+            onChange={(e) => setNewAppt({ ...newAppt, mode: e.target.value })}
+            className="accent-indigo-600"
+          />
+          Online
+        </label>
+        <label className="flex items-center gap-2 text-sm font-medium">
+          <input
+            type="radio"
+            name="mode"
+            value="Offline"
+            checked={newAppt.mode === "Offline"}
+            onChange={(e) => setNewAppt({ ...newAppt, mode: e.target.value })}
+            className="accent-indigo-600"
+          />
+          In-person
+        </label>
+      </div>
+    </div>
+
+    {/* Submit Button */}
+    <button
+      type="submit"
+      className="w-full py-2 text-center text-white font-semibold rounded-md bg-indigo-600 hover:bg-indigo-700 transition-all"
+    >
+      ✅ Book Appointment
+    </button>
+  </form>
+</section>
+
+        {/* 📅 Calendar */}
+        <section>
+          <h2 className="text-2xl font-semibold mb-4 text-indigo-500 dark:text-indigo-300">📅 Appointment Calendar</h2>
+          <div className={`rounded-lg p-4 border shadow ${darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"}`}>
             <Calendar
               localizer={localizer}
               events={calendarEvents}
@@ -234,46 +278,52 @@ export default function AppointmentsPage() {
               style={{ height: 500 }}
               eventPropGetter={customEventStyleGetter}
               views={["month", "week", "day"]}
-              tooltipAccessor={(event) =>
-                `${event.title} at ${format(event.start, "PPpp")}`
-              }
+              tooltipAccessor={(event) => `${event.title} at ${format(event.start, "PPpp")}`}
             />
           </div>
         </section>
 
-        {/* Appointment List */}
+        {/* 🗂️ Upcoming Appointments */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4 text-indigo-500 dark:text-indigo-400">
-            🗂️ Upcoming Appointments
-          </h2>
+          <h2 className="text-2xl font-semibold mb-4 text-indigo-500 dark:text-indigo-400">🗂️ Upcoming Appointments</h2>
           {appointments.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400">
-              No upcoming appointments. Book one above!
-            </p>
+            <p className="text-gray-500 dark:text-gray-400">No upcoming appointments. Book one above!</p>
           ) : (
-            <div
-              className={`overflow-x-auto rounded-lg shadow border ${
-                darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-              }`}
-            >
+            <div className={`overflow-x-auto rounded-xl shadow border ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
               <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="text-left border-b dark:border-gray-600">
-                    <th className="px-4 py-2">Date</th>
-                    <th className="px-4 py-2">Time</th>
-                    <th className="px-4 py-2">Doctor</th>
-                    <th className="px-4 py-2">Mode</th>
+                <thead className="bg-gray-100 dark:bg-gray-700">
+                  <tr className="text-left font-semibold text-gray-700 dark:text-gray-200">
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Time</th>
+                    <th className="px-4 py-3">Doctor</th>
+                    <th className="px-4 py-3">Mode</th>
+                    <th className="px-4 py-3">Booked By</th>
+                    <th className="px-4 py-3">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {appointments
-                    .sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`))
+                    .sort((a, b) => a.timestamp - b.timestamp)
                     .map((appt) => (
-                      <tr key={appt.id} className="border-b dark:border-gray-700">
-                        <td className="px-4 py-2">{format(new Date(`${appt.date}T${appt.time}`), "MMM dd, yyyy")}</td>
-                        <td className="px-4 py-2">{format(new Date(`${appt.date}T${appt.time}`), "hh:mm a")}</td>
+                      <tr key={appt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700">
+                        <td className="px-4 py-2">{format(appt.timestamp, "MMM dd, yyyy")}</td>
+                        <td className="px-4 py-2">{format(appt.timestamp, "hh:mm a")}</td>
                         <td className="px-4 py-2">{appt.doctor}</td>
                         <td className="px-4 py-2">{appt.mode}</td>
+                        <td className="px-4 py-2">
+                          {appt.userName}<br />
+                          <span className="text-xs text-gray-500">{appt.userEmail}</span>
+                        </td>
+                        <td className="px-4 py-2">
+                          {currentUser?.uid === appt.userId && (
+                            <button
+                              onClick={() => handleCancelAppointment(appt.id)}
+                              className="flex items-center gap-1 text-sm text-red-500 hover:text-red-600 hover:underline"
+                            >
+                              <XCircle size={16} /> Cancel
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                 </tbody>
@@ -283,10 +333,15 @@ export default function AppointmentsPage() {
         </section>
       </div>
 
-      {/* Toast Notification */}
-      {showToast && (
-        <div className="fixed bottom-6 right-6 bg-green-600 text-white px-6 py-3 rounded shadow-lg animate-fade-in">
+      {/* Toasts */}
+      {toastType === "booked" && (
+        <div className="fixed bottom-6 right-6 bg-green-600 text-white px-6 py-3 rounded shadow-lg">
           ✅ Appointment booked successfully!
+        </div>
+      )}
+      {toastType === "cancelled" && (
+        <div className="fixed bottom-6 right-6 bg-red-600 text-white px-6 py-3 rounded shadow-lg">
+          ❌ Appointment cancelled.
         </div>
       )}
     </div>

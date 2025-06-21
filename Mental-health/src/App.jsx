@@ -7,7 +7,11 @@ import AppointmentsPage from "./components/AppointmentsPage";
 import AnalysisPage from "./components/AnalysisPage";
 import JournalsPage from "./components/JournalsPage";
 import Footer from './components/Footer';
-import AdminPanel from './pages/AdminPanel'; // ✅ Make sure path is correct
+import AdminPanel from './pages/AdminPanel';
+import ConnectPeer from './components/ConnectPeer';
+import ChatPage from "./pages/ChatPage";
+import AssessmentForm from "./components/AssessmentForm";
+import PeerDashboard from './pages/PeerDashboard'; 
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -34,7 +38,11 @@ function App() {
         <Route path="/appointments" element={<AppointmentsPage />} />
         <Route path="/analytics" element={<AnalysisPage />} />
         <Route path="/journals" element={<JournalsPage />} />
-        <Route path="/admin/*" element={<AdminPanel />} /> {/* ✅ Admin route */}
+        <Route path="/admin/*" element={<AdminPanel />} /> 
+        <Route path="/connect-peer" element={<ConnectPeer />} />
+        <Route path="/chat/:peerId" element={<ChatPage />} />
+         <Route path="/peer" element={<PeerDashboard />} />
+        <Route path="/assessment" element={<AssessmentForm />} /> 
       </Routes>
 
       {/* Conditionally Render Footer */}

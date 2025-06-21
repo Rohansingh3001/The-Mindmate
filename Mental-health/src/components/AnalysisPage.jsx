@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IoIosStats } from "react-icons/io";
 import { Sun, Moon } from "lucide-react";
 import { Card, CardContent } from "./ui/Card";
+import { format, isThisWeek, parseISO } from "date-fns";
 
 export default function AnalysisPage() {
   const [moodLogs, setMoodLogs] = useState([]);
@@ -19,9 +20,9 @@ export default function AnalysisPage() {
     const journalData = JSON.parse(localStorage.getItem("mindmates.journals") || "[]");
     const appointmentData = JSON.parse(localStorage.getItem("mindmates.appointments") || "[]");
 
-    setMoodLogs(moodData);
-    setJournals(journalData);
-    setAppointments(appointmentData);
+    setMoodLogs(Array.isArray(moodData) ? moodData : []);
+    setJournals(Array.isArray(journalData) ? journalData : []);
+    setAppointments(Array.isArray(appointmentData) ? appointmentData : []);
   }, []);
 
   useEffect(() => {
@@ -33,19 +34,34 @@ export default function AnalysisPage() {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
-  const recentMoods = moodLogs.slice(-5).map((log) => log.mood);
+  // Filter entries from this week
+  const isEntryThisWeek = (entry) => {
+    const dateStr = entry?.date || entry?.createdAt || entry?.timestamp;
+    try {
+      const date = new Date(dateStr);
+      return isThisWeek(date, { weekStartsOn: 1 });
+    } catch {
+      return false;
+    }
+  };
+
+  const weeklyMoods = moodLogs.filter(isEntryThisWeek);
+  const weeklyJournals = journals.filter(isEntryThisWeek);
+  const weeklyAppointments = appointments.filter(isEntryThisWeek);
+
+  const recentMoods = moodLogs.slice(-5).map((log) => log.mood).filter(Boolean);
   const moodSummary = recentMoods.length
     ? [...new Set(recentMoods)].join(", ")
     : "No recent mood entries";
 
   const journalWords = journals
-    .map((entry) => entry.text)
+    .map((entry) => entry.text || "")
     .join(" ")
     .toLowerCase()
     .split(/\W+/);
 
   const frequentTopics = [...new Set(journalWords.filter((w) =>
-    ["stress", "exams", "friendship", "anxiety", "lonely"].includes(w)
+    ["stress", "exams", "friendship", "anxiety", "lonely", "tired", "overwhelmed"].includes(w)
   ))];
 
   return (
@@ -76,11 +92,11 @@ export default function AnalysisPage() {
         {/* Weekly Summary */}
         <Card className="bg-white dark:bg-gray-800 border border-purple-300 dark:border-gray-600 rounded-2xl shadow-md hover:shadow-lg transition">
           <CardContent className="p-6 space-y-3">
-            <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Weekly Activity</h2>
+            <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">This Week's Activity</h2>
             <ul className="text-gray-700 dark:text-gray-300 text-sm space-y-1">
-              <li>🧠 Mood logs this week: <strong>{moodLogs.length}</strong></li>
-              <li>📓 Journals written: <strong>{journals.length}</strong></li>
-              <li>🗓️ Sessions booked: <strong>{appointments.length}</strong></li>
+              <li>🧠 Mood logs this week: <strong>{weeklyMoods.length}</strong></li>
+              <li>📓 Journals written: <strong>{weeklyJournals.length}</strong></li>
+              <li>🗓️ Sessions booked: <strong>{weeklyAppointments.length}</strong></li>
             </ul>
           </CardContent>
         </Card>

@@ -1,17 +1,36 @@
 // src/firebase.js
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from "firebase/app";
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  addDoc,
+  getDocs,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+} from "firebase/firestore";
 import {
   getAuth,
   setPersistence,
   browserLocalPersistence,
-} from 'firebase/auth';
+  onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+} from "firebase/auth";
 import {
-  getFirestore,
-  doc,
-  getDoc,
-} from 'firebase/firestore';
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 
-// Your Firebase config
+// ✅ Firebase config
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -22,21 +41,18 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
+// ✅ Initialize Firebase safely
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Auth
-const auth = getAuth(app);
-
-// Persistent Login
-setPersistence(auth, browserLocalPersistence).catch((error) => {
-  console.error("Auth persistence error:", error);
-});
-
-// Firestore
+// 🔥 Services
 const db = getFirestore(app);
+const auth = getAuth(app);
+const storage = getStorage(app);
+
+// ✅ Persistent Auth
+setPersistence(auth, browserLocalPersistence).catch((err) =>
+  console.error("Auth persistence error:", err)
+);
 
 /**
  * 🔍 Fetch current user details from Firebase Auth + Firestore
@@ -46,33 +62,61 @@ const fetchUserDetails = async () => {
   const user = auth.currentUser;
 
   if (!user) {
-    console.warn('No user is currently logged in.');
+    console.warn("No user is currently logged in.");
     return null;
   }
 
   try {
-    const userRef = doc(db, 'users', user.uid);
+    const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
       const userData = userSnap.data();
       return {
-        name: userData.name || user.displayName || 'User',
+        name: userData.name || user.displayName || "User",
         email: user.email,
         uid: user.uid,
       };
     } else {
-      // Return basic auth data if no Firestore doc found
       return {
-        name: user.displayName || 'User',
+        name: user.displayName || "User",
         email: user.email,
         uid: user.uid,
       };
     }
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    console.error("Error fetching user data:", error);
     return null;
   }
 };
 
-export { app, auth, db, fetchUserDetails };
+// ✅ Export everything needed across the app
+export {
+  app,
+  db,
+  auth,
+  storage,
+  // Firestore
+  collection,
+  query,
+  orderBy,
+  addDoc,
+  getDocs,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  // Auth
+  onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  // Storage
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  // Utils
+  fetchUserDetails,
+};

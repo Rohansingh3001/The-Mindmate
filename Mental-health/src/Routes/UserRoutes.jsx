@@ -8,7 +8,8 @@ import AssessmentForm from "../components/AssessmentForm";
 import MentalHealthChart from "../components/MentalHealthChart";
 import AppointmentsPage from "../components/AppointmentsPage";
 import AnalysisPage from "../components/AnalysisPage";
-
+import JournalsPage from "../components/JournalsPage";
+import ConnectPeer from "../components/ConnectPeer";
 function UserRoutes() {
   return (
     <Routes>
@@ -18,6 +19,8 @@ function UserRoutes() {
       <Route path="/chart" element={<MentalHealthChart />} />
       <Route path="/appointments" element={<AppointmentsPage />} />
       <Route path="/analytics" element={<AnalysisPage />} />
+      <Route path="/journals" element={<JournalsPage />} />
+      <Route path="/connect-peer" element={<ConnectPeer />} />
     </Routes>
   );
 }
