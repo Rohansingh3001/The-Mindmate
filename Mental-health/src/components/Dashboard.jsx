@@ -1,8 +1,9 @@
+// src/pages/Dashboard.jsx
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Card, CardContent } from "./ui/Card";
-import { Button } from "./ui/Button";
-import { FaRegSmile } from "react-icons/fa";
+import {
+  FaRegSmile,
+} from "react-icons/fa";
 import {
   IoMdCalendar,
   IoIosStats,
@@ -21,8 +22,10 @@ import {
   Moon,
 } from "lucide-react";
 import { toast } from "react-toastify";
-import AssessmentForm from "./AssessmentForm";
-import Chatbot from "./ChatBot";
+import { Card, CardContent } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import AssessmentForm from "../components/AssessmentForm";
+import Chatbot from "../components/ChatBot";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -45,7 +48,6 @@ export default function Dashboard() {
   const [stats, setStats] = useState({ moodLogs: 0, journals: 0, sessions: 0 });
   const [user, setUser] = useState(null);
 
-  // Theme
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.theme = theme;
@@ -53,32 +55,26 @@ export default function Dashboard() {
 
   const toggleTheme = () => setTheme((prev) => (prev === "dark" ? "light" : "dark"));
 
-  // Auth & user setup
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         const name = firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "User";
         setUserName(name);
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-        });
+        setUser({ uid: firebaseUser.uid, email: firebaseUser.email });
       } else {
         navigate("/login");
       }
     });
-
     return () => unsubscribe();
   }, [navigate]);
 
-  // Daily quote
   useEffect(() => {
     fetch("https://api.quotable.io/random?tags=inspirational|wisdom")
       .then((res) => res.ok ? res.json() : Promise.reject("API error"))
       .then((data) => {
         if (data.content && data.author) {
-          setQuote(`${data.content} — ${data.author}`);
+          setQuote(`"${data.content}" — ${data.author}`);
         } else {
           throw new Error("Malformed quote");
         }
@@ -88,11 +84,9 @@ export default function Dashboard() {
       });
   }, []);
 
-  // Local mood/journal stats
   useEffect(() => {
     const moodLogs = JSON.parse(localStorage.getItem("mindmates.moodLogs") || "[]");
     const journals = JSON.parse(localStorage.getItem("mindmates.journals") || "[]");
-
     if (moodLogs.length > 0) setMood(moodLogs[moodLogs.length - 1].mood);
 
     setStats((prev) => ({
@@ -104,7 +98,6 @@ export default function Dashboard() {
     setGreeting(greetings[Math.floor(Math.random() * greetings.length)]);
   }, []);
 
-  // Firestore: fetch next appointment
   useEffect(() => {
     const fetchNextAppointment = async () => {
       if (!user) return;
@@ -159,14 +152,14 @@ export default function Dashboard() {
       </header>
 
       {/* Daily Quote */}
-      <div className="bg-white dark:bg-gray-800 border border-purple-200 dark:border-gray-700 rounded-xl px-6 py-4 text-center italic text-sm text-purple-900 dark:text-purple-100 shadow">
-        🌟 <span className="font-semibold">Quote of the Day:</span> {quote}
-      </div>
+      <blockquote className="border-l-4 border-purple-400 pl-4 italic text-purple-800 dark:text-purple-200 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
+        {quote}
+      </blockquote>
 
       {/* Dashboard Grid */}
       <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {/* Mood Tracker */}
-        <Card className="p-6 bg-white dark:bg-gray-800 border border-purple-300 dark:border-gray-600 rounded-2xl">
+        <Card className="p-6 dark:bg-gray-800">
           <CardContent>
             <div className="flex justify-between mb-4">
               <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Today's Mood</h2>
@@ -175,7 +168,7 @@ export default function Dashboard() {
             <p className="text-sm mb-2">How are you feeling?</p>
             <div className="flex justify-between text-2xl">
               {["😊", "😐", "😢", "😠", "😴"].map((emoji) => (
-                <button key={emoji} onClick={() => handleMoodClick(emoji)} className={mood === emoji ? "scale-125" : ""}>
+                <button key={emoji} onClick={() => handleMoodClick(emoji)} className={`transition-transform ${mood === emoji ? "scale-125" : "hover:scale-110"}`}>
                   {emoji}
                 </button>
               ))}
@@ -183,8 +176,8 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Next Appointment */}
-        <Card className="p-6 bg-white dark:bg-gray-800 border border-purple-300 dark:border-gray-600 rounded-2xl">
+        {/* Appointment Card */}
+        <Card className="p-6">
           <CardContent>
             <div className="flex justify-between mb-4">
               <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Next Appointment</h2>
@@ -205,7 +198,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Wellness Stats */}
-        <Card className="p-6 bg-white dark:bg-gray-800 border border-purple-300 dark:border-gray-600 rounded-2xl">
+        <Card className="p-6">
           <CardContent>
             <div className="flex justify-between mb-4">
               <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Wellness Stats</h2>
@@ -216,24 +209,25 @@ export default function Dashboard() {
               <li>✔️ {stats.journals} journal entries</li>
               <li>✔️ {stats.sessions} session{stats.sessions !== 1 ? "s" : ""} booked</li>
             </ul>
-            <Button className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white" onClick={() => navigate("/analytics")}>
+            <Button className="mt-4 w-full" onClick={() => navigate("/analytics")}>
               View Analytics
             </Button>
           </CardContent>
         </Card>
 
-       <Card className="p-6 bg-white dark:bg-gray-800 border border-purple-300 dark:border-gray-600 rounded-2xl">
+        {/* Assessment */}
+        <Card className="p-6">
           <CardContent>
             <div className="flex justify-between mb-4">
-              <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Wanna Check Your Mode?</h2>
+              <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Wanna Check Your Mood?</h2>
               <IoIosGlobe size={22} className="text-purple-400" />
             </div>
             <ul className="text-sm space-y-1">
-              <li>✔️  Mood Check – PHQ-9</li>
-              <li>✔️  Anxiety Check – GAD-7</li>
-              <li>✔️  Stress Levels </li>
+              <li>✔️ Mood Check – PHQ-9</li>
+              <li>✔️ Anxiety Check – GAD-7</li>
+              <li>✔️ Stress Levels</li>
             </ul>
-            <Button className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white" onClick={() => navigate("/assessment")}>
+            <Button className="mt-4 w-full" onClick={() => navigate("/assessment")}>
               Give it a Try!
             </Button>
           </CardContent>
@@ -241,82 +235,53 @@ export default function Dashboard() {
 
         {/* Chatbot */}
         <div className="xl:col-span-2"><Chatbot userName={userName} /></div>
-{/* Journals */}
-<Card className="xl:col-span-2 p-6 bg-white dark:bg-gray-800 border border-purple-300 dark:border-gray-600 rounded-2xl shadow-sm">
-  <CardContent>
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">
-        Recent Journals
-      </h2>
-      <Link to="/journals">
-        <Button
-          variant="outline"
-          className="text-xs sm:text-sm border-purple-400 text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-700"
-        >
-          View All
-        </Button>
-      </Link>
-    </div>
 
-    {getJournals().length > 0 ? (
-      <ul className="space-y-4">
-        {getJournals()
-          .slice(-3)
-          .reverse()
-          .map((journal, i) => (
-            <li
-              key={i}
-              className="border-l-4 border-purple-400 pl-3 bg-purple-50/20 dark:bg-gray-700/30 rounded-md"
-            >
-              <p className="text-sm text-gray-800 dark:text-gray-100 line-clamp-3">
-                <em>{journal.entry}</em>
-              </p>
-              {journal.date && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {journal.date}
-                </p>
-              )}
-            </li>
-          ))}
-      </ul>
-    ) : (
-      <p className="italic text-gray-600 dark:text-gray-300">
-        No journal entries yet.
-      </p>
-    )}
-  </CardContent>
-</Card>
+        {/* Journals */}
+        <Card className="xl:col-span-2 p-6">
+          <CardContent>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Recent Journals</h2>
+              <Link to="/journals">
+                <Button variant="outline" className="text-xs sm:text-sm">View All</Button>
+              </Link>
+            </div>
+            {getJournals().length > 0 ? (
+              <ul className="space-y-4">
+                {getJournals().slice(-3).reverse().map((journal, i) => (
+                  <li key={i} className="border-l-4 border-purple-400 pl-3 bg-purple-50/20 dark:bg-gray-700/30 rounded-md">
+                    <p className="text-sm text-gray-800 dark:text-gray-100 italic line-clamp-3">{journal.entry}</p>
+                    {journal.date && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{journal.date}</p>}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="italic text-gray-600 dark:text-gray-300">No journal entries yet.</p>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Quick Access */}
-{/* Quick Access */}
-<Card className="p-6 bg-white dark:bg-gray-900 border border-purple-200 dark:border-gray-700 rounded-2xl shadow-sm">
-  <CardContent>
-    <h2 className="text-lg font-bold text-purple-700 dark:text-purple-300 mb-4">Quick Access</h2>
-    <div className="flex flex-col gap-2">
-      {[
-        [<IoIosFitness size={18} className="text-purple-600 dark:text-purple-300" />, "Mental Exercises", "/exercises"],
-        [<IoIosPeople size={18} className="text-purple-600 dark:text-purple-300" />, "Connect with Peers", "/connect-peer"],
-        [<IoMdCalendar size={18} className="text-purple-600 dark:text-purple-300" />, "Book a Session", "/appointments"],
-        [<BarChart2 size={18} className="text-purple-600 dark:text-purple-300" />, "View Progress", "/analytics"],
-        [<IoIosSettings size={18} className="text-purple-600 dark:text-purple-300" />, "Settings", "/settings"],
-      ].map(([icon, label, path]) => (
-        <Link to={path} key={label}>
-          <Button
-            variant="ghost"
-            className="text-left w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all
-              text-gray-900 dark:text-gray-200
-              hover:bg-purple-50 dark:hover:bg-purple-800/30"
-          >
-            {icon}
-            <span className="text-sm font-semibold">{label}</span>
-          </Button>
-        </Link>
-      ))}
-    </div>
-  </CardContent>
-</Card>
-
-
+        <Card className="p-6">
+          <CardContent>
+            <h2 className="text-lg font-bold text-purple-700 dark:text-purple-300 mb-4">Quick Access</h2>
+            <div className="flex flex-col gap-2">
+              {[
+                [<IoIosFitness />, "Mental Exercises", "/exercises"],
+                [<IoIosPeople />, "Connect with Peers", "/connect-peer"],
+                [<IoMdCalendar />, "Book a Session", "/appointments"],
+                [<BarChart2 />, "View Progress", "/analytics"],
+                [<IoIosSettings />, "Settings", "/settings"],
+              ].map(([icon, label, path]) => (
+                <Link to={path} key={label}>
+                  <Button variant="ghost" className="w-full text-left flex items-center gap-3">
+                    {icon}
+                    <span className="text-sm font-semibold">{label}</span>
+                  </Button>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </section>
     </div>
   );

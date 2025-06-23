@@ -1,15 +1,25 @@
 // src/components/ui/Card.jsx
-export function Card({ children, className = "" }) {
+
+import React from "react";
+import clsx from "clsx";
+
+export function Card({ children, className = "", ...props }) {
   return (
-    <div className={`bg-gray-800 rounded-2xl shadow-lg ${className}`}>
+    <div
+      className={clsx(
+        "rounded-2xl bg-white dark:bg-gray-800 shadow-md transition-all",
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
   );
 }
 
-export function CardContent({ children, className = "" }) {
+export function CardContent({ children, className = "", ...props }) {
   return (
-    <div className={`p-5 ${className}`}>
+    <div className={clsx("p-5", className)} {...props}>
       {children}
     </div>
   );

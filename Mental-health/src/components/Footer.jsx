@@ -1,58 +1,125 @@
-import React from 'react';
-import { FaFacebook, FaInstagram, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import React from "react";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaTwitter,
+  FaLinkedin,
+} from "react-icons/fa";
 
 function Footer() {
   return (
-    <footer className="bg-[#6a4eeb] text-white py-8">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center">
-        {/* The MindMates Description */}
-        <div className="text-center md:text-left mb-8 md:mb-0">
-          <h3 className="text-3xl font-bold mb-2">The MindMates</h3>
-          <p className="text-lg">Your AI mental health companion, providing support and guidance whenever you need it.</p>
+    <footer className="bg-[#6a4eeb] text-white py-12 mt-20 shadow-inner">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 grid gap-12 md:grid-cols-4">
+        {/* Brand Identity */}
+        <div className="md:col-span-1">
+          <h3 className="text-3xl font-extrabold mb-3">The MindMates</h3>
+          <p className="text-base text-white/80 leading-relaxed">
+            Your AI-powered mental health companion — here for you 24/7 with
+            support, comfort, and tools that truly care.
+          </p>
         </div>
 
-        {/* Resources Links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 md:mb-0 text-center md:text-left">
-          <div>
-            <h4 className="font-semibold text-lg mb-4">Resources</h4>
-            <ul>
-              <li><a href="/mental-health-tips" className="hover:text-gray-200">Mental Health Tips</a></li>
-              <li><a href="/meditation-guides" className="hover:text-gray-200">Meditation Guides</a></li>
-              <li><a href="/wellness-blog" className="hover:text-gray-200">Wellness Blog</a></li>
-              <li><a href="/faqs" className="hover:text-gray-200">FAQs</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold text-lg mb-4">Company</h4>
-            <ul>
-              <li><a href="/about-us" className="hover:text-gray-200">About Us</a></li>
-              <li><a href="/careers" className="hover:text-gray-200">Careers</a></li>
-              <li><a href="/contact" className="hover:text-gray-200">Contact</a></li>
-              <li><a href="/privacy-policy" className="hover:text-gray-200">Privacy Policy</a></li>
-            </ul>
-          </div>
+        {/* Resources */}
+        <div>
+          <h4 className="text-lg font-semibold mb-4">Resources</h4>
+          <ul className="space-y-2 text-sm text-white/90">
+            <li>
+              <a href="/tips" className="hover:text-white/70">
+                Mental Health Tips
+              </a>
+            </li>
+            <li>
+              <a href="/meditation" className="hover:text-white/70">
+                Meditation Guides
+              </a>
+            </li>
+            <li>
+              <a href="/wellness" className="hover:text-white/70">
+                Wellness Blog
+              </a>
+            </li>
+            <li>
+              <a href="/faqs" className="hover:text-white/70">
+                FAQs
+              </a>
+            </li>
+          </ul>
         </div>
 
-        {/* Social Media Icons */}
-        <div className="flex justify-center gap-6 mb-6 md:mb-0">
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-2xl hover:text-gray-200 transition duration-300 ease-in-out">
-            <FaFacebook />
-          </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-2xl hover:text-gray-200 transition duration-300 ease-in-out">
-            <FaInstagram />
-          </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-2xl hover:text-gray-200 transition duration-300 ease-in-out">
-            <FaTwitter />
-          </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-2xl hover:text-gray-200 transition duration-300 ease-in-out">
-            <FaLinkedin />
-          </a>
+        {/* Company */}
+        <div>
+          <h4 className="text-lg font-semibold mb-4">Company</h4>
+          <ul className="space-y-2 text-sm text-white/90">
+            <li>
+              <a href="/about" className="hover:text-white/70">
+                About Us
+              </a>
+            </li>
+            <li>
+              <a href="/careers" className="hover:text-white/70">
+                Careers
+              </a>
+            </li>
+            <li>
+              <a href="/contact" className="hover:text-white/70">
+                Contact
+              </a>
+            </li>
+            <li>
+              <a href="/privacy-policy" className="hover:text-white/70">
+                Privacy Policy
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Social Media */}
+        <div className="flex flex-col gap-4 items-start">
+          <h4 className="text-lg font-semibold">Follow Us</h4>
+          <div className="flex gap-5 text-2xl">
+            <a
+              href="https://facebook.com"
+              aria-label="Facebook"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white/70 transition"
+            >
+              <FaFacebook />
+            </a>
+            <a
+              href="https://instagram.com"
+              aria-label="Instagram"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white/70 transition"
+            >
+              <FaInstagram />
+            </a>
+            <a
+              href="https://twitter.com"
+              aria-label="Twitter"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white/70 transition"
+            >
+              <FaTwitter />
+            </a>
+            <a
+              href="https://linkedin.com"
+              aria-label="LinkedIn"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white/70 transition"
+            >
+              <FaLinkedin />
+            </a>
+          </div>
         </div>
       </div>
 
-      {/* Footer Copyright */}
-      <div className="border-t border-gray-200 pt-4 mt-8 text-center">
-        <p className="text-sm text-gray-300">&copy; 2025 The MindMates. All rights reserved.</p>
+      {/* Bottom Line */}
+      <div className="border-t border-white/20 mt-12 pt-6 text-center text-sm text-white/70">
+        &copy; {new Date().getFullYear()} The MindMates. All rights reserved.
       </div>
     </footer>
   );

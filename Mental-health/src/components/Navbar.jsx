@@ -1,28 +1,34 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Bell, User, LogOut, Menu } from "lucide-react";
+import {
+  Bell,
+  LogOut,
+  Menu,
+  Settings as SettingsIcon,
+} from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
-const Navbar = ({ onLogout, onViewAccount }) => {
+const Navbar = ({ onLogout }) => {
   const [navOpen, setNavOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const profileRef = useRef();
+  const settingsRef = useRef();
   const notificationsRef = useRef();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        profileRef.current &&
-        !profileRef.current.contains(event.target) &&
+        settingsRef.current &&
+        !settingsRef.current.contains(event.target) &&
         notificationsRef.current &&
         !notificationsRef.current.contains(event.target)
       ) {
-        setProfileOpen(false);
+        setSettingsOpen(false);
         setNotificationsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -34,18 +40,18 @@ const Navbar = ({ onLogout, onViewAccount }) => {
     });
   };
 
-  const handleViewProfile = () => {
-    toast.success("Viewing your account details...", {
+  const handleGoToSettings = () => {
+    toast.success("Opening settings...", {
       position: "top-right",
       theme: "colored",
     });
-    onViewAccount();
+    navigate("/settings");
   };
 
   return (
-    <nav className="w-full bg-gradient-to-r from-white via-[#f8f5ff] to-[#ede7ff] px-4 py-3 shadow-sm border-b border-purple-200">
+    <nav className="w-full z-50 px-4 py-3 backdrop-blur-md bg-white/70 dark:bg-gray-900/50 border-b border-purple-200 dark:border-purple-700 shadow-sm sticky top-0">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold text-[#7b5fff] tracking-tight">
+        <h1 className="text-2xl font-extrabold text-purple-700 dark:text-purple-200 tracking-tight drop-shadow-sm">
           The MindMates
         </h1>
 
@@ -58,38 +64,38 @@ const Navbar = ({ onLogout, onViewAccount }) => {
                 setNotificationsOpen(!notificationsOpen);
                 handleNotificationClick();
               }}
-              className="relative text-[#7b5fff] hover:text-indigo-700 transition-all"
+              className="relative text-purple-600 dark:text-purple-300 hover:text-indigo-700 dark:hover:text-indigo-400 transition"
             >
               <Bell className="w-6 h-6" />
             </button>
             {notificationsOpen && (
-              <div className="absolute right-0 mt-2 w-60 bg-white border border-purple-100 rounded-xl shadow-lg z-30 text-sm">
-                <div className="px-4 py-2 hover:bg-gray-100 transition">📢 New update available</div>
-                <div className="px-4 py-2 hover:bg-gray-100 transition">💡 Try mood logging today</div>
-                <div className="px-4 py-2 hover:bg-gray-100 transition">🎯 Goal progress saved</div>
+              <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800/80 backdrop-blur-md border border-purple-100 dark:border-gray-700 rounded-xl shadow-xl z-30 text-sm">
+                <div className="px-4 py-2 hover:bg-purple-50 dark:hover:bg-gray-700 transition">📢 New update available</div>
+                <div className="px-4 py-2 hover:bg-purple-50 dark:hover:bg-gray-700 transition">💡 Try mood logging today</div>
+                <div className="px-4 py-2 hover:bg-purple-50 dark:hover:bg-gray-700 transition">🎯 Goal progress saved</div>
               </div>
             )}
           </div>
 
-          {/* Profile */}
-          <div className="relative" ref={profileRef}>
+          {/* Settings */}
+          <div className="relative" ref={settingsRef}>
             <button
-              onClick={() => setProfileOpen(!profileOpen)}
-              className="text-[#7b5fff] hover:text-indigo-700 transition-all"
+              onClick={() => setSettingsOpen(!settingsOpen)}
+              className="text-purple-600 dark:text-purple-300 hover:text-indigo-700 dark:hover:text-indigo-400 transition"
             >
-              <User className="w-6 h-6" />
+              <SettingsIcon className="w-6 h-6" />
             </button>
-            {profileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-purple-100 rounded-xl shadow-xl py-2 z-30 text-sm">
+            {settingsOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800/80 backdrop-blur-md border border-purple-100 dark:border-gray-700 rounded-xl shadow-xl py-2 z-30 text-sm">
                 <button
-                  onClick={handleViewProfile}
-                  className="w-full px-4 py-2 text-left text-[#7b5fff] font-medium hover:bg-purple-50 transition rounded-t-xl"
+                  onClick={handleGoToSettings}
+                  className="w-full px-4 py-2 text-left text-purple-700 dark:text-purple-300 font-medium hover:bg-purple-50 dark:hover:bg-gray-700 transition rounded-t-xl"
                 >
-                  👤 View Profile
+                  ⚙️ Settings
                 </button>
                 <button
                   onClick={onLogout}
-                  className="w-full px-4 py-2 text-left text-red-500 font-medium hover:bg-red-50 transition flex items-center gap-2 rounded-b-xl"
+                  className="w-full px-4 py-2 text-left text-red-500 font-medium hover:bg-red-50 dark:hover:bg-gray-700 transition flex items-center gap-2 rounded-b-xl"
                 >
                   <LogOut className="w-4 h-4" />
                   Logout
@@ -103,7 +109,7 @@ const Navbar = ({ onLogout, onViewAccount }) => {
         <div className="md:hidden">
           <button
             onClick={() => setNavOpen(!navOpen)}
-            className="text-[#7b5fff] focus:outline-none"
+            className="text-purple-600 dark:text-purple-300 focus:outline-none"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -114,15 +120,15 @@ const Navbar = ({ onLogout, onViewAccount }) => {
       {navOpen && (
         <div className="md:hidden mt-3 px-3 space-y-2 animate-fade-in-down">
           <button
-            onClick={handleViewProfile}
-            className="w-full flex items-center justify-between px-4 py-2 border border-[#7b5fff] text-[#7b5fff] rounded-xl hover:bg-[#7b5fff] hover:text-white transition"
+            onClick={handleGoToSettings}
+            className="w-full flex items-center justify-between px-4 py-2 border border-purple-500 text-purple-700 dark:text-purple-300 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900 transition"
           >
-            View Profile
-            <User className="w-5 h-5" />
+            Settings
+            <SettingsIcon className="w-5 h-5" />
           </button>
           <button
             onClick={onLogout}
-            className="w-full flex items-center justify-between px-4 py-2 bg-[#7b5fff] text-white rounded-xl hover:bg-[#6c54e0] transition"
+            className="w-full flex items-center justify-between px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition"
           >
             Logout
             <LogOut className="w-5 h-5" />

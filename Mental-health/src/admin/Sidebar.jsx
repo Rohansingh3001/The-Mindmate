@@ -11,6 +11,7 @@ import {
   Moon,
   Menu,
   X,
+  Briefcase, // New icon
 } from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
 
@@ -19,9 +20,9 @@ const navItems = [
   { label: "Users", icon: <Users size={18} />, key: "users" },
   { label: "Appointments", icon: <CalendarCheck size={18} />, key: "appointments" },
   { label: "Schools", icon: <BarChart3 size={18} />, key: "schools" },
-  { label: "Peer Support", icon: <Users size={18} />, key: "peer" }, // 👈 new item
+  { label: "Peer Support", icon: <Users size={18} />, key: "peer" },
+  { label: "Careers", icon: <Briefcase size={18} />, key: "career" }, // ✅ Career tab added
 ];
-
 
 const Sidebar = ({ setActiveSection, activeSection }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -68,7 +69,7 @@ const Sidebar = ({ setActiveSection, activeSection }) => {
               key={item.key}
               onClick={() => {
                 setActiveSection(item.key);
-                setMobileOpen(false); // auto-close on mobile
+                setMobileOpen(false);
               }}
               className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer group transition ${
                 activeSection === item.key
