@@ -11,6 +11,7 @@ import {
   IoIosSettings,
   IoIosGlobe,
   IoIosFitness,
+  IoIosPaper,
 } from "react-icons/io";
 import {
   BarChart2,
@@ -229,6 +230,26 @@ export default function Dashboard() {
             </ul>
             <Button className="mt-4 w-full" onClick={() => navigate("/assessment")}>
               Give it a Try!
+            </Button>
+          </CardContent>
+        </Card>
+
+{/* Feedback */}
+        <Card className="p-6">
+          <CardContent>
+            <div className="flex justify-between mb-4">
+              <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">
+                Have Something to Share?
+              </h2>
+              <IoIosPaper size={22} className="text-purple-400" />
+            </div>
+            <ul className="text-sm space-y-1">
+              <li>✔️ Feedback & Suggestions</li>
+              <li>✔️ Well-being Survey</li>
+              <li>✔️ Contribute to MindMates</li>
+            </ul>
+            <Button className="mt-4 w-full" onClick={() => navigate("/form")}>
+              Fill a Form
             </Button>
           </CardContent>
         </Card>

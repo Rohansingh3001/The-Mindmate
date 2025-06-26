@@ -1,6 +1,7 @@
 import React from "react";
 import { Smile, Sun, Moon, BookOpen, Users } from "lucide-react";
 
+
 const tips = [
   {
     icon: <Smile className="text-purple-500 w-5 h-5" />,

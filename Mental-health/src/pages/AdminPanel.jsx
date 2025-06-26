@@ -10,7 +10,9 @@ import Appointments from "../admin/Appointments";
 import Schools from "../admin/Schools";
 import AddPeer from "../admin/AddPeer";
 import AdminCareer from "../admin/AdminCareers";
-
+import Form from "../admin/AdminCreateForm";
+import AdminCreateForm from "../admin/AdminCreateForm";
+import ManageForms from "../admin/ManageForms";
 export default function AdminPanel() {
   const [user, setUser] = useState(null);
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -59,6 +61,10 @@ export default function AdminPanel() {
         return <AddPeer />;
       case "career": // ✅ Fixed key to match Sidebar
         return <AdminCareer />;
+      case "form": // ✅ Fixed key to match Sidebar
+        return <AdminCreateForm />;
+      case "manage": // ✅ Fixed key to match Sidebar
+        return <ManageForms />;
       default:
         return <Dashboard />;
     }

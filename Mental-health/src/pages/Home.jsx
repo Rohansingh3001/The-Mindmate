@@ -8,7 +8,7 @@ import HowItWorks from '../components/HowItWorks';
 import DoctorsSection from '../components/DoctorsSection';
 import Testimonial from '../components/Testimonial';
 import HardwareSection from "../components/PriceSection";
-import OurStory from '../components/OurStory';
+//import OurStory from '../components/OurStory';
 
 function Home() {
   const location = useLocation();
@@ -24,10 +24,6 @@ function Home() {
         <HeroSection />
       </section>
 
-      {/* Our Story */}
-      <section className="w-full px-4 sm:px-6 md:px-8 py-10 bg-gradient-to-b from-purple-50 to-white">
-        <OurStory />
-      </section>
 
       {/* How it Works */}
       <section className="w-full px-4 sm:px-6 md:px-8 py-10 bg-white">

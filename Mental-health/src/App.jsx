@@ -35,6 +35,7 @@ import MentalHealthTips from "./components/resources/MentalHealthTips";
 
 // Footer
 import Footer from "./components/Footer";
+import FormViewer from "./components/FormViewer";
 
 function App() {
   const { pathname } = useLocation();
@@ -63,6 +64,7 @@ function App() {
         <Route path="/exercises" element={<Exercises />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/assessment" element={<AssessmentForm />} />
+        <Route path="/form" element={<FormViewer />} />
 
         {/* Peer & Community */}
         <Route path="/connect-peer" element={<ConnectPeer />} />

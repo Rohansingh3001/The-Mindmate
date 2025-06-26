@@ -14,14 +14,17 @@ import {
   Briefcase, // New icon
 } from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
-
+import { IoIosPaper } from "react-icons/io";
+import { FiSettings } from "react-icons/fi";
 const navItems = [
   { label: "Dashboard", icon: <Home size={18} />, key: "dashboard" },
   { label: "Users", icon: <Users size={18} />, key: "users" },
   { label: "Appointments", icon: <CalendarCheck size={18} />, key: "appointments" },
   { label: "Schools", icon: <BarChart3 size={18} />, key: "schools" },
   { label: "Peer Support", icon: <Users size={18} />, key: "peer" },
-  { label: "Careers", icon: <Briefcase size={18} />, key: "career" }, // ✅ Career tab added
+  { label: "Careers", icon: <Briefcase size={18} />, key: "career" }, 
+   { label: "Form", icon: <IoIosPaper size={18} />, key: "form" },       
+  { label: "Manage", icon: <FiSettings size={18} />, key: "manage" },  
 ];
 
 const Sidebar = ({ setActiveSection, activeSection }) => {
