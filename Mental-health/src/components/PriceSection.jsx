@@ -103,7 +103,7 @@ export default function ServicesSection() {
             <div className="bg-[#6a4eeb] text-white p-8 rounded-2xl shadow-lg transform scale-105 max-w-sm w-full">
               <h4 className="text-xl font-semibold mb-2">Premium Plan</h4>
               <p className="text-3xl font-bold mb-4">
-                <CountUp end={999} prefix="₹" duration={2} />/month
+                <CountUp end={99} prefix="₹" duration={2} />/month
               </p>
               <ul className="text-left space-y-3 text-sm mb-6">
                 <li>✔️ Unlimited AI chatbot access</li>
