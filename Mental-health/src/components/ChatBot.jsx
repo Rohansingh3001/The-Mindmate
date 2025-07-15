@@ -84,7 +84,7 @@ When appropriate, provide thoughtful and simple references from the Bhagavad Git
         }))
       );
 
-      const response = await fetch("http://localhost:3000/api/ai", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: payloadMessages }),
