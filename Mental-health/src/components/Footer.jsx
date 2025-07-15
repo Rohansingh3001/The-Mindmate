@@ -24,24 +24,16 @@ function Footer() {
           <h4 className="text-lg font-semibold mb-4">Resources</h4>
           <ul className="space-y-2 text-sm text-white/90">
             <li>
-              <a href="/tips" className="hover:text-white/70">
-                Mental Health Tips
-              </a>
+              <span className="opacity-60 cursor-not-allowed select-none">Mental Health Tips</span>
             </li>
             <li>
-              <a href="/meditation" className="hover:text-white/70">
-                Meditation Guides
-              </a>
+              <span className="opacity-60 cursor-not-allowed select-none">Meditation Guides</span>
             </li>
             <li>
-              <a href="/wellness" className="hover:text-white/70">
-                Wellness Blog
-              </a>
+              <span className="opacity-60 cursor-not-allowed select-none">Wellness Blog</span>
             </li>
             <li>
-              <a href="/faqs" className="hover:text-white/70">
-                FAQs
-              </a>
+              <span className="opacity-60 cursor-not-allowed select-none">FAQs</span>
             </li>
           </ul>
         </div>
@@ -51,24 +43,16 @@ function Footer() {
           <h4 className="text-lg font-semibold mb-4">Company</h4>
           <ul className="space-y-2 text-sm text-white/90">
             <li>
-              <a href="/about" className="hover:text-white/70">
-                About Us
-              </a>
+              <span className="opacity-60 cursor-not-allowed select-none">About Us</span>
             </li>
             <li>
-              <a href="/careers" className="hover:text-white/70">
-                Careers
-              </a>
+              <span className="opacity-60 cursor-not-allowed select-none">Careers</span>
             </li>
             <li>
-              <a href="/contact" className="hover:text-white/70">
-                Contact
-              </a>
+              <span className="opacity-60 cursor-not-allowed select-none">Contact</span>
             </li>
             <li>
-              <a href="/privacy-policy" className="hover:text-white/70">
-                Privacy Policy
-              </a>
+              <span className="opacity-60 cursor-not-allowed select-none">Privacy Policy</span>
             </li>
           </ul>
         </div>
@@ -76,43 +60,11 @@ function Footer() {
         {/* Social Media */}
         <div className="flex flex-col gap-4 items-start">
           <h4 className="text-lg font-semibold">Follow Us</h4>
-          <div className="flex gap-5 text-2xl">
-            <a
-              href="https://facebook.com"
-              aria-label="Facebook"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white/70 transition"
-            >
-              <FaFacebook />
-            </a>
-            <a
-              href="https://instagram.com"
-              aria-label="Instagram"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white/70 transition"
-            >
-              <FaInstagram />
-            </a>
-            <a
-              href="https://twitter.com"
-              aria-label="Twitter"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white/70 transition"
-            >
-              <FaTwitter />
-            </a>
-            <a
-              href="https://linkedin.com"
-              aria-label="LinkedIn"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white/70 transition"
-            >
-              <FaLinkedin />
-            </a>
+          <div className="flex gap-5 text-2xl opacity-60 cursor-not-allowed select-none">
+            <span aria-label="Facebook"><FaFacebook /></span>
+            <span aria-label="Instagram"><FaInstagram /></span>
+            <span aria-label="Twitter"><FaTwitter /></span>
+            <span aria-label="LinkedIn"><FaLinkedin /></span>
           </div>
         </div>
       </div>

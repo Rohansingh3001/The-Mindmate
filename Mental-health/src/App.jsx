@@ -47,49 +47,49 @@ function App() {
   }, [pathname]);
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+      <div className="flex-1">
+        <Routes>
+          {/* Public */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginSignup />} />
+          <Route path="/signup" element={<LoginSignup />} />
 
-      <Routes>
-        {/* Public */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LoginSignup />} />
-        <Route path="/signup" element={<LoginSignup />} />
+          {/* User */}
+          <Route path="/user/*" element={<User />} />
+          <Route path="/appointments" element={<AppointmentsPage />} />
+          <Route path="/analytics" element={<AnalysisPage />} />
+          <Route path="/journals" element={<JournalsPage />} />
+          <Route path="/exercises" element={<Exercises />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/assessment" element={<AssessmentForm />} />
+          <Route path="/form" element={<FormViewer />} />
 
-        {/* User */}
-        <Route path="/user/*" element={<User />} />
-        <Route path="/appointments" element={<AppointmentsPage />} />
-        <Route path="/analytics" element={<AnalysisPage />} />
-        <Route path="/journals" element={<JournalsPage />} />
-        <Route path="/exercises" element={<Exercises />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/assessment" element={<AssessmentForm />} />
-        <Route path="/form" element={<FormViewer />} />
+          {/* Peer & Community */}
+          <Route path="/connect-peer" element={<ConnectPeer />} />
+          <Route path="/chat/:peerId" element={<ChatPage />} />
+          <Route path="/peer" element={<PeerDashboard />} />
 
-        {/* Peer & Community */}
-        <Route path="/connect-peer" element={<ConnectPeer />} />
-        <Route path="/chat/:peerId" element={<ChatPage />} />
-        <Route path="/peer" element={<PeerDashboard />} />
+          {/* Admin */}
+          <Route path="/admin/*" element={<AdminPanel />} />
 
-        {/* Admin */}
-        <Route path="/admin/*" element={<AdminPanel />} />
+          {/* Company Pages */}
+          <Route path="/about" element={<About />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/contact" element={<Contact />} />
 
-        {/* Company Pages */}
-        <Route path="/about" element={<About />} />
-        <Route path="/careers" element={<Careers />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/contact" element={<Contact />} />
-
-        {/* Resources */}
-        <Route path="/faqs" element={<FAQs />} />
-        <Route path="/meditation" element={<MeditationGuides />} />
-        <Route path="/wellness" element={<WellnessBlog />} />
-        <Route path="/tips" element={<MentalHealthTips />} />
-      </Routes>
-
+          {/* Resources */}
+          <Route path="/faqs" element={<FAQs />} />
+          <Route path="/meditation" element={<MeditationGuides />} />
+          <Route path="/wellness" element={<WellnessBlog />} />
+          <Route path="/tips" element={<MentalHealthTips />} />
+        </Routes>
+      </div>
       {/* Footer */}
       {!hideFooter && <Footer />}
-    </>
+    </div>
   );
 }
 

@@ -22,7 +22,7 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { Card, CardContent } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import AssessmentForm from "../components/AssessmentForm";
@@ -36,6 +36,7 @@ import { getJournals } from "../utils/journalStorage";
 
 const greetings = ["Hey", "Welcome", "Namaste", "How are you?", "Peace ✌️"];
 
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
@@ -48,12 +49,6 @@ export default function Dashboard() {
   const [nextAppointment, setNextAppointment] = useState(null);
   const [stats, setStats] = useState({ moodLogs: 0, journals: 0, sessions: 0 });
   const [user, setUser] = useState(null);
-  const [journals, setJournals] = useState([]);
-
-  useEffect(() => {
-    setJournals(getJournals());
-  }, []);
-
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -134,6 +129,7 @@ export default function Dashboard() {
     fetchNextAppointment();
   }, [user]);
 
+
   const handleMoodClick = (emoji) => {
     const logs = JSON.parse(localStorage.getItem("mindmates.moodLogs") || "[]");
     const updatedLogs = [...logs, { mood: emoji, timestamp: new Date().toISOString() }];
@@ -143,8 +139,23 @@ export default function Dashboard() {
     toast.success(`Mood logged: ${emoji}`, { position: "top-right", theme });
   };
 
+  // Handler for under development features: navigate and show toast
+  const handleDevFeature = (path) => {
+    navigate(path);
+    toast("🚧 This feature is under development.", { position: "top-center" });
+  };
+
   return (
-    <div className="min-h-screen px-6 py-10 bg-gradient-to-br from-white via-purple-100 to-purple-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100 space-y-10">
+    <div className="min-h-screen px-6 py-10 bg-gradient-to-br from-white via-purple-100 to-purple-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100 space-y-10 relative">
+      {/* IRA Chat Assistant Floating Bubble */}
+      {showIraBubble && (
+        <div className="fixed bottom-8 right-8 z-50 flex items-end animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl px-5 py-3 max-w-xs text-base text-gray-800 dark:text-gray-100 border border-purple-300 dark:border-purple-700 flex items-center gap-3" style={{boxShadow: '0 8px 32px rgba(128,0,255,0.12)'}}>
+            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white font-bold mr-2 shadow-md">🤖</span>
+            <span>Hi, I am <span className="font-semibold text-purple-600 dark:text-purple-300">IRA</span>, your chat assistant!</span>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <header className="flex justify-between items-start">
         <div>
@@ -200,7 +211,7 @@ export default function Dashboard() {
             ) : (
               <p className="text-gray-500 dark:text-gray-300">No upcoming appointments.</p>
             )}
-            <Button onClick={() => navigate("/appointments")}>Manage Appointments</Button>
+            <Button onClick={() => handleDevFeature("/appointments")}>Manage Appointments</Button>
           </CardContent>
         </Card>
 
@@ -216,9 +227,7 @@ export default function Dashboard() {
               <li>✔️ {stats.journals} journal entries</li>
               <li>✔️ {stats.sessions} session{stats.sessions !== 1 ? "s" : ""} booked</li>
             </ul>
-            <Button className="mt-4 w-full" onClick={() => navigate("/analytics")}>
-              View Analytics
-            </Button>
+            <Button className="mt-4 w-full" onClick={() => handleDevFeature("/analytics")}>View Analytics</Button>
           </CardContent>
         </Card>
 
@@ -234,9 +243,7 @@ export default function Dashboard() {
               <li>✔️ Anxiety Check – GAD-7</li>
               <li>✔️ Stress Levels</li>
             </ul>
-            <Button className="mt-4 w-full" onClick={() => navigate("/assessment")}>
-              Give it a Try!
-            </Button>
+            <Button className="mt-4 w-full" onClick={() => handleDevFeature("/assessment")}>Give it a Try!</Button>
           </CardContent>
         </Card>
 
@@ -245,14 +252,14 @@ export default function Dashboard() {
           <CardContent>
             <div className="flex justify-between mb-4">
               <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">
-                Have Something to Share?
+               Please share the feedback
               </h2>
               <IoIosPaper size={22} className="text-purple-400" />
             </div>
             <ul className="text-sm space-y-1">
               <li>✔️ Feedback & Suggestions</li>
-              <li>✔️ Well-being Survey</li>
-              <li>✔️ Contribute to MindMates</li>
+              {/* <li>✔️ Well-being Survey</li>
+              <li>✔️ Contribute to MindMates</li> */}
             </ul>
             <Button className="mt-4 w-full" onClick={() => navigate("/form")}>
               Fill a Form
@@ -261,33 +268,33 @@ export default function Dashboard() {
         </Card>
 
         {/* Chatbot */}
-        <div className="xl:col-span-2"><Chatbot userName={userName} /></div>
+        <div className="xl:col-span-2" onClick={() => setShowIraBubble(false)} style={{cursor: 'pointer'}}>
+          <Chatbot userName={userName} />
+        </div>
 
         {/* Journals */}
-         <Card className="xl:col-span-2 p-6">
-      <CardContent>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Recent Journals</h2>
-          <Link to="/journals">
-            <Button variant="outline" className="text-xs sm:text-sm">View All</Button>
-          </Link>
-        </div>
-        {journals.length > 0 ? (
-          <ul className="space-y-4">
-            {journals.slice(-3).reverse().map((journal, i) => (
-              <li key={i} className="border-l-4 border-purple-400 pl-3 bg-purple-50/20 dark:bg-gray-700/30 rounded-md">
-                <p className="text-sm text-gray-800 dark:text-gray-100 italic line-clamp-3">{journal.entry}</p>
-                {journal.date && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{journal.date}</p>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="italic text-gray-600 dark:text-gray-300">No journal entries yet.</p>
-        )}
-      </CardContent>
-    </Card>
+        <Card className="xl:col-span-2 p-6">
+          <CardContent>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Recent Journals</h2>
+              <Link to="/journals">
+                <Button variant="outline" className="text-xs sm:text-sm">View All</Button>
+              </Link>
+            </div>
+            {getJournals().length > 0 ? (
+              <ul className="space-y-4">
+                {getJournals().slice(-3).reverse().map((journal, i) => (
+                  <li key={i} className="border-l-4 border-purple-400 pl-3 bg-purple-50/20 dark:bg-gray-700/30 rounded-md">
+                    <p className="text-sm text-gray-800 dark:text-gray-100 italic line-clamp-3">{journal.entry}</p>
+                    {journal.date && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{journal.date}</p>}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="italic text-gray-600 dark:text-gray-300">No journal entries yet.</p>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Quick Access */}
         <Card className="p-6">
@@ -301,12 +308,15 @@ export default function Dashboard() {
                 [<BarChart2 />, "View Progress", "/analytics"],
                 [<IoIosSettings />, "Settings", "/settings"],
               ].map(([icon, label, path]) => (
-                <Link to={path} key={label}>
-                  <Button variant="ghost" className="w-full text-left flex items-center gap-3">
-                    {icon}
-                    <span className="text-sm font-semibold">{label}</span>
-                  </Button>
-                </Link>
+                <Button
+                  key={label}
+                  variant="ghost"
+                  className="w-full text-left flex items-center gap-3"
+                  onClick={() => handleDevFeature(path)}
+                >
+                  {icon}
+                  <span className="text-sm font-semibold">{label}</span>
+                </Button>
               ))}
             </div>
           </CardContent>

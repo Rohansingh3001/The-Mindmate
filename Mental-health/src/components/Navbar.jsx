@@ -13,6 +13,8 @@ const Navbar = ({ onLogout }) => {
   const [navOpen, setNavOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  // Example notifications array; empty means no notifications
+  const notifications = [];
   const settingsRef = useRef();
   const notificationsRef = useRef();
   const navigate = useNavigate();
@@ -33,11 +35,9 @@ const Navbar = ({ onLogout }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+
   const handleNotificationClick = () => {
-    toast.info("You have a new notification!", {
-      position: "top-right",
-      theme: "colored",
-    });
+    setNotificationsOpen((prev) => !prev);
   };
 
   const handleGoToSettings = () => {
@@ -60,19 +60,20 @@ const Navbar = ({ onLogout }) => {
           {/* Notifications */}
           <div className="relative" ref={notificationsRef}>
             <button
-              onClick={() => {
-                setNotificationsOpen(!notificationsOpen);
-                handleNotificationClick();
-              }}
+              onClick={handleNotificationClick}
               className="relative text-purple-600 dark:text-purple-300 hover:text-indigo-700 dark:hover:text-indigo-400 transition"
             >
               <Bell className="w-6 h-6" />
             </button>
             {notificationsOpen && (
               <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800/80 backdrop-blur-md border border-purple-100 dark:border-gray-700 rounded-xl shadow-xl z-30 text-sm">
-                <div className="px-4 py-2 hover:bg-purple-50 dark:hover:bg-gray-700 transition">📢 New update available</div>
-                <div className="px-4 py-2 hover:bg-purple-50 dark:hover:bg-gray-700 transition">💡 Try mood logging today</div>
-                <div className="px-4 py-2 hover:bg-purple-50 dark:hover:bg-gray-700 transition">🎯 Goal progress saved</div>
+                {notifications.length === 0 ? (
+                  <div className="px-4 py-3 text-center text-gray-400 select-none">No notifications available.</div>
+                ) : (
+                  notifications.map((note, idx) => (
+                    <div key={idx} className="px-4 py-2 hover:bg-purple-50 dark:hover:bg-gray-700 transition">{note}</div>
+                  ))
+                )}
               </div>
             )}
           </div>
