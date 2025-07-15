@@ -48,6 +48,12 @@ export default function Dashboard() {
   const [nextAppointment, setNextAppointment] = useState(null);
   const [stats, setStats] = useState({ moodLogs: 0, journals: 0, sessions: 0 });
   const [user, setUser] = useState(null);
+  const [journals, setJournals] = useState([]);
+
+  useEffect(() => {
+    setJournals(getJournals());
+  }, []);
+
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -258,28 +264,30 @@ export default function Dashboard() {
         <div className="xl:col-span-2"><Chatbot userName={userName} /></div>
 
         {/* Journals */}
-        <Card className="xl:col-span-2 p-6">
-          <CardContent>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Recent Journals</h2>
-              <Link to="/journals">
-                <Button variant="outline" className="text-xs sm:text-sm">View All</Button>
-              </Link>
-            </div>
-            {getJournals().length > 0 ? (
-              <ul className="space-y-4">
-                {getJournals().slice(-3).reverse().map((journal, i) => (
-                  <li key={i} className="border-l-4 border-purple-400 pl-3 bg-purple-50/20 dark:bg-gray-700/30 rounded-md">
-                    <p className="text-sm text-gray-800 dark:text-gray-100 italic line-clamp-3">{journal.entry}</p>
-                    {journal.date && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{journal.date}</p>}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="italic text-gray-600 dark:text-gray-300">No journal entries yet.</p>
-            )}
-          </CardContent>
-        </Card>
+         <Card className="xl:col-span-2 p-6">
+      <CardContent>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Recent Journals</h2>
+          <Link to="/journals">
+            <Button variant="outline" className="text-xs sm:text-sm">View All</Button>
+          </Link>
+        </div>
+        {journals.length > 0 ? (
+          <ul className="space-y-4">
+            {journals.slice(-3).reverse().map((journal, i) => (
+              <li key={i} className="border-l-4 border-purple-400 pl-3 bg-purple-50/20 dark:bg-gray-700/30 rounded-md">
+                <p className="text-sm text-gray-800 dark:text-gray-100 italic line-clamp-3">{journal.entry}</p>
+                {journal.date && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{journal.date}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="italic text-gray-600 dark:text-gray-300">No journal entries yet.</p>
+        )}
+      </CardContent>
+    </Card>
 
         {/* Quick Access */}
         <Card className="p-6">
