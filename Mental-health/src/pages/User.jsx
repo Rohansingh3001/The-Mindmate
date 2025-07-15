@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
@@ -11,7 +12,7 @@ import UserRoutes from "../Routes/UserRoutes.jsx";
 function User() {
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState(null);
-  const [showBotPopup, setShowBotPopup] = useState(true);
+  const [showGuide, setShowGuide] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -20,16 +21,28 @@ function User() {
           name: user.displayName || "User",
           email: user.email,
         });
+        // Show feedback reminder toast
+        toast((t) => (
+          <span>
+            <span className="text-lg mr-2">📝</span>
+            We value your feedback!&nbsp;
+            <button
+              onClick={() => {
+                navigate('/form');
+                toast.dismiss(t.id);
+              }}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-3 py-1 rounded ml-2"
+            >
+              Fill Now
+            </button>
+          </span>
+        ), { duration: 8000 });
       } else {
         navigate("/login");
       }
     });
-
-    const timer = setTimeout(() => setShowBotPopup(false), 5000);
-
     return () => {
       unsubscribe();
-      clearTimeout(timer);
     };
   }, [navigate]);
 
@@ -47,14 +60,13 @@ function User() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-[#f0e9ff] dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100">
+    <div className="bg-gradient-to-br from-white to-[#f0e9ff] dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100 relative">
       <Navbar onLogout={handleLogout} onViewAccount={handleViewAccount} />
+
 
       <main className="flex flex-col w-full">
         <UserRoutes /> {/* ✅ Routes moved here */}
       </main>
-
-      
     </div>
   );
 }

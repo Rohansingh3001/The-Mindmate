@@ -10,6 +10,7 @@ const Chatbot = () => {
   const [isFullChat, setIsFullChat] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [iraGreeted, setIraGreeted] = useState(false);
+  const [showFullChatTip, setShowFullChatTip] = useState(true);
   const [userName, setUserName] = useState("");
 
   const chatContainerRef = useRef();
@@ -35,9 +36,11 @@ const Chatbot = () => {
     });
   }, []);
 
+
   const handleSendMessage = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
+    if (showFullChatTip) setShowFullChatTip(false);
 
     const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const userMessage = { role: "user", text: trimmed, sender: "user", time: timestamp };
@@ -214,24 +217,31 @@ When appropriate, provide thoughtful and simple references from the Bhagavad Git
           </div>
 
           {/* Input Area */}
-          <div className={`p-3 border-t flex gap-2 items-center ${darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"}`}>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder="Type a message..."
-              className={`flex-grow p-2 rounded-lg border text-sm ${darkMode
-                ? "bg-gray-800 text-white border-gray-600 focus:ring-indigo-400"
-                : "bg-white text-black border-gray-300 focus:ring-indigo-500"
-                } focus:outline-none focus:ring-2`}
-            />
-            <button
-              onClick={handleSendMessage}
-              className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700"
-            >
-              <Send className="w-5 h-5" />
-            </button>
+          <div className={`p-3 border-t flex flex-col gap-2 ${darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"}`}>
+            {showFullChatTip && (
+              <div className={`mb-1 text-[11px] text-center px-2 py-1 rounded font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 border border-indigo-300 dark:border-indigo-700`}>
+                🖥️ Tip: For a better experience, use <b>Full Chat</b> (monitor icon above)!
+              </div>
+            )}
+            <div className="flex gap-2 items-center">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder="Type a message..."
+                className={`flex-grow p-2 rounded-lg border text-sm ${darkMode
+                  ? "bg-gray-800 text-white border-gray-600 focus:ring-indigo-400"
+                  : "bg-white text-black border-gray-300 focus:ring-indigo-500"
+                  } focus:outline-none focus:ring-2`}
+              />
+              <button
+                onClick={handleSendMessage}
+                className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       )}

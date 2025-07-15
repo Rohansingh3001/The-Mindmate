@@ -41,7 +41,15 @@ const AdminCreateForm = () => {
   };
 
   const handleAddQuestion = () => {
-    setQuestions([...questions, { ...defaultQuestion }]);
+    setQuestions([
+      ...questions,
+      { ...defaultQuestion, options: [] }
+    ]);
+  };
+  const handleRemoveOption = (qIndex, optIndex) => {
+    const updated = [...questions];
+    updated[qIndex].options = updated[qIndex].options.filter((_, i) => i !== optIndex);
+    setQuestions(updated);
   };
 
   const handleRemoveQuestion = (index) => {
@@ -136,14 +144,22 @@ const AdminCreateForm = () => {
               <>
                 <p className="text-sm font-medium mb-1">Options:</p>
                 {q.options.map((opt, i) => (
-                  <input
-                    key={i}
-                    className="w-full border rounded p-1 mb-1"
-                    value={opt}
-                    onChange={(e) => handleOptionChange(index, i, e.target.value)}
-                    placeholder={`Option ${i + 1}`}
-                    required
-                  />
+                  <div key={i} className="flex items-center gap-2 mb-1">
+                    <input
+                      className="w-full border rounded p-1"
+                      value={opt}
+                      onChange={(e) => handleOptionChange(index, i, e.target.value)}
+                      placeholder={`Option ${i + 1}`}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveOption(index, i)}
+                      className="text-red-500 text-xs px-2 py-1 border rounded"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 ))}
                 <button
                   type="button"

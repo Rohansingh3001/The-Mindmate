@@ -263,7 +263,8 @@ Always keep your tone light, loving, and genuinely caring. Don’t try to sound 
       <div className={`p-4 border-t ${darkMode ? "bg-gray-950 border-gray-800" : "bg-white border-gray-300"}`}>
         {showNotice && (
           <div className={`mb-2 text-xs text-center px-4 py-2 rounded-md font-medium ${darkMode ? "bg-yellow-900 text-yellow-200" : "bg-yellow-100 text-yellow-800"}`}>
-            ⚠️ You're chatting with Ira, an AI-based mental health assistant. She may make mistakes — please avoid sharing any personal, sensitive, or confidential information.
+            ⚠️ You're chatting with Ira, an AI-based mental health assistant. She may make mistakes — please avoid sharing any personal, sensitive, or confidential information.<br />
+            <span className="block mt-1">Feel free to chat openly—your data is not connected to any database and will be erased when you refresh the page.</span>
           </div>
         )}
         <div className="flex gap-3 items-center">

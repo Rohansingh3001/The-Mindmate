@@ -11,8 +11,20 @@ import {
 import { toast } from "react-toastify";
 import { FaDownload } from "react-icons/fa";
 
+import { deleteDoc } from "firebase/firestore";
+
 const ManageForms = () => {
   const [forms, setForms] = useState([]);
+
+  const deleteForm = async (formId) => {
+    try {
+      await deleteDoc(doc(db, "form_templates", formId));
+      toast.success("Form deleted!");
+      setForms(prev => prev.filter(f => f.id !== formId));
+    } catch (e) {
+      toast.error("Error deleting form!");
+    }
+  };
 
   useEffect(() => {
     const fetchForms = async () => {
@@ -90,6 +102,12 @@ const ManageForms = () => {
               className="text-purple-600 hover:text-purple-800"
             >
               <FaDownload size={18} />
+            </button>
+            <button
+              onClick={() => deleteForm(form.id)}
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+            >
+              Delete
             </button>
           </div>
         </div>

@@ -8,9 +8,10 @@ import {
   addDoc,
   Timestamp,
 } from "firebase/firestore";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 import { IoIosPaper, IoIosArrowBack } from "react-icons/io";
+import { FiShare2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 const FormViewer = () => {
@@ -138,7 +139,20 @@ const FormViewer = () => {
           <h1 className="text-2xl font-bold text-purple-700 dark:text-purple-300">
             {form.title}
           </h1>
-          <IoIosPaper size={24} className="text-purple-500" />
+          <div className="flex items-center gap-3">
+            <IoIosPaper size={24} className="text-purple-500" />
+            <button
+              onClick={() => {
+                const url = `${window.location.origin}/form`; // Adjust path if needed
+                navigator.clipboard.writeText(url);
+                toast.success("Link copied!");
+              }}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold p-3 rounded-full shadow transition flex items-center justify-center"
+              aria-label="Share Feedback Form"
+            >
+              <FiShare2 size={22} />
+            </button>
+          </div>
         </div>
 
         {form.description && (

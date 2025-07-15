@@ -191,9 +191,23 @@ export default function AssessmentForm() {
         </button>
       </div>
 
+
       <h1 className="text-4xl font-extrabold text-center text-purple-800 dark:text-purple-200 mb-8">
         💬 How Are You Feeling Today?
       </h1>
+
+      <div className="flex justify-center mb-8">
+        <button
+          onClick={() => {
+            const url = `${window.location.origin}/assessment`;
+            navigator.clipboard.writeText(url);
+            alert("Shareable link copied to clipboard!\n" + url);
+          }}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-xl shadow transition"
+        >
+          Share Assessment Form
+        </button>
+      </div>
 
       <div className="bg-white dark:bg-gray-900 border border-purple-200 dark:border-purple-700 rounded-2xl p-8 shadow-xl">
         {!submitted ? (
@@ -290,7 +304,7 @@ export default function AssessmentForm() {
                 onClick={handleRetake}
                 className="bg-gray-200 hover:bg-gray-300 text-black dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 font-semibold py-2 px-6 rounded-xl transition shadow"
               >
-                Retake Test
+                Sumit Another Responce
               </button>
             </div>
           </div>
