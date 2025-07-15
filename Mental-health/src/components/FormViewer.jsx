@@ -101,21 +101,37 @@ const FormViewer = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center max-w-lg mx-auto mt-20 bg-green-50 dark:bg-green-900 p-6 rounded-xl shadow-md"
+        className="text-center max-w-lg mx-auto mt-24 bg-gradient-to-br from-green-50 via-purple-50 to-white dark:from-green-900 dark:via-gray-900 dark:to-gray-800 p-10 rounded-3xl shadow-2xl border border-green-200 dark:border-green-800 relative overflow-hidden"
       >
-        <h2 className="text-xl font-semibold text-green-700 dark:text-green-300">
-          Thank you for sharing 💚
-        </h2>
-        <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
-          You just helped make MindMates better for everyone.
-        </p>
-        <button
-          onClick={() => navigate(-1)}
-          className="mt-6 inline-flex items-center gap-2 text-purple-600 hover:underline"
-        >
-          <IoIosArrowBack />
-          Back to Dashboard
-        </button>
+        <div className="flex flex-col items-center justify-center">
+          <div className="mb-4 animate-bounce">
+            <span className="inline-block text-5xl md:text-6xl">💚</span>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-green-700 dark:text-green-300 mb-2 drop-shadow-lg tracking-tight">
+            Thank you for sharing!
+          </h2>
+          <p className="text-base md:text-lg text-gray-700 dark:text-gray-200 mb-4 font-medium">
+            You just helped make <span className="text-purple-600 font-bold">MindMates</span> better for everyone.
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold shadow-lg hover:from-purple-700 hover:to-purple-600 transition text-base"
+          >
+            <IoIosArrowBack />
+            Back to Dashboard
+          </button>
+        </div>
+        {/* Decorative confetti */}
+        <div className="pointer-events-none absolute inset-0 z-0">
+          <svg width="100%" height="100%" className="absolute left-0 top-0 opacity-20" style={{zIndex:0}}>
+            <circle cx="30" cy="30" r="8" fill="#a78bfa" />
+            <circle cx="90" cy="60" r="5" fill="#34d399" />
+            <circle cx="200" cy="40" r="6" fill="#fbbf24" />
+            <circle cx="300" cy="80" r="7" fill="#f472b6" />
+            <circle cx="400" cy="30" r="5" fill="#60a5fa" />
+            <circle cx="500" cy="70" r="8" fill="#a3e635" />
+          </svg>
+        </div>
       </motion.div>
     );
   }
@@ -164,20 +180,29 @@ const FormViewer = () => {
             <div key={index}>
               <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
                 {q.label}
+                {q.required && (
+                  <span className="text-red-500 ml-1" title="Mandatory">*</span>
+                )}
               </label>
+
+
 
               {q.type === "text" && (
                 <input
                   type="text"
+                  placeholder={q.placeholder || "Type your answer..."}
                   className="w-full p-3 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
                   onChange={(e) => handleChange(q.field, e.target.value)}
                   required={q.required}
                 />
               )}
 
+
+
               {q.type === "textarea" && (
                 <textarea
                   rows="3"
+                  placeholder={q.placeholder || "Type your answer..."}
                   className="w-full p-3 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
                   onChange={(e) => handleChange(q.field, e.target.value)}
                   required={q.required}
@@ -187,16 +212,19 @@ const FormViewer = () => {
               {q.type === "radio" && (
                 <div className="space-y-2 mt-2">
                   {q.options.map((opt) => (
-                    <label key={opt} className="flex items-center gap-2">
+                    <label
+                      key={opt}
+                      className="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition bg-white dark:bg-gray-700 hover:bg-purple-50 dark:hover:bg-purple-800 border border-gray-200 dark:border-gray-600 shadow-sm"
+                    >
                       <input
                         type="radio"
                         name={q.field}
                         value={opt}
                         onChange={() => handleChange(q.field, opt)}
                         required={q.required}
-                        className="accent-purple-600"
+                        className="w-5 h-5 accent-purple-600 focus:ring-2 focus:ring-purple-400 transition-all"
                       />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{opt}</span>
+                      <span className="text-base text-gray-800 dark:text-gray-100 font-medium">{opt}</span>
                     </label>
                   ))}
                 </div>
@@ -205,14 +233,17 @@ const FormViewer = () => {
               {q.type === "checkbox" && (
                 <div className="space-y-2 mt-2">
                   {q.options.map((opt) => (
-                    <label key={opt} className="flex items-center gap-2">
+                    <label
+                      key={opt}
+                      className="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition bg-white dark:bg-gray-700 hover:bg-purple-50 dark:hover:bg-purple-800 border border-gray-200 dark:border-gray-600 shadow-sm"
+                    >
                       <input
                         type="checkbox"
                         value={opt}
                         onChange={() => handleCheckboxChange(q.field, opt)}
-                        className="accent-purple-600"
+                        className="w-5 h-5 accent-purple-600 focus:ring-2 focus:ring-purple-400 transition-all"
                       />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{opt}</span>
+                      <span className="text-base text-gray-800 dark:text-gray-100 font-medium">{opt}</span>
                     </label>
                   ))}
                 </div>

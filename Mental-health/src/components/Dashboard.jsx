@@ -49,6 +49,7 @@ export default function Dashboard() {
   const [nextAppointment, setNextAppointment] = useState(null);
   const [stats, setStats] = useState({ moodLogs: 0, journals: 0, sessions: 0 });
   const [user, setUser] = useState(null);
+  const [showIraBubble, setShowIraBubble] = useState(true);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -146,7 +147,16 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen px-6 py-10 bg-gradient-to-br from-white via-purple-100 to-purple-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100 space-y-10">
+    <div className="min-h-screen px-6 py-10 bg-gradient-to-br from-white via-purple-100 to-purple-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100 space-y-10 relative">
+      {/* IRA Chat Assistant Floating Bubble */}
+      {showIraBubble && (
+        <div className="fixed bottom-8 right-8 z-50 flex items-end animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl px-5 py-3 max-w-xs text-base text-gray-800 dark:text-gray-100 border border-purple-300 dark:border-purple-700 flex items-center gap-3" style={{boxShadow: '0 8px 32px rgba(128,0,255,0.12)'}}>
+            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white font-bold mr-2 shadow-md">🤖</span>
+            <span>Hi, I am <span className="font-semibold text-purple-600 dark:text-purple-300">IRA</span>, your chat assistant!</span>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <header className="flex justify-between items-start">
         <div>
@@ -259,7 +269,9 @@ export default function Dashboard() {
         </Card>
 
         {/* Chatbot */}
-        <div className="xl:col-span-2"><Chatbot userName={userName} /></div>
+        <div className="xl:col-span-2" onClick={() => setShowIraBubble(false)} style={{cursor: 'pointer'}}>
+          <Chatbot userName={userName} />
+        </div>
 
         {/* Journals */}
         <Card className="xl:col-span-2 p-6">

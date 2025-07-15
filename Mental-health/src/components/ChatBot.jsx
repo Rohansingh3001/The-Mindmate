@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send, MessageCircle, X, Monitor, Moon, Sun } from "lucide-react";
+import { toast } from "react-hot-toast";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import FullChat from "./FullChat";
 
@@ -118,6 +119,28 @@ When appropriate, provide thoughtful and simple references from the Bhagavad Git
   const handleOpenFullChat = () => setIsFullChat(true);
   const handleCloseFullChat = () => setIsFullChat(false);
 
+  // Show feedback toast after closing chat widget (styled like User.jsx)
+  const handleCloseWidget = () => {
+    setIsOpen(false);
+    setTimeout(() => {
+      toast((t) => (
+        <span>
+          <span className="text-lg mr-2">📝</span>
+          We value your feedback!&nbsp;
+          <button
+            onClick={() => {
+              window.location.href = '/form';
+              toast.dismiss(t.id);
+            }}
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-3 py-1 rounded ml-2"
+          >
+            Fill Now
+          </button>
+        </span>
+      ), { duration: 8000 });
+    }, 1000);
+  };
+
   const toggleDarkMode = () => {
     setDarkMode((prev) => {
       const next = !prev;
@@ -161,7 +184,7 @@ When appropriate, provide thoughtful and simple references from the Bhagavad Git
               <button onClick={handleOpenFullChat} title="Fullscreen">
                 <Monitor className="w-4 h-4" />
               </button>
-              <button onClick={() => setIsOpen(false)} title="Close">
+              <button onClick={handleCloseWidget} title="Close">
                 <X className="w-4 h-4" />
               </button>
             </div>
