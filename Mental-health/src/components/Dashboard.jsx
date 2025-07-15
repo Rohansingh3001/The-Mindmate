@@ -49,6 +49,7 @@ export default function Dashboard() {
   const [nextAppointment, setNextAppointment] = useState(null);
   const [stats, setStats] = useState({ moodLogs: 0, journals: 0, sessions: 0 });
   const [user, setUser] = useState(null);
+  const [showIraBubble, setShowIraBubble] = useState(true);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
