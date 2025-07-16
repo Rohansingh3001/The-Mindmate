@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import customPrompts from "../context/personaPrompts";
 import { Send, X, Sun, Moon, Mic, Volume2, VolumeX } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -162,32 +163,39 @@ const FullChat = ({ messages, setMessages, onClose }) => {
     setInput("");
 
     setMessages((prev) => [...prev, { text: "Typing...", sender: "bot", time, loading: true }]);
-
     const persona = personalities[selectedPersona];
+    const personaPrompt = persona.prompt(userName);
+    const personaGreeting = persona.greeting(userName);
+    // ...existing code...
+
+    const personaContext = {
+      prompt: personaPrompt,
+      greeting: personaGreeting,
+      name: persona.name,
+      key: selectedPersona,
+      customPrompt: customPrompts[selectedPersona]
+    };
+    // Hold chat content for current exchange
+    let chatContent = {
+      user: trimmed,
+      bot: null
+    };
 
     try {
       const systemPrompt = {
         role: "system",
-        content: `You are Ira — a gentle, compassionate, and friendly mental health assistant. Your current user is ${userName}.
-Speak like a close female friend or elder sister, in the user's language.
-You support mental wellness, emotional healing, stress relief, and self-reflection in a comforting and non-judgmental way.
-
-⚠️ Important: Do not answer questions outside the mental health, emotional well-being, or self-growth domains. If the user asks unrelated things (e.g., news, tech, politics), gently steer the conversation back by saying something like:
-"I'm here for your emotional and mental well-being. Let's talk about how you're feeling or what’s on your mind today 💛"
-
-You may gently refer to simple and thoughtful ideas from the Bhagavad Gita **only when it's truly helpful** — such as during moments of fear, anxiety, self-doubt, or decision-making — but never mention it unnecessarily.
-
-Keep your tone warm, loving, and relatable at all times. You are not a therapist, just a close friend who cares.`,
+        content: personaPrompt,
       };
-
       const payloadMessages = [systemPrompt];
 
-      if (!iraGreeted && messages.length === 0) {
+      if (!greeted && messages.length === 0) {
+        const persona = personalities[selectedPersona];
+        const greetingText = persona.greeting(userName);
         setMessages((prev) => [
           ...prev.slice(0, -1),
-          { text: greet, sender: "bot", time, loading: false },
+          { text: greetingText, sender: "bot", time, loading: false },
         ]);
-        speakText(greet);
+        speakText(greetingText);
         setGreeted(true);
         return;
       }
@@ -259,11 +267,10 @@ Keep your tone warm, loving, and relatable at all times. You are not a therapist
             <li key={key}>
               <button
                 onClick={() => handlePersonaChange(key)}
-                className={`w-full text-left px-3 py-2 rounded-lg font-medium transition-all ${
-                  selectedPersona === key
+                className={`w-full text-left px-3 py-2 rounded-lg font-medium transition-all ${selectedPersona === key
                     ? "bg-indigo-600 text-white"
                     : "hover:bg-indigo-100 dark:hover:bg-gray-800"
-                }`}
+                  }`}
               >
                 {persona.name}
               </button>
@@ -309,13 +316,12 @@ Keep your tone warm, loving, and relatable at all times. You are not a therapist
           ) : (
             messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"} animate-slide-up`}>
-                <div className={`px-4 py-3 rounded-xl shadow-sm max-w-[80%] ${
-                  msg.sender === "user"
+                <div className={`px-4 py-3 rounded-xl shadow-sm max-w-[80%] ${msg.sender === "user"
                     ? "bg-indigo-600 text-white rounded-br-none"
                     : darkMode
-                    ? "bg-gray-800 text-white rounded-bl-none"
-                    : "bg-white text-gray-900 rounded-bl-none"
-                }`}>
+                      ? "bg-gray-800 text-white rounded-bl-none"
+                      : "bg-white text-gray-900 rounded-bl-none"
+                  }`}>
                   <div>{msg.loading ? <span className="typing-dots"><span>.</span><span>.</span><span>.</span></span> : msg.text}</div>
                   <div className="text-xs opacity-60 text-right">{msg.time}</div>
                 </div>
@@ -324,31 +330,31 @@ Keep your tone warm, loving, and relatable at all times. You are not a therapist
           )}
         </div>
 
-      {/* Input Area */}
-      <div className={`p-4 border-t ${darkMode ? "bg-gray-950 border-gray-800" : "bg-white border-gray-300"}`}>
-        {showNotice && (
-          <div className={`mb-2 text-xs text-center px-4 py-2 rounded-md font-medium ${darkMode ? "bg-yellow-900 text-yellow-200" : "bg-yellow-100 text-yellow-800"}`}>
-            ⚠️ You're chatting with Ira, an AI-based mental health assistant. She may make mistakes — please avoid sharing any personal, sensitive, or confidential information.
+        {/* Input Area */}
+        <div className={`p-4 border-t ${darkMode ? "bg-gray-950 border-gray-800" : "bg-white border-gray-300"}`}>
+          {showNotice && (
+            <div className={`mb-2 text-xs text-center px-4 py-2 rounded-md font-medium ${darkMode ? "bg-yellow-900 text-yellow-200" : "bg-yellow-100 text-yellow-800"}`}>
+              ⚠️ You're chatting with Ira, an AI-based mental health assistant. She may make mistakes — please avoid sharing any personal, sensitive, or confidential information.
+            </div>
+          )}
+          <div className="flex gap-3 items-center">
+            <input
+              className={`flex-grow px-4 py-2 rounded-lg text-sm border ${darkMode ? "bg-gray-800 text-white border-gray-600" : "border-gray-300"}`}
+              placeholder="Type or use mic..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKey}
+            />
+            <button onClick={handleVoiceInput} className={`p-2 rounded-full transition-colors duration-150 ${listening ? "bg-red-500 text-white" : darkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-black"}`} title="Voice Input">
+              <Mic className="w-5 h-5" />
+            </button>
+            <button onClick={handleSendMessage} className="p-2 bg-indigo-600 rounded-full text-white hover:bg-indigo-700" title="Send">
+              <Send className="w-5 h-5" />
+            </button>
           </div>
-        )}
-        <div className="flex gap-3 items-center">
-          <input
-            className={`flex-grow px-4 py-2 rounded-lg text-sm border ${darkMode ? "bg-gray-800 text-white border-gray-600" : "border-gray-300"}`}
-            placeholder="Type or use mic..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKey}
-          />
-          <button onClick={handleVoiceInput} className={`p-2 rounded-full transition-colors duration-150 ${listening ? "bg-red-500 text-white" : darkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-black"}`} title="Voice Input">
-            <Mic className="w-5 h-5" />
-          </button>
-          <button onClick={handleSendMessage} className="p-2 bg-indigo-600 rounded-full text-white hover:bg-indigo-700" title="Send">
-            <Send className="w-5 h-5" />
-          </button>
         </div>
-      </div>
 
-      <style>{`
+        <style>{`
         .animate-slide-up { animation: slide-up 0.25s ease-out; }
         @keyframes slide-up {
           from { opacity: 0; transform: translateY(12px); }

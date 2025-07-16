@@ -1,7 +1,6 @@
 // src/firebase.js
 import { initializeApp, getApps } from "firebase/app";
 import {
-  getFirestore,
   collection,
   query,
   orderBy,
@@ -13,6 +12,7 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
+  getFirestore,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -29,6 +29,7 @@ import {
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
 // ✅ Firebase config
 const firebaseConfig = {
@@ -48,11 +49,29 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
+const messaging = getMessaging(app);
 
-// ✅ Persistent Auth
-setPersistence(auth, browserLocalPersistence).catch((err) =>
-  console.error("Auth persistence error:", err)
-);
+export const requestNotificationPermission = async (userId) => {
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      const token = await getToken(messaging, { vapidKey: "YOUR_VAPID_KEY" });
+      if (token) {
+        await setDoc(doc(db, "users", userId), { fcmToken: token }, { merge: true });
+        return token;
+      }
+    }
+  } catch (err) {
+    console.error("FCM permission/token error:", err);
+  }
+  return null;
+};
+
+export const listenForMessages = (callback) => {
+  onMessage(messaging, (payload) => {
+    callback(payload);
+  });
+};
 
 /**
  * 🔍 Fetch current user details from Firebase Auth + Firestore
