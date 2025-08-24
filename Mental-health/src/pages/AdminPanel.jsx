@@ -17,7 +17,24 @@ export default function AdminPanel() {
   const [user, setUser] = useState(null);
   const [activeSection, setActiveSection] = useState("dashboard");
   const [loading, setLoading] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+
+  const handleSidebarToggle = (collapsed) => {
+    setSidebarCollapsed(collapsed);
+  };
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const auth = getAuth();
@@ -71,9 +88,20 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-zinc-900">
-      <Sidebar setActiveSection={setActiveSection} activeSection={activeSection} />
-      <main className="flex-1 p-6 overflow-y-auto">{renderSection()}</main>
+    <div className="min-h-screen bg-gray-100 dark:bg-zinc-900">
+      <Sidebar 
+        setActiveSection={setActiveSection} 
+        activeSection={activeSection}
+        onSidebarToggle={handleSidebarToggle}
+      />
+      <main 
+        className={`
+          overflow-y-auto min-h-screen transition-all duration-300
+          ${!isMobile ? (sidebarCollapsed ? 'ml-20 p-6' : 'ml-80 p-6') : 'ml-0 p-4 pt-20'}
+        `}
+      >
+        {renderSection()}
+      </main>
     </div>
   );
 }

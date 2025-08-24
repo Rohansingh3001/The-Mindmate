@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 
 // Components
 import Dashboard from "../components/Dashboard";
+import TopupWrapper from "../components/TopupWrapper";
 import FullChat from "../components/FullChat";
 import AssessmentForm from "../components/AssessmentForm";
 import MentalHealthChart from "../components/MentalHealthChart";
@@ -21,6 +22,7 @@ function UserRoutes() {
       <Route path="/analytics" element={<AnalysisPage />} />
       <Route path="/journals" element={<JournalsPage />} />
       <Route path="/connect-peer" element={<ConnectPeer />} />
+      <Route path="/topup" element={<TopupWrapper />} />
     </Routes>
   );
 }

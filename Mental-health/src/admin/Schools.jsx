@@ -207,78 +207,103 @@ export default function Schools() {
     );
   }
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">
-          Partner Schools & Workshops
-        </h2>
-        <div className="flex gap-3">
+    <div className="space-y-6 p-4 md:p-6">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight mb-2">
+            Partner Schools & Workshops
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Manage educational partnerships and workshop programs
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 text-sm bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            className="flex items-center justify-center gap-2 text-sm bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md"
           >
             <PlusCircle size={16} /> Add School
           </button>
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-2 text-sm bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+            className="flex items-center justify-center gap-2 text-sm bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-md"
           >
             <Download size={16} /> Export CSV
           </button>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <input
-          type="text"
-          placeholder="Search schools..."
-          className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <div className="text-sm flex items-center gap-2">
-          <label className="font-medium">Sort by:</label>
-          <select
-            value={sortBy}
-            onChange={(e) => {
-              setSortBy(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="px-3 py-2 border border-gray-300 rounded"
-          >
-            <option value="latest">Latest Workshop</option>
-            <option value="score">Feedback Score</option>
-            <option value="students">Students Reached</option>
-          </select>
+      {/* Controls Section */}
+      <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 border border-zinc-200 dark:border-zinc-700">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex-1 max-w-md">
+            <input
+              type="text"
+              placeholder="Search schools..."
+              className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 dark:bg-zinc-700 dark:text-white"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="text-sm flex items-center gap-2">
+              <label className="font-medium text-gray-700 dark:text-gray-300">Sort by:</label>
+              <select
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg dark:bg-zinc-700 dark:text-white"
+              >
+                <option value="latest">Latest Workshop</option>
+                <option value="score">Feedback Score</option>
+                <option value="students">Students Reached</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-zinc-700 shadow-md">
-        <table className="min-w-full bg-white dark:bg-zinc-900 text-sm">
-          <thead className="bg-gray-100 dark:bg-zinc-800">
-            <tr className="text-left text-gray-600 dark:text-gray-300 uppercase text-xs tracking-wider">
-              <th className="px-4 py-3">School Name</th>
-              <th className="px-4 py-3">Students Reached</th>
-              <th className="px-4 py-3">Last Workshop</th>
-              <th className="px-4 py-3">Feedback Score</th>
-              <th className="px-4 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedSchools.length > 0 ? (
-              paginatedSchools.map((school) => (
-                <tr
-                  key={school.id}
-                  className="border-b dark:border-zinc-700 hover:bg-purple-50 dark:hover:bg-zinc-800 transition"
-                >
-                  <td className="px-4 py-3 font-medium text-zinc-800 dark:text-white">
-                    {school.name}
-                  </td>
-                  <td className="px-4 py-3">{school.students || "—"}</td>
-                  <td className="px-4 py-3">
-                    {school.lastWorkshop ? formatDate(school.lastWorkshop) : "—"}
-                  </td>
-                  <td className="px-4 py-3 font-semibold">
+      {/* Schools Table */}
+      <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="bg-gray-50 dark:bg-zinc-700">
+              <tr className="text-left text-gray-600 dark:text-gray-300 uppercase text-xs tracking-wider">
+                <th className="px-6 py-3">School Name</th>
+                <th className="px-6 py-3">Students Reached</th>
+                <th className="px-6 py-3">Last Workshop</th>
+                <th className="px-6 py-3">Feedback Score</th>
+                <th className="px-6 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {paginatedSchools.length > 0 ? (
+                paginatedSchools.map((school) => (
+                  <tr
+                    key={school.id}
+                    className="hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors"
+                  >
+                    <td className="px-6 py-4 font-medium text-zinc-900 dark:text-white">
+                      {school.name}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{school.students || "—"}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
+                      {school.lastWorkshop ? formatDate(school.lastWorkshop) : "—"}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        school.feedbackScore >= 4.5 
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                          : school.feedbackScore >= 3.5
+                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                      }`}>
+                        {school.feedbackScore || "—"}
+                      </span>
+                    </td>
                     <span
                       className={
                         school.feedbackScore >= 4
@@ -290,44 +315,45 @@ export default function Schools() {
                     >
                       {school.feedbackScore ? `${school.feedbackScore} / 5` : "--"}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 flex gap-2">
-                    <button
-                      onClick={() => {
-                        setEditSchool(school);
-                        setFormData({
-                          name: school.name,
-                          students: school.students,
-                          lastWorkshop: school.lastWorkshop,
-                          feedbackScore: school.feedbackScore,
-                        });
-                        setShowForm(true);
-                      }}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(school.id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            setEditSchool(school);
+                            setFormData({
+                              name: school.name,
+                              students: school.students,
+                              lastWorkshop: school.lastWorkshop,
+                              feedbackScore: school.feedbackScore,
+                            });
+                            setShowForm(true);
+                          }}
+                          className="inline-flex items-center px-3 py-1 rounded-md text-sm bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/40 transition-colors"
+                        >
+                          <Pencil size={14} className="mr-1" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(school.id)}
+                          className="inline-flex items-center px-3 py-1 rounded-md text-sm bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40 transition-colors"
+                        >
+                          <Trash2 size={14} className="mr-1" />
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                    No schools found
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="px-4 py-6 text-center text-gray-500 dark:text-gray-400"
-                >
-                  No school data found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {totalPages > 1 && (

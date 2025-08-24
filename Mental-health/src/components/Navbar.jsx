@@ -10,6 +10,22 @@ import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
 const Navbar = ({ onLogout }) => {
+  const [balance, setBalance] = useState(0);
+
+  useEffect(() => {
+    // Read wallet balance from localStorage
+    const stored = localStorage.getItem("wallet_balance");
+    setBalance(stored ? parseFloat(stored) : 0);
+
+    // Listen for changes from other tabs/windows
+    const onStorage = (e) => {
+      if (e.key === "wallet_balance") {
+        setBalance(e.newValue ? parseFloat(e.newValue) : 0);
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
   const [navOpen, setNavOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -55,7 +71,7 @@ const Navbar = ({ onLogout }) => {
           The MindMates
         </h1>
 
-        {/* Desktop Nav */}
+        {/* Desktop Nav + Wallet Section */}
         <div className="hidden md:flex items-center gap-6">
           {/* Notifications */}
           <div className="relative" ref={notificationsRef}>
@@ -104,15 +120,14 @@ const Navbar = ({ onLogout }) => {
               </div>
             )}
           </div>
-        </div>
-
-        {/* Mobile Nav Toggle */}
-        <div className="md:hidden">
+          {/* Wallet Section - at end of nav row */}
           <button
-            onClick={() => setNavOpen(!navOpen)}
-            className="text-purple-600 dark:text-purple-300 focus:outline-none"
+            onClick={() => navigate('/topup')}
+            className="flex items-center gap-2 px-3 py-1 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-400 text-white font-semibold shadow hover:scale-105 transition-transform"
+            title="View or recharge wallet"
           >
-            <Menu className="w-6 h-6" />
+            <span className="w-5 h-5 bg-yellow-400 rounded-full text-yellow-900 font-bold flex items-center justify-center mr-1">₹</span>
+            {`₹${Number(balance).toFixed(2)}`}
           </button>
         </div>
       </div>

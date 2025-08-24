@@ -105,92 +105,155 @@ export default function AdminCareer() {
   };
 
   return (
-    <div className="p-6 bg-white dark:bg-zinc-900 min-h-screen rounded-lg max-w-6xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6 text-purple-700 dark:text-purple-300">
-        {editId ? "Edit Career Opportunity" : "Post a New Career Opportunity"}
-      </h2>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight mb-2">
+            Career Opportunities
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            {editId ? "Update career opportunity details" : "Create and manage job postings and career opportunities"}
+          </p>
+        </div>
+      </div>
 
-      {/* Form */}
-      <div className="grid md:grid-cols-2 gap-4 max-w-3xl mb-12">
-        <select
-          name="title"
-          value={form.title}
-          onChange={handleChange}
-          className="w-full px-4 py-2 rounded-lg border dark:bg-zinc-800 dark:text-white"
-        >
-          <option value="">Select Role *</option>
-          {roleOptions.map((role, i) => (
-            <option key={i} value={role}>
-              {role}
-            </option>
-          ))}
-        </select>
+      {/* Form Section */}
+      <div className="bg-white dark:bg-zinc-800 shadow-xl rounded-xl border border-zinc-200 dark:border-zinc-700">
+        <div className="p-6 border-b border-zinc-200 dark:border-zinc-700">
+          <h3 className="text-xl font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+            {editId ? (
+              <>
+                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit Career Opportunity
+              </>
+            ) : (
+              <>
+                <Briefcase className="w-5 h-5 text-green-600" />
+                Post New Career Opportunity
+              </>
+            )}
+          </h3>
+        </div>
 
-        <Input
-          name="location"
-          value={form.location}
-          onChange={handleChange}
-          placeholder="Location (e.g., Remote) *"
-        />
+        <div className="p-6">
+          {/* Form Grid */}
+          <div className="grid lg:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Job Role</label>
+              <select
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">Select Role *</option>
+                {roleOptions.map((role, i) => (
+                  <option key={i} value={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <select
-          name="type"
-          value={form.type}
-          onChange={handleChange}
-          className="w-full px-4 py-2 rounded-lg border dark:bg-zinc-800 dark:text-white"
-        >
-          <option value="">Select Type *</option>
-          {typeOptions.map((type, i) => (
-            <option key={i} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Location</label>
+              <Input
+                name="location"
+                value={form.location}
+                onChange={handleChange}
+                placeholder="e.g., Remote, New York, etc."
+                className="w-full"
+              />
+            </div>
 
-        {form.type === "Internship" && (
-          <select
-            name="duration"
-            value={form.duration}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded-lg border dark:bg-zinc-800 dark:text-white"
-          >
-            <option value="">Select Duration *</option>
-            {durationOptions.map((d, i) => (
-              <option key={i} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
-        )}
+            <div>
+              <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Job Type</label>
+              <select
+                name="type"
+                value={form.type}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">Select Type *</option>
+                {typeOptions.map((type, i) => (
+                  <option key={i} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <Input
-          name="deadline"
-          type="date"
-          value={form.deadline}
-          onChange={handleChange}
-          placeholder="Application Deadline *"
-        />
+            {form.type === "Internship" && (
+              <div>
+                <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Duration</label>
+                <select
+                  name="duration"
+                  value={form.duration}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="">Select Duration *</option>
+                  {durationOptions.map((d, i) => (
+                    <option key={i} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          placeholder="Role Description *"
-          className="col-span-2 p-3 border rounded-md dark:bg-zinc-800 dark:text-white h-28"
-        />
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Application Deadline</label>
+              <Input
+                name="deadline"
+                type="date"
+                value={form.deadline}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
 
-        <div className="col-span-2">
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Job Description</label>
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                placeholder="Provide detailed role description, requirements, and responsibilities..."
+                className="w-full p-3 border border-zinc-300 dark:border-zinc-600 rounded-lg dark:bg-zinc-700 dark:text-white h-32 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
           <Button onClick={handleSubmit} className="w-full">
             {editId ? "Update Opportunity" : "Post Opportunity"}
           </Button>
         </div>
       </div>
 
-      {/* Posted Jobs */}
-      <h3 className="text-xl font-semibold text-purple-600 dark:text-purple-300 mb-4">
-        Posted Openings
-      </h3>
-      <div className="grid md:grid-cols-2 gap-6">
+      {/* Posted Jobs Section */}
+      <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
+        <div className="p-6 border-b border-zinc-200 dark:border-zinc-700">
+          <h3 className="text-xl font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+            <FileText className="w-5 h-5 text-blue-600" />
+            Posted Career Opportunities
+            <span className="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-full text-sm">
+              {jobs.length} active
+            </span>
+          </h3>
+        </div>
+
+        <div className="p-6">
+          {jobs.length === 0 ? (
+            <div className="text-center py-8">
+              <Briefcase className="w-12 h-12 mx-auto text-gray-400 mb-3" />
+              <p className="text-gray-500 dark:text-gray-400">No career opportunities posted yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
         {jobs.map((job) => (
           <div
             key={job.id}
@@ -286,6 +349,9 @@ export default function AdminCareer() {
             </div>
           </div>
         ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Textarea } from "../components/ui/Textarea";
+import { useTheme } from "../context/ThemeContext";
 
 const JournalsPage = () => {
   const [journals, setJournals] = useState([]);
@@ -25,9 +26,7 @@ const JournalsPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
   const [user, setUser] = useState(null);
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
+  const { darkMode, toggleTheme } = useTheme();
 
   const auth = getAuth();
 
@@ -84,13 +83,6 @@ const JournalsPage = () => {
     setEditingId(null);
     setEditText("");
     fetchJournals();
-  };
-
-  const toggleTheme = () => {
-    const newTheme = !darkMode;
-    setDarkMode(newTheme);
-    document.documentElement.classList.toggle("dark", newTheme);
-    localStorage.setItem("theme", newTheme ? "dark" : "light");
   };
 
   return (

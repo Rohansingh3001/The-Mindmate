@@ -14,12 +14,14 @@ import JournalsPage from "./components/JournalsPage";
 import Exercises from "./components/Exercises";
 import SettingsPage from "./components/Settings";
 import AssessmentForm from "./components/AssessmentForm";
-
+import Topup from "./components/Topup";
 // Peer & Admin
+import PeerConnect from "./components/PeerConnect";
 import ConnectPeer from "./components/ConnectPeer";
 import ChatPage from "./pages/ChatPage";
 import PeerDashboard from "./pages/PeerDashboard";
 import AdminPanel from "./pages/AdminPanel";
+import PeerChatDemo from "./components/PeerChatDemo";
 
 // Company Info Pages
 import About from "./components/company/About";
@@ -65,11 +67,12 @@ function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/assessment" element={<AssessmentForm />} />
           <Route path="/form" element={<FormViewer />} />
-
+          <Route path="/topup" element={<Topup />} />
           {/* Peer & Community */}
-          <Route path="/connect-peer" element={<ConnectPeer />} />
-          <Route path="/chat/:peerId" element={<ChatPage />} />
+          <Route path="/connect-peer" element={<PeerConnect />} />
+          <Route path="/chat/:peerId" element={<ConnectPeer />} />
           <Route path="/peer" element={<PeerDashboard />} />
+          <Route path="/demo" element={<PeerChatDemo />} />
 
           {/* Admin */}
           <Route path="/admin/*" element={<AdminPanel />} />

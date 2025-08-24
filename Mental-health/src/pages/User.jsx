@@ -21,7 +21,8 @@ function User() {
           name: user.displayName || "User",
           email: user.email,
         });
-        // Show feedback reminder toast
+        // REMOVE or COMMENT OUT the feedback reminder toast below to stop the popup notification:
+        /*
         toast((t) => (
           <span>
             <span className="text-lg mr-2">📝</span>
@@ -37,6 +38,7 @@ function User() {
             </button>
           </span>
         ), { duration: 8000 });
+        */
       } else {
         navigate("/login");
       }

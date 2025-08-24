@@ -4,14 +4,13 @@ import { IoIosStats } from "react-icons/io";
 import { Sun, Moon } from "lucide-react";
 import { Card, CardContent } from "./ui/Card";
 import { format, isThisWeek, parseISO } from "date-fns";
+import { useTheme } from "../context/ThemeContext";
 
 export default function AnalysisPage() {
   const [moodLogs, setMoodLogs] = useState([]);
   const [journals, setJournals] = useState([]);
   const [appointments, setAppointments] = useState([]);
-  const [theme, setTheme] = useState(() =>
-    localStorage.theme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-  );
+  const { darkMode, toggleTheme } = useTheme();
 
   const navigate = useNavigate();
 
@@ -24,15 +23,6 @@ export default function AnalysisPage() {
     setJournals(Array.isArray(journalData) ? journalData : []);
     setAppointments(Array.isArray(appointmentData) ? appointmentData : []);
   }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.theme = theme;
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
 
   // Filter entries from this week
   const isEntryThisWeek = (entry) => {
@@ -83,7 +73,7 @@ export default function AnalysisPage() {
           className="p-2 rounded-full bg-purple-500 hover:bg-purple-600 text-white shadow"
           aria-label="Toggle Theme"
         >
-          {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </button>
       </header>
 
