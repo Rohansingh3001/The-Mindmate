@@ -130,14 +130,3 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 ---
 
 
-## 🛟 Support & Contact
-
-- For issues, use the [GitHub Issues](https://github.com/Rohansingh3001/Mindmate/issues) page.
-- For questions, contact [Rohan Singh](mailto:rohansingh3001@gmail.com).
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-git clone https://github.com/Rohansingh3001/Mindmate.git
