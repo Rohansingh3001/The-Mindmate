@@ -1,4 +1,4 @@
-# 🧠 The Mindmates – Mindflow AI
+# 🧠 The Mindmates
 
 [![wakatime](https://wakatime.com/badge/user/018ca5a4-e0f2-4fab-834f-1af422477677/project/2f280196-2e60-4e42-9b94-55045df8d859.svg)](https://wakatime.com/badge/user/018ca5a4-e0f2-4fab-834f-1af422477677/project/2f280196-2e60-4e42-9b94-55045df8d859)
 
