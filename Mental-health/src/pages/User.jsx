@@ -64,8 +64,8 @@ function User() {
 
   return (
     <div className="bg-gradient-to-br from-white to-[#f0e9ff] dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100 relative">
-      {/* Only show Navbar on home page (dashboard) */}
-      {location.pathname === '/user' && (
+      {/* Only show Navbar on home page (dashboard), hide it on fullchat */}
+      {location.pathname === '/user' && location.pathname !== '/user/fullchat' && (
         <Navbar onLogout={handleLogout} onViewAccount={handleViewAccount} />
       )}
 
