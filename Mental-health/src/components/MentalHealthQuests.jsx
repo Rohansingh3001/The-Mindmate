@@ -13,10 +13,12 @@ import {
   Calendar,
   BookOpen,
   Smile,
-  Award
+  Award,
+  Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { syncQuestProgress, getActiveQuestsWithProgress } from '../utils/questTracker';
 
 const QUEST_TYPES = {
   DAILY: 'daily',
@@ -180,6 +182,7 @@ export default function MentalHealthQuests() {
   useEffect(() => {
     initializeQuests();
     loadUserData();
+    syncQuestProgress(); // Sync progress on load
   }, []);
 
   const initializeQuests = () => {
@@ -485,12 +488,10 @@ export default function MentalHealthQuests() {
                             </span>
                             
                             {!isComplete && (
-                              <button
-                                onClick={() => completeQuest(quest.id)}
-                                className="text-sm text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-200 font-medium"
-                              >
-                                Mark Complete
-                              </button>
+                              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <Info size={14} className="mr-1" />
+                                <span className="text-xs">Auto-completes</span>
+                              </div>
                             )}
                           </div>
                         </motion.div>

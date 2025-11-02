@@ -58,19 +58,26 @@ const LoginSignup = () => {
 
     try {
       if (isLogin) {
+        // Check for admin credentials BEFORE Firebase authentication
+        if (email === 'mindmates@gmail.com' && password === 'mentalhealth@247') {
+          // Store admin session in localStorage
+          localStorage.setItem('adminAuthenticated', 'true');
+          localStorage.setItem('adminEmail', email);
+          toast.success('Admin login successful!');
+          setTimeout(() => navigate('/admin'), 1000);
+          return; // Exit early, don't call Firebase
+        }
+
+        // Regular user login with Firebase
         await login(email, password);
         toast.success('Login successful!');
 
-        if (email === 'mindmates@gmail.com' && password === 'mentalhelath@247') {
-          setTimeout(() => navigate('/admin'), 1000);
+        const snapshot = await getDocs(collection(db, 'peers'));
+        const peerEmails = snapshot.docs.map((doc) => doc.data().email);
+        if (peerEmails.includes(email)) {
+          setTimeout(() => navigate('/peer'), 1000);
         } else {
-          const snapshot = await getDocs(collection(db, 'peers'));
-          const peerEmails = snapshot.docs.map((doc) => doc.data().email);
-          if (peerEmails.includes(email)) {
-            setTimeout(() => navigate('/peer'), 1000);
-          } else {
-            setTimeout(() => navigate('/user'), 1000);
-          }
+          setTimeout(() => navigate('/user'), 1000);
         }
       } else {
         const user = await signup(email, password, fullName);

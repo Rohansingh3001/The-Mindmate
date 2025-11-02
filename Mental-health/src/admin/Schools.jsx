@@ -209,60 +209,53 @@ export default function Schools() {
   return (
     <div className="space-y-6 p-4 md:p-6">
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight mb-2">
-            Partner Schools & Workshops
+          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white mb-1">
+            Schools & Workshops
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage educational partnerships and workshop programs
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Educational partnerships
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex gap-2">
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center justify-center gap-2 text-sm bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md"
+            className="flex items-center gap-2 text-sm bg-zinc-900 dark:bg-zinc-700 text-white px-3 py-2 rounded-lg hover:bg-zinc-800"
           >
-            <PlusCircle size={16} /> Add School
+            <PlusCircle size={16} /> Add
           </button>
           <button
             onClick={handleExportCSV}
-            className="flex items-center justify-center gap-2 text-sm bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-md"
+            className="flex items-center gap-2 text-sm border border-zinc-300 dark:border-zinc-600 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-700"
           >
-            <Download size={16} /> Export CSV
+            <Download size={16} /> Export
           </button>
         </div>
       </div>
 
       {/* Controls Section */}
-      <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 border border-zinc-200 dark:border-zinc-700">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex-1 max-w-md">
-            <input
-              type="text"
-              placeholder="Search schools..."
-              className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 dark:bg-zinc-700 dark:text-white"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="text-sm flex items-center gap-2">
-              <label className="font-medium text-gray-700 dark:text-gray-300">Sort by:</label>
-              <select
-                value={sortBy}
-                onChange={(e) => {
-                  setSortBy(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg dark:bg-zinc-700 dark:text-white"
-              >
-                <option value="latest">Latest Workshop</option>
-                <option value="score">Feedback Score</option>
-                <option value="students">Students Reached</option>
-              </select>
-            </div>
-          </div>
+      <div className="bg-white dark:bg-zinc-800 rounded-lg p-4 border border-zinc-200 dark:border-zinc-700">
+        <div className="flex items-center justify-between gap-4">
+          <input
+            type="text"
+            placeholder="Search schools..."
+            className="flex-1 max-w-md px-4 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 dark:bg-zinc-700 dark:text-white"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <select
+            value={sortBy}
+            onChange={(e) => {
+              setSortBy(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg text-sm dark:bg-zinc-700 dark:text-white"
+          >
+            <option value="latest">Latest</option>
+            <option value="score">Score</option>
+            <option value="students">Students</option>
+          </select>
         </div>
       </div>
 
@@ -301,20 +294,9 @@ export default function Schools() {
                           ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
                           : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                       }`}>
-                        {school.feedbackScore || "—"}
+                        {school.feedbackScore ? `${school.feedbackScore} / 5` : "—"}
                       </span>
                     </td>
-                    <span
-                      className={
-                        school.feedbackScore >= 4
-                          ? "text-green-600"
-                          : school.feedbackScore >= 3
-                          ? "text-yellow-500"
-                          : "text-red-500"
-                      }
-                    >
-                      {school.feedbackScore ? `${school.feedbackScore} / 5` : "--"}
-                    </span>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button
@@ -357,21 +339,21 @@ export default function Schools() {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-4">
+        <div className="flex justify-center items-center gap-4 bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700">
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((prev) => prev - 1)}
-            className="px-3 py-1 rounded border text-sm flex items-center gap-1 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors text-gray-700 dark:text-gray-300"
           >
-            <ChevronLeft size={16} /> Prev
+            <ChevronLeft size={16} /> Previous
           </button>
-          <span className="text-sm">
-            Page <strong>{currentPage}</strong> of {totalPages}
+          <span className="text-sm text-gray-700 dark:text-gray-300">
+            Page <strong className="text-purple-600 dark:text-purple-400">{currentPage}</strong> of <strong>{totalPages}</strong>
           </span>
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((prev) => prev + 1)}
-            className="px-3 py-1 rounded border text-sm flex items-center gap-1 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors text-gray-700 dark:text-gray-300"
           >
             Next <ChevronRight size={16} />
           </button>
@@ -379,63 +361,83 @@ export default function Schools() {
       )}
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md relative dark:bg-zinc-900 dark:text-white">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-xl w-full max-w-md relative border border-zinc-200 dark:border-zinc-700">
             <button
               onClick={resetForm}
-              className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 dark:text-gray-300"
+              className="absolute top-4 right-4 p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
             >
               <X size={20} />
             </button>
-            <h3 className="text-xl font-semibold mb-4">
+            <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">
               {editSchool ? "Edit School" : "Add School"}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                placeholder="School Name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                required
-                className="w-full px-4 py-2 border rounded"
-              />
-              <input
-                type="number"
-                placeholder="Students Reached"
-                value={formData.students}
-                onChange={(e) =>
-                  setFormData({ ...formData, students: e.target.value })
-                }
-                required
-                className="w-full px-4 py-2 border rounded"
-              />
-              <input
-                type="date"
-                placeholder="Last Workshop"
-                value={formData.lastWorkshop}
-                onChange={(e) =>
-                  setFormData({ ...formData, lastWorkshop: e.target.value })
-                }
-                required
-                className="w-full px-4 py-2 border rounded"
-              />
-              <input
-                type="number"
-                placeholder="Feedback Score"
-                min="0"
-                max="5"
-                value={formData.feedbackScore}
-                onChange={(e) =>
-                  setFormData({ ...formData, feedbackScore: e.target.value })
-                }
-                required
-                className="w-full px-4 py-2 border rounded"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  School Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter school name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  required
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Students Reached
+                </label>
+                <input
+                  type="number"
+                  placeholder="Number of students"
+                  value={formData.students}
+                  onChange={(e) =>
+                    setFormData({ ...formData, students: e.target.value })
+                  }
+                  required
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Last Workshop Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.lastWorkshop}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastWorkshop: e.target.value })
+                  }
+                  required
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Feedback Score (0-5)
+                </label>
+                <input
+                  type="number"
+                  placeholder="Rating out of 5"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value={formData.feedbackScore}
+                  onChange={(e) =>
+                    setFormData({ ...formData, feedbackScore: e.target.value })
+                  }
+                  required
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
               <button
                 type="submit"
-                className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
+                className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 font-semibold transition-colors shadow-md mt-6"
               >
                 {editSchool ? "Update School" : "Add School"}
               </button>

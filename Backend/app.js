@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import chatRoutes from "./routes/chatRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import trainingDataRoutes from "./routes/trainingDataRoutes.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 // API Routes
 app.use("/api/chat", chatRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/training-data", trainingDataRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {

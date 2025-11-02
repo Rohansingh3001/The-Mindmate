@@ -12,9 +12,12 @@ import {
   Zap,
   Heart,
   Clock,
-  CheckCircle
+  CheckCircle,
+  WifiOff,
+  Wifi
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getConnectionStatus } from '../utils/chatHelpers';
 
 export default function PeerConnect() {
   const [peerId, setPeerId] = useState('');
@@ -22,6 +25,7 @@ export default function PeerConnect() {
   const [myPeerId, setMyPeerId] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState({ isConnected: false, socket: false });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,6 +44,19 @@ export default function PeerConnect() {
 
     return () => unsubscribe();
   }, [navigate]);
+
+  // Check connection status periodically
+  useEffect(() => {
+    const checkConnection = () => {
+      const status = getConnectionStatus();
+      setConnectionStatus(status);
+    };
+
+    checkConnection();
+    const interval = setInterval(checkConnection, 2000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const copyToClipboard = async (text) => {
     try {
@@ -91,9 +108,22 @@ export default function PeerConnect() {
                 <h1 className="text-xl font-bold text-gray-800 dark:text-white">
                   MindMate Connect
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Secure peer-to-peer communication
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Secure peer-to-peer communication
+                  </p>
+                  {connectionStatus.isConnected ? (
+                    <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                      <Wifi size={12} />
+                      <span>Connected</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400">
+                      <WifiOff size={12} />
+                      <span>Connecting...</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             

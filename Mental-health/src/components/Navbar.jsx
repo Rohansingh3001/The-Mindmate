@@ -7,9 +7,12 @@ import {
 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 import "react-toastify/dist/ReactToastify.css";
 
 const Navbar = ({ onLogout }) => {
+  const { t } = useTranslation();
   const [balance, setBalance] = useState(0);
 
   useEffect(() => {
@@ -17,14 +20,21 @@ const Navbar = ({ onLogout }) => {
     const stored = localStorage.getItem("wallet_balance");
     setBalance(stored ? parseFloat(stored) : 0);
 
-    // Listen for changes from other tabs/windows
-    const onStorage = (e) => {
-      if (e.key === "wallet_balance") {
-        setBalance(e.newValue ? parseFloat(e.newValue) : 0);
+    // Listen for changes from other tabs/windows and same tab
+    const onStorageChange = (e) => {
+      if (e.key === "wallet_balance" || e.type === "walletUpdate") {
+        const newBalance = localStorage.getItem("wallet_balance");
+        setBalance(newBalance ? parseFloat(newBalance) : 0);
       }
     };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    
+    window.addEventListener("storage", onStorageChange);
+    window.addEventListener("walletUpdate", onStorageChange);
+    
+    return () => {
+      window.removeEventListener("storage", onStorageChange);
+      window.removeEventListener("walletUpdate", onStorageChange);
+    };
   }, []);
   const [navOpen, setNavOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -57,37 +67,50 @@ const Navbar = ({ onLogout }) => {
   };
 
   const handleGoToSettings = () => {
-    toast.success("Opening settings...", {
+    toast.success(t('settings.notifications.opening'), {
       position: "top-right",
       theme: "colored",
     });
-    navigate("/settings");
+    navigate("/user/settings");
   };
 
   return (
-    <nav className="w-full z-50 px-4 py-3 backdrop-blur-md bg-white/70 dark:bg-gray-900/50 border-b border-purple-200 dark:border-purple-700 shadow-sm sticky top-0">
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold text-purple-700 dark:text-purple-200 tracking-tight drop-shadow-sm">
-          The MindMates
-        </h1>
+    <nav className="w-full z-50 px-4 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm sticky top-0 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        {/* Logo */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
+            <span className="text-white font-bold text-xl">M</span>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+            {t('brand.name')}
+          </h1>
+        </div>
 
         {/* Desktop Nav + Wallet Section */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-4">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+          
           {/* Notifications */}
           <div className="relative" ref={notificationsRef}>
             <button
               onClick={handleNotificationClick}
-              className="relative text-purple-600 dark:text-purple-300 hover:text-indigo-700 dark:hover:text-indigo-400 transition"
+              className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors shadow-sm"
             >
-              <Bell className="w-6 h-6" />
+              <Bell className="w-5 h-5" />
             </button>
             {notificationsOpen && (
-              <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800/80 backdrop-blur-md border border-purple-100 dark:border-gray-700 rounded-xl shadow-xl z-30 text-sm">
+              <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-30 overflow-hidden">
                 {notifications.length === 0 ? (
-                  <div className="px-4 py-3 text-center text-gray-400 select-none">No notifications available.</div>
+                  <div className="px-4 py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+                    {t('notifications.none')}
+                  </div>
                 ) : (
                   notifications.map((note, idx) => (
-                    <div key={idx} className="px-4 py-2 hover:bg-purple-50 dark:hover:bg-gray-700 transition">{note}</div>
+                    <div key={idx} className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-100 dark:border-slate-700 last:border-0">
+                      {note}
+                    </div>
                   ))
                 )}
               </div>
@@ -98,55 +121,81 @@ const Navbar = ({ onLogout }) => {
           <div className="relative" ref={settingsRef}>
             <button
               onClick={() => setSettingsOpen(!settingsOpen)}
-              className="text-purple-600 dark:text-purple-300 hover:text-indigo-700 dark:hover:text-indigo-400 transition"
+              className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors shadow-sm"
             >
-              <SettingsIcon className="w-6 h-6" />
+              <SettingsIcon className="w-5 h-5" />
             </button>
             {settingsOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800/80 backdrop-blur-md border border-purple-100 dark:border-gray-700 rounded-xl shadow-xl py-2 z-30 text-sm">
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-30 overflow-hidden">
                 <button
                   onClick={handleGoToSettings}
-                  className="w-full px-4 py-2 text-left text-purple-700 dark:text-purple-300 font-medium hover:bg-purple-50 dark:hover:bg-gray-700 transition rounded-t-xl"
+                  className="w-full px-4 py-3 text-left text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors flex items-center gap-2"
                 >
-                  ⚙️ Settings
+                  <SettingsIcon className="w-4 h-4" />
+                  {t('nav.settings')}
                 </button>
                 <button
                   onClick={onLogout}
-                  className="w-full px-4 py-2 text-left text-red-500 font-medium hover:bg-red-50 dark:hover:bg-gray-700 transition flex items-center gap-2 rounded-b-xl"
+                  className="w-full px-4 py-3 text-left text-red-600 dark:text-red-400 font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2 border-t border-slate-100 dark:border-slate-700"
                 >
                   <LogOut className="w-4 h-4" />
-                  Logout
+                  {t('nav.logout')}
                 </button>
               </div>
             )}
           </div>
-          {/* Wallet Section - at end of nav row */}
+
+          {/* Wallet Section */}
           <button
-            onClick={() => navigate('/topup')}
-            className="flex items-center gap-2 px-3 py-1 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-400 text-white font-semibold shadow hover:scale-105 transition-transform"
+            onClick={() => navigate('/user/topup')}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-sm hover:shadow-md transition-all duration-200"
             title="View or recharge wallet"
           >
-            <span className="w-5 h-5 bg-yellow-400 rounded-full text-yellow-900 font-bold flex items-center justify-center mr-1">₹</span>
-            {`₹${Number(balance).toFixed(2)}`}
+            <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+              <span className="text-yellow-900 font-bold text-xs">₹</span>
+            </div>
+            <span className="text-sm">{`₹${Number(balance).toFixed(2)}`}</span>
           </button>
         </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setNavOpen(!navOpen)}
+          className="md:hidden p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors shadow-sm"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Mobile Dropdown */}
       {navOpen && (
-        <div className="md:hidden mt-3 px-3 space-y-2 animate-fade-in-down">
+        <div className="md:hidden mt-4 space-y-2">
+          {/* Language Switcher - Mobile */}
+          <div className="px-2 py-2">
+            <LanguageSwitcher />
+          </div>
+          
           <button
             onClick={handleGoToSettings}
-            className="w-full flex items-center justify-between px-4 py-2 border border-purple-500 text-purple-700 dark:text-purple-300 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900 transition"
+            className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shadow-sm"
           >
-            Settings
+            <span className="font-medium">{t('nav.settings')}</span>
             <SettingsIcon className="w-5 h-5" />
           </button>
           <button
-            onClick={onLogout}
-            className="w-full flex items-center justify-between px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition"
+            onClick={() => navigate('/user/topup')}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors shadow-sm"
           >
-            Logout
+            <span className="font-medium">{t('wallet.balance')}: ₹{Number(balance).toFixed(2)}</span>
+            <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+              <span className="text-yellow-900 font-bold text-xs">₹</span>
+            </div>
+          </button>
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors shadow-sm"
+          >
+            <span className="font-medium">{t('nav.logout')}</span>
             <LogOut className="w-5 h-5" />
           </button>
         </div>

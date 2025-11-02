@@ -121,6 +121,29 @@ const FullChat = ({ messages, setMessages, onClose }) => {
   const [wallet, setWallet] = useState(() => parseFloat(localStorage.getItem("wallet_balance") || "0"));
   const [deductPaused, setDeductPaused] = useState(false);
   const secondsRef = useRef(120);
+  
+  // Sync wallet with localStorage and custom events
+  useEffect(() => {
+    const handleWalletUpdate = (e) => {
+      if (e.key === "wallet_balance" || e.type === "walletUpdate") {
+        const newBalance = parseFloat(localStorage.getItem("wallet_balance") || "0");
+        setWallet(newBalance);
+        if (newBalance <= 0) {
+          setTimerActive(false);
+          setShowTopup(true);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleWalletUpdate);
+    window.addEventListener("walletUpdate", handleWalletUpdate);
+
+    return () => {
+      window.removeEventListener("storage", handleWalletUpdate);
+      window.removeEventListener("walletUpdate", handleWalletUpdate);
+    };
+  }, []);
+  
   // Deduct ₹1 every 2 minutes if wallet >= 1, else stop chat
   // Pause deduction when chat is closed or page is hidden
   useEffect(() => {
@@ -139,6 +162,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
           const newBal = (current - 1).toFixed(2);
           localStorage.setItem("wallet_balance", newBal);
           setWallet(parseFloat(newBal));
+          window.dispatchEvent(new Event("walletUpdate"));
           secondsRef.current = 120;
         } else {
           setTimerActive(false);
@@ -409,33 +433,33 @@ const FullChat = ({ messages, setMessages, onClose }) => {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="fixed inset-0 z-50 flex bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 dark:from-slate-900 dark:via-gray-900 dark:to-blue-950"
+      className="fixed inset-0 z-[9999] flex bg-slate-50 dark:bg-slate-950 transition-colors duration-300"
     >
       {/* Professional Sidebar */}
       <motion.aside 
         initial={{ x: -120, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-        className="w-80 backdrop-blur-xl bg-white/95 dark:bg-slate-900/95 border-r border-slate-200/60 dark:border-slate-700/60 shadow-2xl flex flex-col h-full min-h-screen"
+        className="w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-xl flex flex-col h-full min-h-screen"
       >
         {/* Professional Header */}
-        <div className="p-6 border-b border-slate-200/60 dark:border-slate-700/60 flex-shrink-0">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-              <Headphones className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-lg bg-indigo-600 flex items-center justify-center shadow-sm">
+              <span className="text-2xl font-bold text-white">M</span>
             </div>
             <div>
-              <h3 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                AI Therapy Suite
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                The MindMates
               </h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-                Professional Mental Health Companions
+                Your Mental Health Companion
               </p>
             </div>
           </div>
           
           {/* Premium Badge */}
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/30 border border-amber-200/50 dark:border-amber-700/30">
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700">
             <Crown className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             <span className="text-sm font-semibold text-amber-700 dark:text-amber-300">Premium Experience</span>
             <div className="ml-auto w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -452,24 +476,24 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                 onClick={() => handlePersonaChange(key)}
                 whileHover={{ scale: 1.02, y: -3 }}
                 whileTap={{ scale: 0.98 }}
-                className={`w-full text-left p-5 rounded-2xl font-medium transition-all duration-300 group relative overflow-hidden border shadow-lg ${
+                className={`w-full text-left p-5 rounded-2xl font-medium transition-all duration-300 group relative overflow-hidden border shadow-sm ${
                   selectedPersona === key
-                    ? `bg-gradient-to-r ${persona.color} text-white shadow-2xl border-transparent transform scale-[1.02]`
-                    : `${persona.bgColor} hover:shadow-xl border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300/70 dark:hover:border-slate-600/70`
+                    ? `bg-indigo-600 text-white shadow-lg border-transparent transform scale-[1.02]`
+                    : `bg-white dark:bg-slate-800 hover:shadow-md border-slate-200 dark:border-slate-700`
                 }`}
               >
                 <div className="flex items-start gap-4 relative z-10">
                   <div className={`p-3 rounded-2xl shadow-md ${
                     selectedPersona === key 
-                      ? 'bg-white/20 backdrop-blur-sm' 
-                      : 'bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm'
+                      ? 'bg-white/20' 
+                      : 'bg-slate-100 dark:bg-slate-700'
                   }`}>
                     <div className="text-2xl">{persona.avatar}</div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <IconComponent className={`w-4 h-4 ${
-                        selectedPersona === key ? 'text-white' : persona.textColor
+                        selectedPersona === key ? 'text-white' : 'text-indigo-600 dark:text-indigo-400'
                       }`} />
                       <div className={`font-bold text-lg ${
                         selectedPersona === key ? 'text-white' : 'text-slate-800 dark:text-slate-200'
@@ -478,7 +502,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                       </div>
                     </div>
                     <div className={`text-xs font-semibold mb-2 ${
-                      selectedPersona === key ? 'text-white/90' : `text-${persona.accentColor}-600 dark:text-${persona.accentColor}-400`
+                      selectedPersona === key ? 'text-white/90' : `text-indigo-600 dark:text-indigo-400`
                     }`}>
                       {persona.specialty}
                     </div>
@@ -494,20 +518,17 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                 {selectedPersona === key && (
                   <motion.div
                     layoutId="selectedPersona"
-                    className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 rounded-2xl"
+                    className="absolute inset-0 bg-white/5 rounded-2xl"
                     transition={{ type: "spring", bounce: 0.15, duration: 0.6 }}
                   />
                 )}
-
-                {/* Hover Glow Effect */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-400/0 to-purple-400/0 group-hover:from-blue-400/10 group-hover:to-purple-400/10 transition-all duration-300" />
               </motion.button>
             );
           })}
         </div>
 
         {/* Enhanced Professional Wallet Status */}
-        <div className="p-6 border-t border-slate-200/60 dark:border-slate-700/60 bg-gradient-to-br from-slate-50/50 to-blue-50/50 dark:from-slate-800/50 dark:to-blue-900/50 flex-shrink-0">
+        <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex-shrink-0">
           <motion.div 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -515,17 +536,17 @@ const FullChat = ({ messages, setMessages, onClose }) => {
             className="space-y-4"
           >
             {/* Main Balance Card - Always Visible */}
-            <div className={`p-5 rounded-3xl backdrop-blur-md shadow-xl border-2 ${
+            <div className={`p-5 rounded-2xl shadow-sm border ${
               wallet < 5 
-                ? 'bg-gradient-to-br from-orange-50/90 to-red-50/90 dark:from-orange-950/40 dark:to-red-950/40 border-orange-200/60 dark:border-orange-700/40 animate-pulse'
-                : 'bg-gradient-to-br from-emerald-50/90 to-blue-50/90 dark:from-emerald-950/40 dark:to-blue-950/40 border-emerald-200/60 dark:border-emerald-700/40'
+                ? 'bg-orange-50 dark:bg-orange-900/30 border-orange-200 dark:border-orange-700 animate-pulse'
+                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700'
             }`}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg ${
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-sm ${
                     wallet < 5 
-                      ? 'bg-gradient-to-br from-orange-500 to-red-500'
-                      : 'bg-gradient-to-br from-emerald-500 to-blue-500'
+                      ? 'bg-orange-500'
+                      : 'bg-indigo-600'
                   }`}>
                     <Heart className="w-5 h-5 text-white" />
                   </div>
@@ -601,10 +622,10 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                     window.location.href = '/topup';
                   }
                 }}
-                className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-400/30"
+                className="p-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-sm hover:shadow-md transition-all duration-300"
               >
                 <div className="flex flex-col items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <span>Add Funds</span>
@@ -615,10 +636,10 @@ const FullChat = ({ messages, setMessages, onClose }) => {
               <motion.button
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="p-4 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-300/50 dark:border-slate-600/50"
+                className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold text-sm shadow-sm hover:shadow-md transition-all duration-300"
               >
                 <div className="flex flex-col items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-600 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-600 flex items-center justify-center">
                     <Settings className="w-4 h-4" />
                   </div>
                   <span>Settings</span>
@@ -627,7 +648,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
             </div>
 
             {/* Balance Info */}
-            <div className="p-3 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/50 dark:border-slate-700/50">
+            <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
               <div className="text-xs text-slate-600 dark:text-slate-400 text-center">
                 <span className="font-semibold">💡 Tip:</span> Sessions cost ₹1 per 2 minutes
                 <br />
@@ -639,19 +660,19 @@ const FullChat = ({ messages, setMessages, onClose }) => {
       </motion.aside>
 
       {/* Professional Main Chat Area */}
-      <div className="flex flex-col flex-1 backdrop-blur-xl bg-white/90 dark:bg-slate-900/90">
+      <div className="flex flex-col flex-1 bg-white dark:bg-slate-900">
         {/* Premium Header */}
         <motion.div 
           initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-          className={`relative backdrop-blur-xl bg-gradient-to-r ${personalities[selectedPersona].color} text-white shadow-2xl`}
+          className={`relative bg-indigo-600 text-white shadow-lg`}
         >
           {/* Professional Header Content */}
-          <div className="relative z-10 flex items-center justify-between p-6">
+          <div className="relative z-10 flex items-center justify-between p-6 border-b border-indigo-500">
             <div className="flex items-center gap-5">
               <div className="relative">
-                <div className="w-16 h-16 rounded-3xl bg-white/20 backdrop-blur-lg flex items-center justify-center text-3xl shadow-2xl border border-white/20">
+                <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-3xl shadow-lg">
                   {personalities[selectedPersona].avatar}
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-green-400 border-2 border-white flex items-center justify-center">
@@ -680,16 +701,13 @@ const FullChat = ({ messages, setMessages, onClose }) => {
               {/* Professional Status Indicator */}
               <motion.div 
                 animate={{ 
-                  scale: timerActive && !showTopup ? [1, 1.05, 1] : 1,
-                  boxShadow: timerActive && !showTopup 
-                    ? ["0 0 0 0 rgba(34, 197, 94, 0.4)", "0 0 0 8px rgba(34, 197, 94, 0)", "0 0 0 0 rgba(34, 197, 94, 0.4)"]
-                    : "0 0 0 0 rgba(249, 115, 22, 0.4)"
+                  scale: timerActive && !showTopup ? [1, 1.05, 1] : 1
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className={`px-4 py-2 rounded-2xl text-sm font-bold backdrop-blur-md border ${
+                className={`px-4 py-2 rounded-lg text-sm font-bold border ${
                   timerActive && !showTopup 
-                    ? "bg-green-500/20 text-green-100 border-green-400/30 shadow-lg shadow-green-500/20" 
-                    : "bg-orange-500/20 text-orange-100 border-orange-400/30 shadow-lg shadow-orange-500/20"
+                    ? "bg-green-500/20 text-green-100 border-green-400/30 shadow-sm" 
+                    : "bg-orange-500/20 text-orange-100 border-orange-400/30 shadow-sm"
                 }`}
               >
                 {timerActive && !showTopup ? "🟢 Live Session" : "⏸️ Session Paused"}
@@ -703,7 +721,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                     setSelectedVoice(e.target.value);
                     localStorage.setItem("selected_voice", e.target.value);
                   }}
-                  className="text-sm bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-white/30"
+                  className="text-sm bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-white/30"
                 >
                   {voicesRef.current
                     .filter((v) => v.lang.toLowerCase().includes("en"))
@@ -718,19 +736,19 @@ const FullChat = ({ messages, setMessages, onClose }) => {
               {/* Professional Control Buttons */}
               <div className="flex items-center gap-2">
                 <motion.button 
-                  whileHover={{ scale: 1.1, rotate: 5 }} 
+                  whileHover={{ scale: 1.1 }} 
                   whileTap={{ scale: 0.9 }}
                   onClick={toggleTTS}
-                  className="p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300 shadow-lg"
+                  className="p-3 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 transition-all duration-300 shadow-sm"
                 >
                   {ttsEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
                 </motion.button>
                 
                 <motion.button 
-                  whileHover={{ scale: 1.1, rotate: 180 }} 
+                  whileHover={{ scale: 1.1 }} 
                   whileTap={{ scale: 0.9 }}
                   onClick={toggleTheme}
-                  className="p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300 shadow-lg"
+                  className="p-3 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 transition-all duration-300 shadow-sm"
                 >
                   {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                 </motion.button>
@@ -739,29 +757,19 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                   whileHover={{ scale: 1.1 }} 
                   whileTap={{ scale: 0.9 }}
                   onClick={onClose}
-                  className="p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-red-500/30 transition-all duration-300 shadow-lg"
+                  className="p-3 rounded-lg bg-white/10 border border-white/20 hover:bg-red-500/30 transition-all duration-300 shadow-sm"
                 >
                   <X className="w-5 h-5" />
                 </motion.button>
               </div>
             </div>
           </div>
-
-          {/* Professional Gradient Overlays */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/10"></div>
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
         </motion.div>
 
         {/* Professional Messages Area */}
         <div 
           ref={chatContainerRef} 
-          className="flex-1 overflow-y-auto p-8 bg-gradient-to-b from-slate-50/50 to-white/80 dark:from-slate-900/50 dark:to-slate-800/80 backdrop-blur-sm"
-          style={{
-            backgroundImage: `
-              radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
-              radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.05) 0%, transparent 50%)
-            `
-          }}
+          className="flex-1 overflow-y-auto p-8 bg-slate-50 dark:bg-slate-900"
         >
           <AnimatePresence mode="popLayout">
             {messages.length === 0 ? (
@@ -777,7 +785,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                     rotateY: [0, 5, 0]
                   }}
                   transition={{ duration: 4, repeat: Infinity }}
-                  className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center text-4xl shadow-2xl"
+                  className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-indigo-600 flex items-center justify-center text-4xl shadow-lg"
                 >
                   {personalities[selectedPersona].avatar}
                 </motion.div>
@@ -787,7 +795,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                 <p className="text-slate-600 dark:text-slate-400 text-lg max-w-md mx-auto mb-4 leading-relaxed">
                   {personalities[selectedPersona].specialty}
                 </p>
-                <div className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 border border-blue-200/50 dark:border-blue-700/30">
+                <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700">
                   <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
                     Confidential & Professional Care
@@ -818,7 +826,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                           transition={{ delay: i * 0.1 + 0.2 }}
                           className="flex items-center gap-3 mb-3"
                         >
-                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-lg shadow-lg border-2 border-white dark:border-slate-700">
+                          <div className="w-12 h-12 rounded-lg bg-indigo-600 flex items-center justify-center text-lg shadow-sm border-2 border-white dark:border-slate-700">
                             {personalities[selectedPersona].avatar}
                           </div>
                           <div>
@@ -835,15 +843,15 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                       {/* Professional Message Bubble */}
                       <motion.div
                         whileHover={{ scale: 1.02 }}
-                        className={`relative px-6 py-4 backdrop-blur-sm border shadow-lg ${
+                        className={`relative px-6 py-4 border shadow-sm ${
                           msg.sender === "user"
-                            ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-3xl rounded-br-lg ml-4 border-transparent shadow-blue-500/25"
-                            : `${personalities[selectedPersona].bgColor} rounded-3xl rounded-bl-lg mr-4 border-slate-200/50 dark:border-slate-700/50 shadow-slate-200/50 dark:shadow-slate-800/50`
+                            ? "bg-indigo-600 text-white rounded-3xl rounded-br-lg ml-4 border-indigo-500"
+                            : `bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-3xl rounded-bl-lg mr-4 border-slate-200 dark:border-slate-700`
                         }`}
                       >
                         {/* Message Content */}
                         <div className={`${
-                          msg.sender === "bot" ? personalities[selectedPersona].textColor : "text-white"
+                          msg.sender === "bot" ? "text-slate-900 dark:text-white" : "text-white"
                         } leading-relaxed`}>
                           {msg.loading ? (
                             <div className="flex items-center gap-3">
@@ -886,7 +894,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="p-8 backdrop-blur-xl bg-white/95 dark:bg-slate-900/95 border-t border-slate-200/60 dark:border-slate-700/60 shadow-2xl"
+          className="p-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-lg"
         >
           {/* Professional Privacy Notice */}
           {showNotice && (
@@ -894,10 +902,10 @@ const FullChat = ({ messages, setMessages, onClose }) => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-amber-50/80 to-orange-50/80 dark:from-amber-950/30 dark:to-orange-950/30 border border-amber-200/50 dark:border-amber-700/30 backdrop-blur-sm"
+              className="mb-6 p-5 rounded-2xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700"
             >
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 rounded-lg bg-amber-500 flex items-center justify-center shadow-sm">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
@@ -926,10 +934,10 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                 {/* Professional Input Field */}
                 <div className="relative">
                   <input
-                    className={`w-full px-8 py-5 rounded-3xl text-lg backdrop-blur-md transition-all duration-500 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:scale-[1.02] border-2 font-medium placeholder:font-normal ${
+                    className={`w-full px-8 py-5 rounded-3xl text-lg transition-all duration-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/30 focus:scale-[1.02] border-2 font-medium placeholder:font-normal ${
                       darkMode 
-                        ? "bg-slate-800/80 text-white border-slate-600/50 placeholder-slate-400 focus:bg-slate-800/90 focus:border-blue-500/50" 
-                        : "bg-white/90 border-slate-200/80 placeholder-slate-500 focus:bg-white focus:border-blue-500/50 shadow-lg"
+                        ? "bg-slate-800 text-white border-slate-600 placeholder-slate-400 focus:bg-slate-800 focus:border-indigo-500" 
+                        : "bg-white border-slate-200 placeholder-slate-500 focus:bg-white focus:border-indigo-500 shadow-sm"
                     }`}
                     placeholder={
                       timerActive && !showTopup 
@@ -949,7 +957,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                       animate={{ scale: 1, rotate: 0 }}
                       className="absolute right-24 top-1/2 transform -translate-y-1/2"
                     >
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg">
+                      <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center shadow-sm">
                         <Smile className="w-4 h-4 text-white" />
                       </div>
                     </motion.div>
@@ -976,10 +984,10 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                   whileTap={{ scale: 0.95 }}
                   onClick={handleVoiceInput}
                   disabled={!timerActive || showTopup}
-                  className={`p-5 rounded-3xl transition-all duration-500 shadow-lg backdrop-blur-md border-2 ${
+                  className={`p-5 rounded-2xl transition-all duration-500 shadow-sm border ${
                     listening 
-                      ? "bg-gradient-to-br from-red-500 to-pink-600 text-white shadow-red-500/40 border-red-400/50 animate-pulse" 
-                      : "bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30 hover:from-purple-100 hover:to-blue-100 dark:hover:from-purple-800/50 dark:hover:to-blue-800/50 text-purple-600 dark:text-purple-300 border-purple-200/50 dark:border-purple-700/50 hover:shadow-purple-500/25"
+                      ? "bg-red-500 text-white shadow-red-500/40 border-red-400 animate-pulse" 
+                      : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
                   }`}
                   title={listening ? "Stop Recording" : "Voice Input"}
                 >
@@ -988,11 +996,11 @@ const FullChat = ({ messages, setMessages, onClose }) => {
 
                 {/* Send Button */}
                 <motion.button
-                  whileHover={{ scale: 1.1, y: -2, rotate: 5 }}
+                  whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleSendMessage}
                   disabled={!timerActive || showTopup || !input.trim()}
-                  className="p-5 rounded-3xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 text-white shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-95 border-2 border-transparent hover:border-white/20"
+                  className="p-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm hover:shadow-md transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-95"
                   title="Send Message"
                 >
                   <Send className="w-6 h-6" />
@@ -1012,11 +1020,11 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                 className="mt-8"
               >
                 {showContinuePrompt ? (
-                  <div className="p-8 rounded-3xl bg-gradient-to-br from-blue-50/90 to-indigo-50/90 dark:from-blue-950/40 dark:to-indigo-950/40 border-2 border-blue-200/50 dark:border-blue-700/30 text-center backdrop-blur-md shadow-2xl">
+                  <div className="p-8 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 text-center shadow-sm">
                     <motion.div
                       animate={{ scale: [1, 1.1, 1], rotate: [0, 5, 0] }}
                       transition={{ duration: 3, repeat: Infinity }}
-                      className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-blue-400 via-purple-500 to-indigo-600 flex items-center justify-center text-3xl shadow-2xl"
+                      className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-indigo-600 flex items-center justify-center text-3xl shadow-sm"
                     >
                       💰
                     </motion.div>
@@ -1032,7 +1040,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                       <motion.button
                         whileHover={{ scale: 1.05, y: -2 }}
                         whileTap={{ scale: 0.95 }}
-                        className="px-8 py-4 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 text-white font-bold shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300"
+                        className="px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-sm hover:shadow-md transition-all duration-300"
                         onClick={() => {
                           setShowTopup(false);
                           setTimerActive(true);
@@ -1061,11 +1069,11 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                     </div>
                   </div>
                 ) : (
-                  <div className="p-8 rounded-3xl bg-gradient-to-br from-rose-50/90 to-pink-50/90 dark:from-rose-950/40 dark:to-pink-950/40 border-2 border-rose-200/50 dark:border-rose-700/30 text-center backdrop-blur-md shadow-2xl">
+                  <div className="p-8 rounded-2xl bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-700 text-center shadow-sm">
                     <motion.div
                       animate={{ scale: [1, 1.1, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
-                      className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-rose-400 via-pink-500 to-purple-600 flex items-center justify-center text-3xl shadow-2xl"
+                      className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-rose-600 flex items-center justify-center text-3xl shadow-sm"
                     >
                       ⏰
                     </motion.div>
@@ -1080,7 +1088,7 @@ const FullChat = ({ messages, setMessages, onClose }) => {
                     <motion.button
                       whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.95 }}
-                      className="px-10 py-4 rounded-2xl bg-gradient-to-br from-rose-500 via-pink-500 to-purple-500 text-white font-bold shadow-2xl shadow-rose-500/30 hover:shadow-rose-500/50 transition-all duration-300"
+                      className="px-10 py-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm hover:shadow-md transition-all duration-300"
                       onClick={() => {
                         if (window.location.pathname.includes('/user')) {
                           window.location.href = '/user/topup';
@@ -1144,15 +1152,13 @@ const FullChat = ({ messages, setMessages, onClose }) => {
           margin: 4px;
         }
         ::-webkit-scrollbar-thumb {
-          background: linear-gradient(to bottom, #3b82f6, #8b5cf6, #ec4899);
+          background: #6366f1;
           border-radius: 12px;
           border: 2px solid transparent;
           background-clip: content-box;
-          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
         }
         ::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(to bottom, #2563eb, #7c3aed, #db2777);
-          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+          background: #4f46e5;
         }
         
         /* Premium Animation Classes */

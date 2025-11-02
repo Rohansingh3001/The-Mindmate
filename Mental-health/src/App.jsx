@@ -1,6 +1,9 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
+import { updateLastActive } from "./firebaseAuth";
 
 // Auth & Home
 import LoginSignup from "./components/Authpage";
@@ -35,12 +38,53 @@ import MeditationGuides from "./components/resources/MeditationGuides";
 import WellnessBlog from "./components/resources/WellnessBlog";
 import MentalHealthTips from "./components/resources/MentalHealthTips";
 
+// Gamification Features
+import GamifiedDashboard from "./components/GamifiedDashboard";
+import GamifiedJournal from "./components/GamifiedJournal";
+import MentalHealthQuests from "./components/MentalHealthQuests";
+import MoodGarden from "./components/MoodGarden";
+import MindfulnessChallenges from "./components/MindfulnessChallenges";
+import MentalHealthProgress from "./components/MentalHealthProgress";
+import MentalHealthScratchCard from "./components/MentalHealthScratchCard";
+
 // Footer
 import Footer from "./components/Footer";
 import FormViewer from "./components/FormViewer";
 
 function App() {
   const { pathname } = useLocation();
+
+  // Track user activity and update lastActive
+  useEffect(() => {
+    let activityTimeout;
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && !user.email?.includes('mindmates@gmail.com')) {
+        // Update last active on mount
+        updateLastActive(user.uid);
+        
+        // Update last active every 5 minutes of activity
+        const updateActivity = () => {
+          updateLastActive(user.uid);
+        };
+        
+        // Set up activity tracking
+        const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+        const handleActivity = () => {
+          clearTimeout(activityTimeout);
+          activityTimeout = setTimeout(updateActivity, 5 * 60 * 1000); // 5 minutes
+        };
+        
+        events.forEach(event => window.addEventListener(event, handleActivity));
+        
+        return () => {
+          events.forEach(event => window.removeEventListener(event, handleActivity));
+          clearTimeout(activityTimeout);
+        };
+      }
+    });
+    
+    return () => unsubscribe();
+  }, []);
 
   // Hide footer on specific pages
   const hideFooter = useMemo(() => {
@@ -88,6 +132,15 @@ function App() {
           <Route path="/meditation" element={<MeditationGuides />} />
           <Route path="/wellness" element={<WellnessBlog />} />
           <Route path="/tips" element={<MentalHealthTips />} />
+
+          {/* Gamification Features */}
+          <Route path="/gamification" element={<GamifiedDashboard />} />
+          <Route path="/gamified-journal" element={<GamifiedJournal />} />
+          <Route path="/mental-health-quests" element={<MentalHealthQuests />} />
+          <Route path="/mood-garden" element={<MoodGarden />} />
+          <Route path="/mindfulness-challenges" element={<MindfulnessChallenges />} />
+          <Route path="/mental-health-progress" element={<MentalHealthProgress />} />
+          <Route path="/scratch-card" element={<MentalHealthScratchCard />} />
         </Routes>
       </div>
       {/* Footer */}

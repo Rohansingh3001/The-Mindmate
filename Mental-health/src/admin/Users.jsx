@@ -27,7 +27,22 @@ import {
 import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { motion, AnimatePresence } from "framer-motion";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
+
+// Helper function to format last active time
+const formatLastActive = (date) => {
+  if (!date) return "Never";
+  
+  const now = new Date();
+  const diffInHours = (now - date) / (1000 * 60 * 60);
+  
+  if (diffInHours < 1) return "Just now";
+  if (diffInHours < 24) return formatDistanceToNow(date, { addSuffix: true });
+  if (diffInHours < 48) return "Yesterday";
+  if (diffInHours < 168) return formatDistanceToNow(date, { addSuffix: true });
+  
+  return format(date, "MMM dd, yyyy");
+};
 
 export default function Users() {
   const [users, setUsers] = useState([]);
@@ -108,37 +123,65 @@ export default function Users() {
   const handleUserAction = async (action, userId) => {
     try {
       const userRef = doc(db, "users", userId);
+      
       switch (action) {
         case "flag":
           await updateDoc(userRef, { isFlagged: true });
+          setUsers(prevUsers => 
+            prevUsers.map(user => 
+              user.id === userId ? { ...user, isFlagged: true } : user
+            )
+          );
           break;
+          
         case "unflag":
           await updateDoc(userRef, { isFlagged: false });
+          setUsers(prevUsers => 
+            prevUsers.map(user => 
+              user.id === userId ? { ...user, isFlagged: false } : user
+            )
+          );
           break;
+          
         case "activate":
           await updateDoc(userRef, { isActive: true });
+          setUsers(prevUsers => 
+            prevUsers.map(user => 
+              user.id === userId ? { ...user, isActive: true } : user
+            )
+          );
           break;
+          
         case "deactivate":
           await updateDoc(userRef, { isActive: false });
+          setUsers(prevUsers => 
+            prevUsers.map(user => 
+              user.id === userId ? { ...user, isActive: false } : user
+            )
+          );
           break;
+          
         case "delete":
-          if (window.confirm("Are you sure you want to delete this user?")) {
+          const confirmDelete = window.confirm(
+            "⚠️ Are you sure you want to permanently delete this user?\n\nThis action cannot be undone and will remove:\n• User account\n• All user data\n• Journal entries\n• Appointments\n• Mood logs"
+          );
+          
+          if (confirmDelete) {
             await deleteDoc(userRef);
+            setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+            console.log(`User ${userId} deleted successfully`);
           }
           break;
+          
+        default:
+          console.warn(`Unknown action: ${action}`);
       }
-      // Refresh users list
-      const snapshot = await getDocs(collection(db, "users"));
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        lastActive: doc.data().lastActive?.toDate?.() || new Date(),
-        joinDate: doc.data().createdAt?.toDate?.() || new Date(),
-      }));
-      setUsers(data);
+      
     } catch (error) {
-      console.error("Error updating user:", error);
+      console.error(`Error performing ${action} on user:`, error);
+      alert(`Failed to ${action} user. Please try again.`);
     }
+    
     setShowActions(null);
   };
 
@@ -175,98 +218,79 @@ export default function Users() {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-2">
-            User Management
+          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white mb-1">
+            Users
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage and monitor all platform users
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Manage platform users
           </p>
         </div>
         
         {/* Stats Cards */}
-        <div className="flex gap-4">
-          <div className="bg-white dark:bg-zinc-800 rounded-lg p-3 border border-zinc-200 dark:border-zinc-700">
-            <div className="text-2xl font-bold text-purple-600">{users.length}</div>
-            <div className="text-sm text-gray-500">Total Users</div>
+        <div className="flex gap-3 text-sm">
+          <div className="text-center px-3 py-1">
+            <div className="font-semibold text-zinc-900 dark:text-white">{users.length}</div>
+            <div className="text-xs text-gray-500">Total</div>
           </div>
-          <div className="bg-white dark:bg-zinc-800 rounded-lg p-3 border border-zinc-200 dark:border-zinc-700">
-            <div className="text-2xl font-bold text-green-600">
+          <div className="text-center px-3 py-1">
+            <div className="font-semibold text-green-600">
               {users.filter(u => u.isActive).length}
             </div>
-            <div className="text-sm text-gray-500">Active</div>
+            <div className="text-xs text-gray-500">Active</div>
           </div>
-          <div className="bg-white dark:bg-zinc-800 rounded-lg p-3 border border-zinc-200 dark:border-zinc-700">
-            <div className="text-2xl font-bold text-red-600">
+          <div className="text-center px-3 py-1">
+            <div className="font-semibold text-red-600">
               {users.filter(u => u.isFlagged).length}
             </div>
-            <div className="text-sm text-gray-500">Flagged</div>
+            <div className="text-xs text-gray-500">Flagged</div>
           </div>
         </div>
       </div>
 
       {/* Controls Section */}
-      <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 border border-zinc-200 dark:border-zinc-700">
-        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+      <div className="bg-white dark:bg-zinc-800 rounded-lg p-4 border border-zinc-200 dark:border-zinc-700">
+        <div className="flex flex-col lg:flex-row gap-3 items-center justify-between">
           {/* Search */}
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search by name or email..."
+              placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 dark:bg-zinc-700 border border-gray-200 dark:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 dark:bg-zinc-700 border border-gray-200 dark:border-zinc-600 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
             />
           </div>
 
           {/* Filters and Controls */}
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-2 items-center text-sm">
             <select
               value={filterBy}
               onChange={(e) => setFilterBy(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-700 border border-gray-200 dark:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-700 border border-gray-200 dark:border-zinc-600 text-sm"
             >
-              <option value="all">All Users</option>
-              <option value="active">Active Only</option>
-              <option value="flagged">Flagged Only</option>
-              <option value="new">New Users</option>
+              <option value="all">All</option>
+              <option value="active">Active</option>
+              <option value="flagged">Flagged</option>
+              <option value="new">New</option>
             </select>
 
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-700 border border-gray-200 dark:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="px-3 py-2 rounded-lg bg-gray-50 dark:bg-zinc-700 border border-gray-200 dark:border-zinc-600 text-sm"
             >
-              <option value="name">Sort by Name</option>
-              <option value="joinDate">Sort by Join Date</option>
-              <option value="lastActive">Sort by Last Active</option>
-              <option value="moodScore">Sort by Mood Score</option>
+              <option value="name">Name</option>
+              <option value="joinDate">Join Date</option>
+              <option value="lastActive">Last Active</option>
+              <option value="moodScore">Mood</option>
             </select>
-
-            <div className="flex rounded-lg border border-gray-200 dark:border-zinc-600 overflow-hidden">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`px-3 py-2 text-sm ${viewMode === "grid" 
-                  ? "bg-purple-600 text-white" 
-                  : "bg-gray-50 dark:bg-zinc-700 text-gray-600 dark:text-gray-300"}`}
-              >
-                Grid
-              </button>
-              <button
-                onClick={() => setViewMode("table")}
-                className={`px-3 py-2 text-sm ${viewMode === "table" 
-                  ? "bg-purple-600 text-white" 
-                  : "bg-gray-50 dark:bg-zinc-700 text-gray-600 dark:text-gray-300"}`}
-              >
-                Table
-              </button>
-            </div>
 
             <button
               onClick={exportUsers}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 text-sm"
             >
               <Download className="w-4 h-4" />
               Export
@@ -326,8 +350,8 @@ export default function Users() {
                       <p className="text-xs text-gray-500 mt-1">Mood Score</p>
                     </div>
                     <div className="text-center">
-                      <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                        {format(user.lastActive, "MMM dd")}
+                      <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300" title={format(user.lastActive, "MMM dd, yyyy HH:mm")}>
+                        {formatLastActive(user.lastActive)}
                       </div>
                       <p className="text-xs text-gray-500">Last Active</p>
                     </div>
@@ -519,8 +543,11 @@ export default function Users() {
                             {user.moodScore ?? "--"}%
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {format(user.lastActive, "MMM dd, yyyy")}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" title={format(user.lastActive, "MMM dd, yyyy HH:mm:ss")}>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            {formatLastActive(user.lastActive)}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {format(user.joinDate, "MMM dd, yyyy")}
@@ -533,6 +560,63 @@ export default function Users() {
                             >
                               <MoreHorizontal className="w-5 h-5" />
                             </button>
+                            
+                            <AnimatePresence>
+                              {showActions === user.id && (
+                                <motion.div
+                                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                  className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg z-10"
+                                >
+                                  <div className="py-2">
+                                    {user.isFlagged ? (
+                                      <button
+                                        onClick={() => handleUserAction("unflag", user.id)}
+                                        className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
+                                      >
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                        Unflag User
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={() => handleUserAction("flag", user.id)}
+                                        className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
+                                      >
+                                        <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                                        Flag User
+                                      </button>
+                                    )}
+                                    
+                                    {user.isActive ? (
+                                      <button
+                                        onClick={() => handleUserAction("deactivate", user.id)}
+                                        className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
+                                      >
+                                        <UserX className="w-4 h-4 text-orange-500" />
+                                        Deactivate
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={() => handleUserAction("activate", user.id)}
+                                        className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
+                                      >
+                                        <UserCheck className="w-4 h-4 text-green-500" />
+                                        Activate
+                                      </button>
+                                    )}
+                                    
+                                    <button
+                                      onClick={() => handleUserAction("delete", user.id)}
+                                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 text-red-600 border-t border-gray-200 dark:border-gray-700"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                      Delete User
+                                    </button>
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
                         </td>
                       </tr>

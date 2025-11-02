@@ -38,6 +38,19 @@ export default function AdminPanel() {
 
   useEffect(() => {
     const auth = getAuth();
+    
+    // Check if admin is authenticated via localStorage (hardcoded admin login)
+    const isAdminAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
+    const adminEmail = localStorage.getItem('adminEmail');
+    
+    if (isAdminAuthenticated && adminEmail === 'mindmates@gmail.com') {
+      // Admin logged in without Firebase
+      setUser({ email: adminEmail, displayName: 'Admin' });
+      setLoading(false);
+      return;
+    }
+    
+    // Regular Firebase authentication check
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
       if (u) {
         const validAdmin = await isAdmin(u.email);
@@ -97,7 +110,7 @@ export default function AdminPanel() {
       <main 
         className={`
           overflow-y-auto min-h-screen transition-all duration-300
-          ${!isMobile ? (sidebarCollapsed ? 'ml-20 p-6' : 'ml-80 p-6') : 'ml-0 p-4 pt-20'}
+          ${!isMobile ? (sidebarCollapsed ? 'ml-16 p-6' : 'ml-64 p-6') : 'ml-0 p-4 pt-20'}
         `}
       >
         {renderSection()}

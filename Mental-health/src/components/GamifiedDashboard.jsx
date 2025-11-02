@@ -33,6 +33,19 @@ export default function GamifiedDashboard() {
 
   useEffect(() => {
     loadUserStats();
+    
+    // Reload stats when window becomes visible (user returns to tab)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadUserStats();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   const loadUserStats = () => {
@@ -76,11 +89,184 @@ export default function GamifiedDashboard() {
       { id: 'mindfulness', title: '5 Min Mindfulness', completed: false, icon: Brain, path: '/mindfulness-challenges' }
     ]);
 
-    // Recent achievements (placeholder)
-    setRecentAchievements([
-      { title: 'Journal Starter', description: 'Wrote your first journal entry', date: '2 hours ago' },
-      { title: 'Mood Tracker', description: 'Logged mood for 3 days', date: '1 day ago' }
-    ]);
+    // Load real recent achievements
+    loadRecentAchievements(journals, quests, garden, badges);
+  };
+
+  const loadRecentAchievements = (journals, quests, garden, badges) => {
+    const achievements = [];
+    const now = Date.now();
+
+    // Check for first journal entry
+    if (journals.length === 1) {
+      const firstJournal = journals[0];
+      const timeAgo = getTimeAgo(firstJournal.timestamp);
+      achievements.push({
+        title: 'Journal Starter',
+        description: 'Wrote your first journal entry',
+        date: timeAgo,
+        icon: '📝'
+      });
+    }
+
+    // Check for journal streak milestones
+    const streak = calculateJournalStreak(journals);
+    if (streak === 3) {
+      const latestJournal = journals.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+      achievements.push({
+        title: '3-Day Streak!',
+        description: 'Maintained a 3-day journaling streak',
+        date: getTimeAgo(latestJournal.timestamp),
+        icon: '🔥'
+      });
+    }
+    if (streak === 7) {
+      const latestJournal = journals.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+      achievements.push({
+        title: 'Week Warrior',
+        description: 'Achieved 7-day journaling streak',
+        date: getTimeAgo(latestJournal.timestamp),
+        icon: '⚡'
+      });
+    }
+
+    // Check for first mood log
+    const moodLogs = JSON.parse(localStorage.getItem('mindmates.moodLogs') || '[]');
+    if (moodLogs.length === 1) {
+      achievements.push({
+        title: 'Mood Tracker',
+        description: 'Logged your first mood',
+        date: getTimeAgo(moodLogs[0].timestamp),
+        icon: '😊'
+      });
+    }
+
+    // Check for mood log milestones
+    if (moodLogs.length === 10) {
+      const latestMood = moodLogs[moodLogs.length - 1];
+      achievements.push({
+        title: 'Emotion Explorer',
+        description: 'Logged 10 different moods',
+        date: getTimeAgo(latestMood.timestamp),
+        icon: '🎭'
+      });
+    }
+
+    // Check for first quest completion
+    if (quests.length === 1) {
+      achievements.push({
+        title: 'Quest Beginner',
+        description: 'Completed your first quest',
+        date: 'Recently',
+        icon: '🎯'
+      });
+    }
+
+    // Check for quest milestones
+    if (quests.length === 5) {
+      achievements.push({
+        title: 'Quest Hunter',
+        description: 'Completed 5 mental health quests',
+        date: 'Recently',
+        icon: '🏹'
+      });
+    }
+    if (quests.length === 10) {
+      achievements.push({
+        title: 'Quest Master',
+        description: 'Completed 10 mental health quests',
+        date: 'Recently',
+        icon: '👑'
+      });
+    }
+
+    // Check for first garden plant
+    if (garden.length === 1) {
+      achievements.push({
+        title: 'Garden Starter',
+        description: 'Planted your first mood in the garden',
+        date: getTimeAgo(garden[0].timestamp),
+        icon: '🌱'
+      });
+    }
+
+    // Check for garden milestones
+    if (garden.length === 10) {
+      const latestPlant = garden[garden.length - 1];
+      achievements.push({
+        title: 'Blooming Garden',
+        description: 'Grew 10 plants in your mood garden',
+        date: getTimeAgo(latestPlant.timestamp),
+        icon: '🌸'
+      });
+    }
+
+    // Check for badge unlocks
+    if (badges.length === 1) {
+      achievements.push({
+        title: 'First Badge',
+        description: 'Earned your first achievement badge',
+        date: 'Recently',
+        icon: '🏅'
+      });
+    }
+    if (badges.length === 5) {
+      achievements.push({
+        title: 'Badge Collector',
+        description: 'Collected 5 achievement badges',
+        date: 'Recently',
+        icon: '🎖️'
+      });
+    }
+
+    // Check for XP milestones
+    const xp = parseInt(localStorage.getItem('user_xp') || '0');
+    if (xp >= 100) {
+      achievements.push({
+        title: 'Century Club',
+        description: 'Reached 100 XP',
+        date: 'Recently',
+        icon: '💯'
+      });
+    }
+    if (xp >= 500) {
+      achievements.push({
+        title: 'XP Collector',
+        description: 'Accumulated 500 XP',
+        date: 'Recently',
+        icon: '⭐'
+      });
+    }
+
+    // Sort by most recent and take last 5
+    const sortedAchievements = achievements
+      .sort((a, b) => {
+        // Prioritize time-based achievements
+        if (a.date.includes('ago') && !b.date.includes('ago')) return -1;
+        if (!a.date.includes('ago') && b.date.includes('ago')) return 1;
+        return 0;
+      })
+      .slice(0, 5);
+
+    setRecentAchievements(sortedAchievements);
+  };
+
+  const getTimeAgo = (timestamp) => {
+    const now = Date.now();
+    const time = new Date(timestamp).getTime();
+    const diff = now - time;
+
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 60) {
+      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    } else if (hours < 24) {
+      return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+    } else {
+      return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+    }
   };
 
   const calculateJournalStreak = (journals) => {
@@ -160,12 +346,14 @@ export default function GamifiedDashboard() {
     }
   };
 
+  // Dynamic gamified features with real-time stats
   const gamifiedFeatures = [
     {
       title: 'Gamified Journal',
       description: 'Write with achievements and rewards',
       icon: BookOpen,
-      color: 'from-purple-500 to-pink-500',
+      iconBg: 'bg-purple-100 dark:bg-purple-900/30',
+      iconColor: 'text-purple-600 dark:text-purple-400',
       path: '/gamified-journal',
       stats: `${userStats.journalStreak} day streak`
     },
@@ -173,7 +361,8 @@ export default function GamifiedDashboard() {
       title: 'Mental Health Quests',
       description: 'Daily and weekly challenges',
       icon: Target,
-      color: 'from-blue-500 to-cyan-500',
+      iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+      iconColor: 'text-blue-600 dark:text-blue-400',
       path: '/mental-health-quests',
       stats: `${userStats.completedQuests} completed`
     },
@@ -181,7 +370,8 @@ export default function GamifiedDashboard() {
       title: 'Mood Garden',
       description: 'Grow your emotional landscape',
       icon: TreePine,
-      color: 'from-green-500 to-emerald-500',
+      iconBg: 'bg-green-100 dark:bg-green-900/30',
+      iconColor: 'text-green-600 dark:text-green-400',
       path: '/mood-garden',
       stats: `${userStats.gardenPlants} plants`
     },
@@ -189,7 +379,8 @@ export default function GamifiedDashboard() {
       title: 'Mindfulness Challenges',
       description: 'Guided meditation practices',
       icon: Brain,
-      color: 'from-indigo-500 to-purple-500',
+      iconBg: 'bg-indigo-100 dark:bg-indigo-900/30',
+      iconColor: 'text-indigo-600 dark:text-indigo-400',
       path: '/mindfulness-challenges',
       stats: `${Math.floor(userStats.mindfulnessMinutes)} minutes`
     },
@@ -197,50 +388,27 @@ export default function GamifiedDashboard() {
       title: 'Progress Tracker',
       description: 'Detailed analytics and badges',
       icon: TrendingUp,
-      color: 'from-orange-500 to-red-500',
+      iconBg: 'bg-orange-100 dark:bg-orange-900/30',
+      iconColor: 'text-orange-600 dark:text-orange-400',
       path: '/mental-health-progress',
       stats: `${userStats.badges} badges earned`
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       <div className="max-w-7xl mx-auto p-6 space-y-8">
         
-        {/* Debug Section - Only for development */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
-            <h3 className="text-red-800 dark:text-red-200 font-semibold mb-2">Debug Info</h3>
-            <div className="text-sm text-red-600 dark:text-red-300 space-y-1">
-              <p>Journal Points: {localStorage.getItem('journal_points') || '0'}</p>
-              <p>Quest Points: {localStorage.getItem('user_xp') || '0'}</p>
-              <p>Mindfulness Points: {localStorage.getItem('mindfulness_points') || '0'}</p>
-              <p>Total Points: {userStats.totalPoints}</p>
-              <button
-                onClick={() => {
-                  localStorage.setItem('journal_points', '0');
-                  localStorage.setItem('user_xp', '0');
-                  localStorage.setItem('mindfulness_points', '0');
-                  loadUserStats();
-                }}
-                className="mt-2 px-3 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
-              >
-                Reset All Points
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Header */}
         <div className="text-center space-y-4">
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+            className="text-4xl font-bold text-slate-900 dark:text-white"
           >
-            ✨ Welcome to Your Mental Health Journey ✨
+            Your Mental Health Journey
           </motion.h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg">
+          <p className="text-slate-600 dark:text-slate-400 text-lg">
             Track your progress, complete challenges, and earn rewards for taking care of your mental health
           </p>
         </div>
@@ -249,49 +417,55 @@ export default function GamifiedDashboard() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl text-center"
+          className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 text-center"
         >
           <div className="flex justify-center items-center space-x-8 flex-wrap gap-4 mb-6">
             <div className="flex items-center space-x-3">
-              <Trophy className="text-yellow-500" size={32} />
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Level</p>
-                <p className="text-3xl font-bold text-gray-800 dark:text-gray-200">{userStats.level}</p>
+              <div className="w-12 h-12 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                <Trophy className="text-amber-600 dark:text-amber-400" size={24} />
+              </div>
+              <div className="text-left">
+                <p className="text-sm text-slate-600 dark:text-slate-400">Level</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">{userStats.level}</p>
               </div>
             </div>
             
             <div className="flex items-center space-x-3">
-              <Star className="text-purple-500" size={32} />
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total Points</p>
-                <p className="text-3xl font-bold text-gray-800 dark:text-gray-200">{userStats.totalPoints}</p>
+              <div className="w-12 h-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                <Star className="text-indigo-600 dark:text-indigo-400" size={24} />
+              </div>
+              <div className="text-left">
+                <p className="text-sm text-slate-600 dark:text-slate-400">Total Points</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">{userStats.totalPoints}</p>
               </div>
             </div>
             
             <div className="flex items-center space-x-3">
-              <Flame className="text-orange-500" size={32} />
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Journal Streak</p>
-                <p className="text-3xl font-bold text-gray-800 dark:text-gray-200">{userStats.journalStreak}</p>
+              <div className="w-12 h-12 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                <Flame className="text-orange-600 dark:text-orange-400" size={24} />
+              </div>
+              <div className="text-left">
+                <p className="text-sm text-slate-600 dark:text-slate-400">Journal Streak</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">{userStats.journalStreak}</p>
               </div>
             </div>
           </div>
 
           {/* Level Progress Bar */}
           <div className="max-w-md mx-auto">
-            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <div className="flex justify-between text-sm text-slate-600 dark:text-slate-400 mb-2">
               <span>Level {userStats.level}</span>
               <span>{Math.floor(getLevelProgress())}% to next level</span>
             </div>
-            <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+            <div className="bg-slate-200 dark:bg-slate-700 rounded-full h-3">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${getLevelProgress()}%` }}
                 transition={{ duration: 1, delay: 0.5 }}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full"
+                className="bg-indigo-600 h-3 rounded-full"
               />
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
               {getPointsNeededForNextLevel()} points to Level {userStats.level + 1}
             </p>
           </div>
@@ -299,11 +473,11 @@ export default function GamifiedDashboard() {
 
         {/* Today's Goals */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">Today's Goals</h2>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Today's Goals</h2>
           
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                 Daily Progress ({getCompletedGoalsCount()}/{todayGoals.length})
               </h3>
               <div className="text-2xl">
@@ -319,19 +493,19 @@ export default function GamifiedDashboard() {
                     key={goal.id}
                     whileHover={{ scale: 1.02 }}
                     onClick={() => navigate(goal.path)}
-                    className={`p-4 rounded-xl cursor-pointer transition-all border-2 ${
+                    className={`p-4 rounded-xl cursor-pointer transition-all border ${
                       goal.completed
                         ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700'
-                        : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 hover:border-purple-300'
+                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600'
                     }`}
                   >
                     <div className="flex items-center space-x-3">
                       <Icon 
-                        className={goal.completed ? 'text-green-600' : 'text-gray-600 dark:text-gray-400'} 
+                        className={goal.completed ? 'text-green-600 dark:text-green-400' : 'text-slate-600 dark:text-slate-400'} 
                         size={24} 
                       />
                       <div className="flex-1">
-                        <p className={`font-medium ${goal.completed ? 'text-green-800 dark:text-green-200' : 'text-gray-800 dark:text-gray-200'}`}>
+                        <p className={`font-medium ${goal.completed ? 'text-green-800 dark:text-green-200' : 'text-slate-900 dark:text-white'}`}>
                           {goal.title}
                         </p>
                         {goal.completed && (
@@ -348,7 +522,7 @@ export default function GamifiedDashboard() {
 
         {/* Gamified Features Grid */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">Explore Features</h2>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Explore Features</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {gamifiedFeatures.map((feature, index) => {
@@ -362,30 +536,30 @@ export default function GamifiedDashboard() {
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.02, y: -4 }}
                   onClick={() => navigate(feature.path)}
-                  className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl cursor-pointer group hover:shadow-2xl transition-all duration-300"
+                  className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 cursor-pointer group hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-300"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className={`p-3 rounded-full bg-gradient-to-r ${feature.color} group-hover:scale-110 transition-transform duration-300`}>
-                        <Icon className="text-white" size={24} />
+                      <div className={`p-3 rounded-lg ${feature.iconBg} group-hover:scale-110 transition-transform duration-300`}>
+                        <Icon className={feature.iconColor} size={24} />
                       </div>
-                      <Sparkles className="text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={20} />
+                      <Sparkles className="text-indigo-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={20} />
                     </div>
                     
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                      <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                         {feature.title}
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">
                         {feature.description}
                       </p>
                     </div>
                     
                     <div className="flex justify-between items-center pt-2">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                         {feature.stats}
                       </span>
-                      <span className="text-sm font-medium text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform duration-300">
+                      <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400 group-hover:translate-x-1 transition-transform duration-300">
                         Explore →
                       </span>
                     </div>
@@ -398,13 +572,13 @@ export default function GamifiedDashboard() {
 
         {/* Recent Achievements */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">Recent Achievements</h2>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Recent Achievements</h2>
           
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
             {recentAchievements.length === 0 ? (
               <div className="text-center py-8">
-                <Award className="mx-auto text-gray-400 mb-4" size={48} />
-                <p className="text-gray-600 dark:text-gray-400">
+                <Award className="mx-auto text-slate-400 mb-4" size={48} />
+                <p className="text-slate-600 dark:text-slate-400">
                   Start your journey to earn your first achievement!
                 </p>
               </div>
@@ -416,18 +590,20 @@ export default function GamifiedDashboard() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl border border-yellow-200 dark:border-yellow-800"
+                    className="flex items-center space-x-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800"
                   >
-                    <Trophy className="text-yellow-600" size={24} />
+                    <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-2xl">
+                      {achievement.icon || '🏆'}
+                    </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800 dark:text-gray-200">
+                      <h4 className="font-semibold text-slate-900 dark:text-white">
                         {achievement.title}
                       </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
                         {achievement.description}
                       </p>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
                       {achievement.date}
                     </span>
                   </motion.div>
@@ -439,14 +615,14 @@ export default function GamifiedDashboard() {
 
         {/* Quick Actions */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">Quick Actions</h2>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Quick Actions</h2>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/gamified-journal')}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all"
             >
               📝 Write Journal
             </motion.button>
@@ -455,7 +631,7 @@ export default function GamifiedDashboard() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/mood-garden')}
-              className="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all"
             >
               🌱 Plant Mood
             </motion.button>
@@ -464,7 +640,7 @@ export default function GamifiedDashboard() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/mental-health-quests')}
-              className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all"
             >
               🎯 Start Quest
             </motion.button>
@@ -473,7 +649,7 @@ export default function GamifiedDashboard() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/mindfulness-challenges')}
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all"
             >
               🧘‍♀️ Meditate
             </motion.button>

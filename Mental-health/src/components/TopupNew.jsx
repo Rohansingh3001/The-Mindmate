@@ -15,10 +15,8 @@ import upiIcon from "../assets/upi.png";
 import cardIcon from "../assets/card.jpeg";
 import bankIcon from "../assets/bank.jpeg";
 import { useTheme } from "../context/ThemeContext";
-import { useTranslation } from "react-i18next";
 
-const Topup = () => {
-  const { t } = useTranslation();
+const TopupNew = () => {
   const [amount, setAmount] = useState("");
   const [balance, setBalance] = useState("0.0");
   const [loading, setLoading] = useState(false);
@@ -141,11 +139,11 @@ const Topup = () => {
   };
 
   const processingSteps = [
-    t('topup.verifying'),
-    t('topup.connecting'),
-    t('topup.authenticating'),
-    t('topup.processingPayment'),
-    t('topup.updatingBalance')
+    "Verifying payment details...",
+    "Connecting to payment gateway...",
+    "Authenticating transaction...",
+    "Processing payment...",
+    "Updating wallet balance..."
   ];
 
   return (
@@ -156,7 +154,7 @@ const Topup = () => {
           className="mb-6 flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 font-semibold shadow-sm hover:shadow-md transition-all border border-slate-200 dark:border-slate-700"
         >
           <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
-          {t('topup.back')}
+          Back
         </button>
         
         {/* Two Column Layout */}
@@ -171,20 +169,20 @@ const Topup = () => {
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-6 border border-slate-200 dark:border-slate-700">
               <div className="flex items-center gap-3 mb-4">
                 <IoWalletOutline className="w-6 h-6 text-indigo-600" />
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t('topup.summary')}</h3>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Payment Summary</h3>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">{t('topup.currentBalance')}</span>
+                  <span className="text-slate-600 dark:text-slate-400">Current Balance</span>
                   <span className="font-semibold text-slate-900 dark:text-slate-100">₹{balance}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">{t('topup.topupAmount')}</span>
+                  <span className="text-slate-600 dark:text-slate-400">Top-up Amount</span>
                   <span className="font-semibold text-indigo-600">₹{amount || "0"}</span>
                 </div>
                 <div className="border-t border-slate-200 dark:border-slate-700 pt-3">
                   <div className="flex justify-between">
-                    <span className="font-semibold text-slate-900 dark:text-slate-100">{t('topup.newBalance')}</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">New Balance</span>
                     <span className="font-bold text-lg text-indigo-600">₹{amount ? (parseFloat(balance) + parseFloat(amount)).toFixed(2) : balance}</span>
                   </div>
                 </div>
@@ -193,27 +191,27 @@ const Topup = () => {
 
             {/* Security Trust Badges */}
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-6 border border-slate-200 dark:border-slate-700">
-              <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">{t('topup.securedPayment')}</h4>
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">Secured Payment</h4>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <IoLockClosedOutline className="w-5 h-5 text-green-600" />
                   <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{t('topup.sslEncryption')}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{t('topup.dataSecure')}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">256-bit SSL Encryption</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Your data is secure</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <IoShieldCheckmarkOutline className="w-5 h-5 text-blue-600" />
                   <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{t('topup.pciCompliant')}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{t('topup.bankGrade')}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">PCI DSS Compliant</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Bank-grade security</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <IoCheckmarkCircle className="w-5 h-5 text-indigo-600" />
                   <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{t('topup.rbiApproved')}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{t('topup.regulated')}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">RBI Approved</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Regulated payment gateway</p>
                   </div>
                 </div>
               </div>
@@ -230,14 +228,14 @@ const Topup = () => {
               <div className="flex items-center gap-3 mb-6">
                 <img src={logo} alt="MindMates" className="h-10 w-10 rounded-full shadow-md" />
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t('topup.addMoney')}</h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">{t('topup.chooseMethod')}</p>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Add Money to Wallet</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Choose your preferred payment method</p>
                 </div>
               </div>
 
               {/* Quick Add Amounts */}
               <div className="mb-6">
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">{t('topup.quickSelect')}</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">Quick Select</label>
                 <div className="grid grid-cols-4 gap-2">
                   {[10, 20, 50, 100, 200, 500, 1000, 2000].map((amt) => (
                     <button
@@ -261,7 +259,7 @@ const Topup = () => {
                 {/* Custom Amount Input */}
                 <div>
                   <label htmlFor="amount" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                    {t('topup.customAmount')}
+                    Or Enter Custom Amount
                   </label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">₹</span>
@@ -272,7 +270,7 @@ const Topup = () => {
                       step="0.01"
                       value={amount}
                       onChange={e => setAmount(e.target.value)}
-                      placeholder={t('topup.enterAmount')}
+                      placeholder="Enter amount"
                       className="w-full pl-8 pr-4 py-3 rounded-xl border-2 border-slate-300 dark:border-slate-600 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-slate-100 transition-all"
                       required
                       disabled={loading}
@@ -282,7 +280,7 @@ const Topup = () => {
 
                 {/* Payment Method Selection */}
                 <div>
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3 block">{t('topup.paymentMethod')}</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3 block">Payment Method</label>
                   <div className="grid grid-cols-3 gap-3">
                     <button
                       type="button"
@@ -295,7 +293,7 @@ const Topup = () => {
                       }`}
                     >
                       <img src={upiIcon} alt="UPI" className="w-8 h-8" />
-                      <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{t('topup.upi')}</span>
+                      <span className="text-sm font-medium text-slate-900 dark:text-slate-100">UPI</span>
                     </button>
                     <button
                       type="button"
@@ -338,7 +336,7 @@ const Topup = () => {
                     >
                       <div>
                         <label htmlFor="upiId" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                          {t('topup.upiId')}
+                          UPI ID
                         </label>
                         <input
                           id="upiId"
@@ -364,7 +362,7 @@ const Topup = () => {
                     >
                       <div>
                         <label htmlFor="cardNumber" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                          {t('topup.cardNumber')} {cardType && <span className="text-indigo-600 font-semibold">({cardType})</span>}
+                          Card Number {cardType && <span className="text-indigo-600 font-semibold">({cardType})</span>}
                         </label>
                         <input
                           id="cardNumber"
@@ -380,7 +378,7 @@ const Topup = () => {
                       </div>
                       <div>
                         <label htmlFor="cardName" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                          {t('topup.cardholderName')}
+                          Cardholder Name
                         </label>
                         <input
                           id="cardName"
@@ -396,7 +394,7 @@ const Topup = () => {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label htmlFor="cardExpiry" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                            {t('topup.expiryDate')}
+                            Expiry Date
                           </label>
                           <input
                             id="cardExpiry"
@@ -412,7 +410,7 @@ const Topup = () => {
                         </div>
                         <div>
                           <label htmlFor="cardCvv" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                            {t('topup.cvv')}
+                            CVV
                           </label>
                           <input
                             id="cardCvv"
@@ -440,7 +438,7 @@ const Topup = () => {
                     >
                       <div>
                         <label htmlFor="bank" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                          {t('topup.selectBank')}
+                          Select Your Bank
                         </label>
                         <select
                           id="bank"
@@ -450,7 +448,7 @@ const Topup = () => {
                           disabled={loading}
                           required
                         >
-                          <option value="">{t('topup.chooseBank')}</option>
+                          <option value="">Choose a bank</option>
                           <option value="sbi">State Bank of India</option>
                           <option value="hdfc">HDFC Bank</option>
                           <option value="icici">ICICI Bank</option>
@@ -504,11 +502,11 @@ const Topup = () => {
                   disabled={loading}
                   className="w-full py-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-400 text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all disabled:cursor-not-allowed"
                 >
-                  {loading ? t('topup.processing') : `${t('topup.pay')} ₹${amount || "0"}`}
+                  {loading ? "Processing..." : `Pay ₹${amount || "0"}`}
                 </button>
 
                 <p className="text-xs text-center text-slate-500 dark:text-slate-400">
-                  {t('topup.termsAgree')}
+                  By proceeding, you agree to our Terms & Conditions
                 </p>
               </form>
             </div>
@@ -545,20 +543,20 @@ const Topup = () => {
                 <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                   <IoCheckmarkCircle className="w-12 h-12 text-green-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">{t('topup.success')}</h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-6">₹{amount} {t('topup.addedToWallet')}</p>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Payment Successful!</h3>
+                <p className="text-slate-600 dark:text-slate-400 mb-6">₹{amount} has been added to your wallet</p>
                 
                 <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 mb-6 space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-600 dark:text-slate-400">{t('topup.transactionId')}</span>
+                    <span className="text-slate-600 dark:text-slate-400">Transaction ID</span>
                     <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">{transactionId}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-600 dark:text-slate-400">{t('topup.amount')}</span>
+                    <span className="text-slate-600 dark:text-slate-400">Amount</span>
                     <span className="font-semibold text-slate-900 dark:text-slate-100">₹{amount}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-600 dark:text-slate-400">{t('topup.newBalance')}</span>
+                    <span className="text-slate-600 dark:text-slate-400">New Balance</span>
                     <span className="font-semibold text-indigo-600">₹{balance}</span>
                   </div>
                 </div>
@@ -570,7 +568,7 @@ const Topup = () => {
                   }}
                   className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-all"
                 >
-                  {t('topup.goToDashboard')}
+                  Go to Dashboard
                 </button>
               </div>
             </motion.div>
@@ -581,4 +579,4 @@ const Topup = () => {
   );
 };
 
-export default Topup;
+export default TopupNew;

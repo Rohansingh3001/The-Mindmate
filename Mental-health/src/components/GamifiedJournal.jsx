@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Star, Trophy, Calendar, Flame, Award, BookOpen, Heart, Brain, Zap } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import React, { useState, useEffect, useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
+import { BookOpen, Flame, Star, Award, Sparkles, Target, Calendar, TrendingUp, Trophy, Heart, Brain, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
+import { trackJournalEntry } from '../utils/questTracker';
 
 const JOURNAL_ACHIEVEMENTS = {
   FIRST_ENTRY: { id: 'first_entry', title: 'First Steps', description: 'Write your first journal entry', icon: BookOpen, points: 10 },
@@ -177,6 +179,7 @@ export default function GamifiedJournal() {
 
     const newJournal = {
       id: Date.now(),
+      content: entry.trim(),
       entry: entry.trim(),
       mood: selectedMood,
       date: new Date().toDateString(),
@@ -188,6 +191,9 @@ export default function GamifiedJournal() {
     const updatedJournals = [...journals, newJournal];
     setJournals(updatedJournals);
     localStorage.setItem('gamified_journals', JSON.stringify(updatedJournals));
+
+    // Track journal entry for quest completion
+    trackJournalEntry(newJournal);
 
     checkAchievements(updatedJournals);
     

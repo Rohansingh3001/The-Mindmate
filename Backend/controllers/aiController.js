@@ -3,9 +3,25 @@ import dotenv from "dotenv";
 dotenv.config();
 import { Groq } from "groq-sdk";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+// Make Groq client optional
+let groq = null;
+try {
+  if (process.env.GROQ_API_KEY) {
+    groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  } else {
+    console.warn("⚠️  GROQ_API_KEY not found. AI features will be disabled.");
+  }
+} catch (error) {
+  console.error("Failed to initialize Groq client:", error);
+}
 
 export const askAI = async (req, res) => {
+  if (!groq) {
+    return res.status(503).json({ 
+      error: "AI service is not configured. Please check server configuration." 
+    });
+  }
+
   const { messages } = req.body;
 
   try {

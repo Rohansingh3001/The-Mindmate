@@ -24,6 +24,7 @@ import {
   IoIosRocket,
   IoIosTrophy,
 } from "react-icons/io";
+import { trackMoodLog } from '../utils/questTracker';
 import {
   BarChart2,
   CalendarDays,
@@ -63,6 +64,7 @@ import { useTheme } from "../context/ThemeContext";
 
 // Gamified Components
 import GamifiedDashboard from "./GamifiedDashboard";
+import "./Dashboard.css";
 
 const greetings = ["Hey there", "Welcome back", "Namaste", "Great to see you", "Peace & wellness"];
 
@@ -85,7 +87,7 @@ const achievements = [
 export default function Dashboard() {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
-  const { darkMode, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const [greeting, setGreeting] = useState(greetings[0]);
   const [quote, setQuote] = useState("");
   const [mood, setMood] = useState(() => getFromStorage(STORAGE_KEYS.MOOD, ""));
@@ -315,8 +317,13 @@ export default function Dashboard() {
 
   const handleMoodClick = (emoji, index) => {
     const logs = JSON.parse(localStorage.getItem("mindmates.moodLogs") || "[]");
-    const updatedLogs = [...logs, { mood: emoji, timestamp: new Date().toISOString() }];
+    const newMoodLog = { mood: emoji, timestamp: new Date().toISOString() };
+    const updatedLogs = [...logs, newMoodLog];
     localStorage.setItem("mindmates.moodLogs", JSON.stringify(updatedLogs));
+    
+    // Track mood log for quest completion
+    trackMoodLog(newMoodLog);
+    
     setMood(emoji);
     setSelectedMoodIndex(index);
     setStats((prev) => ({ ...prev, moodLogs: updatedLogs.length }));
@@ -430,167 +437,116 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300">
-      {/* Professional Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgb(148 163 184 / 0.15) 1px, transparent 0)`,
-          backgroundSize: '24px 24px'
-        }}></div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+      {/* Minimalist Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        {/* Subtle top accent */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-200 dark:via-indigo-900 to-transparent"></div>
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-8 space-y-8 max-w-7xl mx-auto">
-        {/* Professional Header Section */}
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-7xl mx-auto">
+        {/* Minimalist Header */}
         <motion.header 
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.4 }}
           className="relative"
         >
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
             {/* Hero Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
-                  <Heart className="w-8 h-8 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center">
+                  <Heart className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <motion.h1 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white"
-                  >
-                    {greeting}, <span className="text-blue-600 dark:text-blue-400">{userName}</span>
-                  </motion.h1>
-                  <motion.p 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                    className="text-slate-600 dark:text-slate-300 font-medium"
-                  >
-                    Welcome to your wellness dashboard
-                  </motion.p>
+                  <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                    {greeting}, <span className="text-indigo-600 dark:text-indigo-400">{userName}</span>
+                  </h1>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Your wellness dashboard
+                  </p>
                 </div>
               </div>
 
-              {/* Enhanced Professional Status Bar */}
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 }}
-                className="space-y-4"
-              >
-                <div className="flex items-center gap-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-red-500" />
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      Wellness: {wellnessScore}%
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-amber-500" />
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      Level {userLevel}
-                    </span>
-                  </div>
+              {/* Clean Status Bar */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  <span className="font-medium text-slate-700 dark:text-slate-300">
+                    {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 </div>
-                
-                {/* Level Progress Bar - Clickable for XP info */}
-                <motion.div 
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setShowXPInfo(true)}
-                  className="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 cursor-pointer hover:shadow-md transition-all"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-amber-600" />
-                      <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                        Level {userLevel} Progress
-                      </span>
-                    </div>
-                    <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
-                      {levelProgress}/100 XP
-                    </span>
-                  </div>
-                  <div className="w-full bg-amber-200 dark:bg-amber-800 rounded-full h-2 overflow-hidden">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"
-                      initial={{ width: "0%" }}
-                      animate={{ width: `${levelProgress}%` }}
-                      transition={{ duration: 1, ease: "easeOut" }}
-                    />
-                  </div>
-                  <div className="mt-2 flex items-center justify-between">
-                    <div className="text-xs text-amber-700 dark:text-amber-400">
-                      {100 - levelProgress} XP until Level {userLevel + 1}
-                    </div>
-                    <div className="text-xs text-amber-600 dark:text-amber-500">
-                      Tap for XP info
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm">
+                  <Heart className="w-4 h-4 text-red-500" />
+                  <span className="font-medium text-slate-700 dark:text-slate-300">{wellnessScore}%</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm">
+                  <Zap className="w-4 h-4 text-amber-500" />
+                  <span className="font-medium text-slate-700 dark:text-slate-300">Level {userLevel}</span>
+                </div>
+              </div>
+
+              {/* Simple Progress Bar */}
+              <div 
+                onClick={() => setShowXPInfo(true)}
+                className="p-4 rounded-lg bg-slate-100 dark:bg-slate-800 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                    Level {userLevel} Progress
+                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    {levelProgress}/100 XP
+                  </span>
+                </div>
+                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                  <div
+                    className="h-full bg-indigo-600 rounded-full transition-all duration-500"
+                    style={{ width: `${levelProgress}%` }}
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Professional Control Panel */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 }}
-              className="flex flex-row lg:flex-col gap-3"
-            >
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            {/* Simple Controls */}
+            <div className="flex flex-row lg:flex-col gap-2">
+              <button 
                 onClick={toggleTheme} 
-                className="p-3 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 shadow-sm transition-all duration-200"
+                className="p-3 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shadow-sm"
+                title="Toggle Theme"
               >
-                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </motion.button>
+                {theme === "dark" ? <Sun className="w-5 h-5 text-slate-700 dark:text-slate-300" /> : <Moon className="w-5 h-5 text-slate-700 dark:text-slate-300" />}
+              </button>
               
-              {/* Achievements Button - Only show if there are unlocked achievements */}
               {dynamicAchievements.some(achievement => achievement.unlocked) && (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <button
                   onClick={() => setShowAchievements(!showAchievements)}
-                  className="p-3 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 shadow-sm transition-all duration-200"
+                  className="relative p-3 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shadow-sm"
                 >
-                  <Award className="w-5 h-5" />
-                </motion.button>
+                  <Award className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                    {dynamicAchievements.filter(a => a.unlocked).length}
+                  </span>
+                </button>
               )}
-            </motion.div>
+            </div>
           </div>
         </motion.header>
 
-        {/* Professional Quote Section */}
+        {/* Simple Quote Section */}
         {quote && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
-            className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700"
-          >
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-sm flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center flex-shrink-0">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <div className="flex-1">
-                <blockquote className="text-lg font-medium text-slate-700 dark:text-slate-200 italic leading-relaxed">
-                  {quote}
-                </blockquote>
-              </div>
+              <blockquote className="text-base font-medium text-slate-700 dark:text-slate-300 italic leading-relaxed">
+                {quote}
+              </blockquote>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Professional Achievements Modal */}
@@ -854,134 +810,98 @@ export default function Dashboard() {
           )}
         </AnimatePresence>
 
-        {/* Professional Dashboard Grid */}
-        <motion.section 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-          className="grid gap-6 lg:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-        >
-          {/* Professional Mood Tracker */}
-          <motion.div
-            whileHover={{ y: -2, scale: 1.01 }}
-            className="md:col-span-2 xl:col-span-2 2xl:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300"
-          >
+        {/* Dashboard Grid */}
+        <section className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {/* Clean Mood Tracker */}
+          <div className="md:col-span-2 xl:col-span-2 2xl:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
                   <Heart className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Mood Tracker</h2>
-                  <p className="text-slate-600 dark:text-slate-300">How are you feeling today?</p>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">Mood Tracker</h2>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">How are you feeling?</p>
                 </div>
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.moodLogs}</div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">Total logs</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">logs</div>
               </div>
             </div>
             
             <div className="grid grid-cols-5 gap-3">
               {moodEmojis.map((moodData, index) => (
-                <motion.button
+                <button
                   key={index}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
                   onClick={() => handleMoodClick(moodData.emoji, index)}
-                  className={`relative p-3 rounded-xl transition-all duration-200 ${
+                  className={`p-3 rounded-xl transition-all ${
                     selectedMoodIndex === index || mood === moodData.emoji
-                      ? 'bg-blue-600 text-white shadow-lg scale-105'
-                      : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
                   <div className="text-2xl mb-1">{moodData.emoji}</div>
                   <div className="text-xs font-medium">{moodData.label}</div>
-                  {(selectedMoodIndex === index || mood === moodData.emoji) && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center shadow-lg text-white text-xs"
-                    >
-                      ✓
-                    </motion.div>
-                  )}
-                </motion.button>
+                </button>
               ))}
             </div>
             
             {selectedMoodIndex >= 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700"
-              >
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-green-600" />
-                  <span className="font-medium text-green-800 dark:text-green-300">
-                    Feeling {moodEmojis[selectedMoodIndex].label.toLowerCase()}? That's perfectly normal!
-                  </span>
-                </div>
-              </motion.div>
+              <div className="mt-4 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                <p className="text-sm text-green-800 dark:text-green-300">
+                  Feeling {moodEmojis[selectedMoodIndex].label.toLowerCase()}? All emotions are valid. 💚
+                </p>
+              </div>
             )}
-          </motion.div>
+          </div>
 
-          {/* Professional Appointment Card */}
+          {/* Simple Appointment Card */}
           {nextAppointment && (
-            <motion.div
-              whileHover={{ y: -2, scale: 1.01 }}
-              className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-sm">
-                    <Calendar className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Next Session</h3>
+            <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-white" />
                 </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Next Session</h3>
               </div>
               <div className="space-y-3">
-                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
+                <div className="p-4 rounded-lg bg-slate-100 dark:bg-slate-800">
                   <div className="flex items-center gap-2 mb-2">
                     <UserCircle2 className="w-4 h-4 text-indigo-600" />
                     <span className="font-semibold text-slate-900 dark:text-white">{nextAppointment.doctor}</span>
                   </div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <CalendarDays className="w-4 h-4 text-slate-500" />
-                    <span className="text-sm text-slate-600 dark:text-slate-300">{nextAppointment.date}</span>
+                  <div className="flex items-center gap-2 mb-1 text-sm text-slate-600 dark:text-slate-300">
+                    <CalendarDays className="w-4 h-4" />
+                    <span>{nextAppointment.date}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-slate-500" />
-                    <span className="text-sm text-slate-600 dark:text-slate-300">{nextAppointment.time}</span>
+                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                    <Clock className="w-4 h-4" />
+                    <span>{nextAppointment.time}</span>
                   </div>
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={() => handleDevFeature("/appointments")}
-                  className="w-full p-3 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm hover:bg-indigo-700 transition-colors duration-200"
+                  className="w-full p-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors"
                 >
                   Manage Sessions
-                </motion.button>
+                </button>
               </div>
-            </motion.div>
+            </div>
           )}
 
-          {/* Professional Stats Dashboard */}
+          {/* Simple Stats Card */}
           {(stats.moodLogs > 0 || stats.journals > 0 || stats.sessions > 0) && (
-            <motion.div
-              whileHover={{ y: -2, scale: 1.01 }}
-              className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300"
-            >
+            <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
                   <TrendingUp className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Your Progress</h3>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {stats.moodLogs > 0 && (
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-slate-100 dark:bg-slate-800">
                     <div className="flex items-center gap-2">
                       <Heart className="w-4 h-4 text-red-500" />
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Mood Logs</span>
@@ -990,16 +910,16 @@ export default function Dashboard() {
                   </div>
                 )}
                 {stats.journals > 0 && (
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-slate-100 dark:bg-slate-800">
                     <div className="flex items-center gap-2">
                       <BookOpen className="w-4 h-4 text-blue-500" />
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Journal Entries</span>
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Journals</span>
                     </div>
                     <span className="text-lg font-bold text-slate-900 dark:text-white">{stats.journals}</span>
                   </div>
                 )}
                 {stats.sessions > 0 && (
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-slate-100 dark:bg-slate-800">
                     <div className="flex items-center gap-2">
                       <Users className="w-4 h-4 text-green-500" />
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Sessions</span>
@@ -1008,177 +928,138 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={() => handleDevFeature("/analytics")}
-                className="w-full mt-4 p-3 rounded-xl bg-purple-600 text-white font-semibold shadow-sm hover:bg-purple-700 transition-colors duration-200"
+                className="w-full mt-4 p-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors"
               >
                 View Analytics
-              </motion.button>
-            </motion.div>
+              </button>
+            </div>
           )}
 
-          {/* Professional Assessment Card */}
+          {/* Simple Assessment Card */}
           {!assessmentCompleted && (
-            <motion.div
-              whileHover={{ y: -2, scale: 1.01 }}
-              className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300"
-            >
+            <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
                   <Brain className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Mind Check</h3>
               </div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <span className="text-sm text-slate-600 dark:text-slate-300">PHQ-9 Depression</span>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  <span>PHQ-9 Depression</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                  <span className="text-sm text-slate-600 dark:text-slate-300">GAD-7 Anxiety</span>
+                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                  <span>GAD-7 Anxiety</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                  <span className="text-sm text-slate-600 dark:text-slate-300">Stress Assessment</span>
+                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                  <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
+                  <span>Stress Assessment</span>
                 </div>
               </div>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={() => handleDevFeature("/assessment")}
-                className="w-full mt-4 p-3 rounded-xl bg-orange-600 text-white font-semibold shadow-sm hover:bg-orange-700 transition-colors duration-200"
+                className="w-full p-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors"
               >
                 Take Assessment
-              </motion.button>
-            </motion.div>
+              </button>
+            </div>
           )}
 
-          {/* Professional Feedback Card */}
-          <motion.div
-            whileHover={{ y: -2, scale: 1.01 }}
-            className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center shadow-sm">
+          {/* Simple Feedback Card */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
                 <MessageCircle className="w-5 h-5 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Share Feedback</h3>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Feedback</h3>
             </div>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
-              Help us improve your mental wellness journey
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              Help us improve your wellness journey
             </p>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={() => navigate("/form")}
-              className="w-full p-3 rounded-xl bg-teal-600 text-white font-semibold shadow-sm hover:bg-teal-700 transition-colors duration-200"
+              className="w-full p-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors"
             >
               Give Feedback
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
 
-          {/* Professional Journals Section */}
+          {/* Simple Journals Section */}
           {getJournals().length > 0 && (
-            <motion.div
-              whileHover={{ y: -2, scale: 1.005 }}
-              className="xl:col-span-3 2xl:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300"
-            >
+            <div className="xl:col-span-3 2xl:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-sm">
+                  <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
                     <BookOpen className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Journal Entries</h3>
-                    <p className="text-slate-600 dark:text-slate-300">Your thoughts and reflections</p>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Journals</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Recent entries</p>
                   </div>
                 </div>
-                <Link to="/journals">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold shadow-sm hover:bg-indigo-700 transition-colors duration-200"
-                  >
-                    View All Entries
-                  </motion.button>
+                <Link to="journals">
+                  <button className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors">
+                    View All
+                  </button>
                 </Link>
               </div>
               
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {getJournals().slice(-3).reverse().map((journal, i) => (
-                  <motion.div
+                  <div
                     key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600"
+                    className="p-4 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm"
                   >
-                    <div className="text-sm text-slate-700 dark:text-slate-200 line-clamp-4 leading-relaxed mb-3">
+                    <p className="text-sm text-slate-700 dark:text-slate-300 line-clamp-3 mb-2">
                       "{journal.entry}"
-                    </div>
+                    </p>
                     {journal.date && (
-                      <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      <div className="text-xs text-slate-500 dark:text-slate-400">
                         {journal.date}
                       </div>
                     )}
-                  </motion.div>
+                  </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           )}
 
-          {/* Professional Quick Access Panel */}
-          <motion.div
-            whileHover={{ y: -2, scale: 1.01 }}
-            className="xl:col-span-1 2xl:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300"
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center shadow-sm">
+          {/* Simple Quick Actions */}
+          <div className="xl:col-span-1 2xl:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
                 <Zap className="w-5 h-5 text-white" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">Quick Actions</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2 gap-3">
               {[
-                { icon: Activity, label: "Mental Exercises", path: "/exercises", color: "bg-purple-600 hover:bg-purple-700" },
-                { icon: Users, label: "Connect Peers", path: "/connect-peer", color: "bg-blue-600 hover:bg-blue-700" },
-                { icon: Calendar, label: "Book Session", path: "/appointments", color: "bg-emerald-600 hover:bg-emerald-700" },
-                { icon: TrendingUp, label: "View Progress", path: "/analytics", color: "bg-orange-600 hover:bg-orange-700" },
-                { icon: Settings, label: "Settings", path: "/settings", color: "bg-slate-600 hover:bg-slate-700" },
-              ].map((item, index) => (
-                <motion.button
+                { icon: Activity, label: "Mental Exercises", path: "/exercises" },
+                { icon: Users, label: "Connect Peers", path: "/connect-peer" },
+                { icon: Calendar, label: "Book Session", path: "/appointments" },
+                { icon: TrendingUp, label: "View Progress", path: "/analytics" },
+                { icon: Settings, label: "Settings", path: "/settings" },
+                { icon: Crown, label: showGamifiedFeatures ? 'Hide Games' : 'Show Games', path: null, action: () => setShowGamifiedFeatures(!showGamifiedFeatures) },
+              ].map((item) => (
+                <button
                   key={item.label}
-                  whileHover={{ scale: 1.02, y: -1 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleDevFeature(item.path)}
-                  className={`p-4 rounded-xl ${item.color} text-white shadow-sm transition-all duration-200 flex items-center gap-3`}
+                  onClick={item.action || (() => handleDevFeature(item.path))}
+                  className={`p-4 rounded-lg text-white font-semibold transition-colors flex items-center gap-3 ${
+                    item.icon === Crown && showGamifiedFeatures
+                      ? 'bg-purple-600 hover:bg-purple-700'
+                      : 'bg-indigo-600 hover:bg-indigo-700'
+                  }`}
                 >
-                  <item.icon className="w-5 h-5 flex-shrink-0" />
-                  <span className="text-sm font-semibold truncate">{item.label}</span>
-                </motion.button>
+                  <item.icon className="w-5 h-5" />
+                  <span className="text-sm">{item.label}</span>
+                </button>
               ))}
-              
-              {/* Gamified Features Toggle */}
-              <motion.button
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setShowGamifiedFeatures(!showGamifiedFeatures)}
-                className={`p-4 rounded-xl transition-all duration-200 flex items-center gap-3 ${
-                  showGamifiedFeatures 
-                    ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' 
-                    : 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white shadow-sm'
-                }`}
-              >
-                <Crown className="w-5 h-5 flex-shrink-0" />
-                <span className="text-sm font-semibold truncate">
-                  {showGamifiedFeatures ? 'Hide Games' : 'Show Games'}
-                </span>
-              </motion.button>
             </div>
-          </motion.div>
+          </div>
 
           {/* Gamified Features Section */}
           {showGamifiedFeatures && (
@@ -1191,7 +1072,7 @@ export default function Dashboard() {
               <GamifiedDashboard />
             </motion.div>
           )}
-        </motion.section>
+        </section>
 
         {/* Professional IRA Assistant */}
         <motion.div
