@@ -11,102 +11,144 @@ import {
   Moon,
   Menu,
   X,
-  Briefcase, // New icon
+  Briefcase,
+  Settings,
+  Shield,
+  Bell,
+  HelpCircle,
+  MessageSquare,
+  Activity,
+  TrendingUp,
+  Database,
+  FileText,
+  UserCheck,
+  Zap
 } from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
 import { IoIosPaper } from "react-icons/io";
 import { FiSettings } from "react-icons/fi";
+import { useTheme } from "../context/ThemeContext";
+import { motion, AnimatePresence } from "framer-motion";
+
 const navItems = [
   { label: "Dashboard", icon: <Home size={18} />, key: "dashboard" },
   { label: "Users", icon: <Users size={18} />, key: "users" },
   { label: "Appointments", icon: <CalendarCheck size={18} />, key: "appointments" },
   { label: "Schools", icon: <BarChart3 size={18} />, key: "schools" },
-  { label: "Peer Support", icon: <Users size={18} />, key: "peer" },
-  { label: "Careers", icon: <Briefcase size={18} />, key: "career" }, 
-   { label: "Form", icon: <IoIosPaper size={18} />, key: "form" },       
-  { label: "Manage", icon: <FiSettings size={18} />, key: "manage" },  
+  { label: "Peer Support", icon: <MessageSquare size={18} />, key: "peer" },
+  { label: "Careers", icon: <Briefcase size={18} />, key: "career" },
+  { label: "Forms", icon: <IoIosPaper size={18} />, key: "form" },
+  { label: "Settings", icon: <FiSettings size={18} />, key: "manage" }
 ];
 
-const Sidebar = ({ setActiveSection, activeSection }) => {
+const Sidebar = ({ setActiveSection, activeSection, onSidebarToggle }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [theme, setTheme] = useState(() =>
-    localStorage.theme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-  );
+  const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleLogout = () => {
-    signOut(getAuth());
-  };
-
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    localStorage.theme = newTheme;
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-  };
-
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
+    if (onSidebarToggle) {
+      onSidebarToggle(collapsed);
+    }
+  }, [collapsed, onSidebarToggle]);
+
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      // Clear admin localStorage session
+      localStorage.removeItem('adminAuthenticated');
+      localStorage.removeItem('adminEmail');
+      
+      // Sign out from Firebase (if logged in via Firebase)
+      const auth = getAuth();
+      if (auth.currentUser) {
+        signOut(auth);
+      } else {
+        // If not Firebase user, manually redirect
+        window.location.href = '/login';
+      }
+    }
+  };
 
   const SidebarContent = () => (
     <div
-      className={`h-screen bg-purple-800 text-white p-4 flex flex-col justify-between ${
-        collapsed ? "w-20" : "w-64"
-      } transition-all duration-300`}
+      className={`fixed top-0 left-0 h-screen bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 flex flex-col z-30 ${
+        collapsed ? "w-16" : "w-64"
+      } transition-all duration-200`}
     >
-      <div>
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="mb-6 text-white flex items-center gap-2"
-        >
-          {collapsed ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
-          {!collapsed && <span className="text-sm font-semibold">Collapse</span>}
-        </button>
+      {/* Header */}
+      <div className="p-4 border-b border-gray-200 dark:border-zinc-800">
+        <div className="flex items-center justify-between">
+          {!collapsed && (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded bg-zinc-900 dark:bg-white flex items-center justify-center">
+                <Zap className="w-4 h-4 text-white dark:text-zinc-900" />
+              </div>
+              <div>
+                <h1 className="text-sm font-semibold text-zinc-900 dark:text-white">
+                  MindMates
+                </h1>
+                <p className="text-xs text-gray-500">Admin</p>
+              </div>
+            </div>
+          )}
+          
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500"
+            title={collapsed ? "Expand" : "Collapse"}
+          >
+            {collapsed ? <ChevronsRight size={16} /> : <ChevronsLeft size={16} />}
+          </button>
+        </div>
+      </div>
 
-        {!collapsed && <h1 className="text-xl font-bold mb-6 px-2">Admin Panel</h1>}
-
-        <nav className="space-y-2">
+      {/* Navigation */}
+      <div className="flex-1 overflow-y-auto p-2">
+        <nav className="space-y-1">
           {navItems.map((item) => (
-            <div
+            <button
               key={item.key}
               onClick={() => {
                 setActiveSection(item.key);
                 setMobileOpen(false);
               }}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer group transition ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded text-sm transition-colors ${
                 activeSection === item.key
-                  ? "bg-purple-700 font-bold"
-                  : "hover:bg-purple-600"
+                  ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800"
               }`}
               title={collapsed ? item.label : ""}
             >
-              {item.icon}
-              {!collapsed && <span className="text-sm">{item.label}</span>}
-            </div>
+              <div className="flex-shrink-0">
+                {item.icon}
+              </div>
+              
+              {!collapsed && (
+                <span className="truncate">{item.label}</span>
+              )}
+            </button>
           ))}
         </nav>
       </div>
 
-      <div className="space-y-3">
+      {/* Footer */}
+      <div className="p-2 border-t border-gray-200 dark:border-zinc-800 space-y-1">
         <button
           onClick={toggleTheme}
-          className="flex items-center gap-2 text-yellow-300 hover:text-yellow-100 transition px-2 py-2 rounded-md hover:bg-purple-700"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+          title={collapsed ? "Toggle Theme" : ""}
         >
-          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-          {!collapsed && (
-            <span className="text-sm">
-              {theme === "dark" ? "Light Mode" : "Dark Mode"}
-            </span>
-          )}
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          {!collapsed && <span>Theme</span>}
         </button>
-
+        
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 text-red-300 hover:text-red-100 transition px-2 py-2 rounded-md hover:bg-purple-700"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+          title={collapsed ? "Logout" : ""}
         >
-          <LogOut size={16} />
-          {!collapsed && <span className="text-sm">Logout</span>}
+          <LogOut size={18} />
+          {!collapsed && <span>Logout</span>}
         </button>
       </div>
     </div>
@@ -114,37 +156,31 @@ const Sidebar = ({ setActiveSection, activeSection }) => {
 
   return (
     <>
-      {/* Mobile toggle button */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
-        <button onClick={() => setMobileOpen(true)} className="text-purple-700 dark:text-white">
-          <Menu size={28} />
-        </button>
-      </div>
-
-      {/* Mobile sidebar */}
-      <div
-        className={`fixed inset-0 z-40 transition-transform transform ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        } md:hidden`}
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className="md:hidden fixed top-4 left-4 z-40 p-2 rounded-lg bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-gray-600 dark:text-gray-400"
       >
-        <div className="absolute inset-0 bg-black bg-opacity-40" onClick={() => setMobileOpen(false)} />
-        <div className="relative z-50">
-          <div className="bg-purple-800 text-white w-64 h-screen p-4">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-xl font-bold">Admin Panel</h1>
-              <button onClick={() => setMobileOpen(false)} className="text-white">
-                <X size={24} />
-              </button>
-            </div>
-            <SidebarContent />
-          </div>
-        </div>
-      </div>
+        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
 
-      {/* Desktop sidebar */}
+      {/* Desktop Sidebar */}
       <div className="hidden md:block">
         <SidebarContent />
       </div>
+
+      {/* Mobile Sidebar */}
+      {mobileOpen && (
+        <>
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-20"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div className="md:hidden">
+            <SidebarContent />
+          </div>
+        </>
+      )}
     </>
   );
 };

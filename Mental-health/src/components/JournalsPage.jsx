@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Textarea } from "../components/ui/Textarea";
+import { useTheme } from "../context/ThemeContext";
 
 const JournalsPage = () => {
   const [journals, setJournals] = useState([]);
@@ -25,9 +26,7 @@ const JournalsPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
   const [user, setUser] = useState(null);
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
+  const { theme, toggleTheme } = useTheme();
 
   const auth = getAuth();
 
@@ -86,52 +85,50 @@ const JournalsPage = () => {
     fetchJournals();
   };
 
-  const toggleTheme = () => {
-    const newTheme = !darkMode;
-    setDarkMode(newTheme);
-    document.documentElement.classList.toggle("dark", newTheme);
-    localStorage.setItem("theme", newTheme ? "dark" : "light");
-  };
-
   return (
-    <div className="min-h-screen px-6 py-10 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-all">
+    <div className="min-h-screen px-6 py-10 bg-slate-50 dark:bg-slate-950 text-gray-900 dark:text-white transition-colors duration-300">
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-purple-700 dark:text-purple-300">
-            My Journal Entries
-          </h1>
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-between mb-4 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
+              <span className="text-white text-xl">📓</span>
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              My Journal Entries
+            </h1>
+          </div>
+          <div className="flex items-center space-x-3">
             <button
               onClick={toggleTheme}
-              className="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200"
+              className="p-3 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shadow-sm"
               title="Toggle Theme"
             >
-              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {theme === "dark" ? <Sun className="w-5 h-5 text-slate-700 dark:text-slate-300" /> : <Moon className="w-5 h-5 text-slate-700 dark:text-slate-300" />}
             </button>
             <Link
               to="/user"
-              className="flex items-center text-sm text-purple-600 hover:underline dark:text-purple-400"
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg shadow-sm transition-colors"
             >
-              <ArrowLeft className="w-4 h-4 mr-1" />
+              <ArrowLeft className="w-4 h-4" />
               Back to Dashboard
             </Link>
           </div>
         </div>
 
         {/* Write new journal */}
-        <Card className="bg-white dark:bg-gray-800 border border-purple-300 dark:border-gray-600 p-4 rounded-xl">
+        <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
           <CardContent className="space-y-3">
             <Textarea
               rows={4}
               placeholder="Write about your day..."
               value={entry}
               onChange={(e) => setEntry(e.target.value)}
-              className="w-full text-sm"
+              className="w-full text-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
             />
             <Button
               onClick={handleSave}
-              className="bg-purple-600 text-white hover:bg-purple-700 transition w-full"
+              className="bg-indigo-600 text-white hover:bg-indigo-700 transition w-full rounded-lg py-2"
             >
               Save Journal Entry
             </Button>
@@ -140,14 +137,14 @@ const JournalsPage = () => {
 
         {/* Display saved journals */}
         {journals.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-sm italic text-center mt-6">
+          <p className="text-slate-500 dark:text-slate-400 text-sm italic text-center mt-6">
             No journal entries yet.
           </p>
         ) : (
           journals.map((journal) => (
             <Card
               key={journal.id}
-              className="bg-white dark:bg-gray-800 border border-purple-300 dark:border-gray-600 p-4 rounded-xl transition hover:shadow-md"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-md transition"
             >
               <CardContent className="space-y-2">
                 {editingId === journal.id ? (
@@ -156,13 +153,13 @@ const JournalsPage = () => {
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
                       rows={3}
-                      className="w-full text-sm"
+                      className="w-full text-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
                     />
                     <div className="flex justify-end gap-2">
                       <Button
                         size="sm"
                         onClick={() => handleEdit(journal.id)}
-                        className="bg-green-600 text-white hover:bg-green-700"
+                        className="bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg"
                       >
                         <Check size={16} />
                       </Button>
@@ -173,6 +170,7 @@ const JournalsPage = () => {
                           setEditingId(null);
                           setEditText("");
                         }}
+                        className="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg"
                       >
                         <X size={16} />
                       </Button>
@@ -180,8 +178,8 @@ const JournalsPage = () => {
                   </>
                 ) : (
                   <>
-                    <p className="text-sm italic text-gray-800 dark:text-gray-200">"{journal.entry}"</p>
-                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-sm italic text-slate-800 dark:text-slate-200">"{journal.entry}"</p>
+                    <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
                       <span>{new Date(journal.timestamp?.toDate?.()).toLocaleDateString()}</span>
                       <div className="flex gap-2">
                         <button
@@ -189,13 +187,13 @@ const JournalsPage = () => {
                             setEditingId(journal.id);
                             setEditText(journal.entry);
                           }}
-                          className="text-blue-600 hover:text-blue-800"
+                          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition"
                         >
                           <Pencil size={14} />
                         </button>
                         <button
                           onClick={() => handleDelete(journal.id)}
-                          className="text-red-600 hover:text-red-800"
+                          className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition"
                         >
                           <Trash2 size={14} />
                         </button>

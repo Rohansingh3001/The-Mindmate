@@ -17,10 +17,40 @@ export default function AdminPanel() {
   const [user, setUser] = useState(null);
   const [activeSection, setActiveSection] = useState("dashboard");
   const [loading, setLoading] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+
+  const handleSidebarToggle = (collapsed) => {
+    setSidebarCollapsed(collapsed);
+  };
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const auth = getAuth();
+    
+    // Check if admin is authenticated via localStorage (hardcoded admin login)
+    const isAdminAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
+    const adminEmail = localStorage.getItem('adminEmail');
+    
+    if (isAdminAuthenticated && adminEmail === 'mindmates@gmail.com') {
+      // Admin logged in without Firebase
+      setUser({ email: adminEmail, displayName: 'Admin' });
+      setLoading(false);
+      return;
+    }
+    
+    // Regular Firebase authentication check
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
       if (u) {
         const validAdmin = await isAdmin(u.email);
@@ -71,9 +101,20 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-zinc-900">
-      <Sidebar setActiveSection={setActiveSection} activeSection={activeSection} />
-      <main className="flex-1 p-6 overflow-y-auto">{renderSection()}</main>
+    <div className="min-h-screen bg-gray-100 dark:bg-zinc-900">
+      <Sidebar 
+        setActiveSection={setActiveSection} 
+        activeSection={activeSection}
+        onSidebarToggle={handleSidebarToggle}
+      />
+      <main 
+        className={`
+          overflow-y-auto min-h-screen transition-all duration-300
+          ${!isMobile ? (sidebarCollapsed ? 'ml-16 p-6' : 'ml-64 p-6') : 'ml-0 p-4 pt-20'}
+        `}
+      >
+        {renderSection()}
+      </main>
     </div>
   );
 }

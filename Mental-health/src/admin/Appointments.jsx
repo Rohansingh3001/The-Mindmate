@@ -9,11 +9,13 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { Trash2 } from "lucide-react";
+import emailjs from 'emailjs-com';
 import { format } from "date-fns";
 
 export default function Appointments() {
   const [appointments, setAppointments] = useState([]);
   const [meetLinks, setMeetLinks] = useState({}); // store temporary input
+  const [filter, setFilter] = useState("upcoming");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,11 +67,33 @@ export default function Appointments() {
       meetLink: link,
     });
 
-    setAppointments(prev =>
-      prev.map(app => (app.id === id ? { ...app, meetLink: link } : app))
-    );
+    // Use callback to ensure we use the latest appointments state
+    setAppointments(prev => {
+      const updated = prev.map(app => (app.id === id ? { ...app, meetLink: link } : app));
 
-    alert("Meet link updated successfully.");
+      // Send email using EmailJS with the updated appointment data
+      const appData = updated.find(app => app.id === id);
+      if (appData && appData.email && appData.email !== "N/A") {
+        emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          {
+            to_email: appData.email,
+            to_name: appData.fullName,
+            meet_link: link,
+          },
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        ).then(() => {
+          alert("Meet link updated and email sent to user.");
+        }).catch((e) => {
+          console.error('EmailJS error:', e);
+          alert("Meet link updated, but failed to send email.");
+        });
+      } else {
+        alert("Meet link updated successfully.");
+      }
+      return updated;
+    });
   };
 
   const formatDateTime = (ts) => {
@@ -84,114 +108,175 @@ export default function Appointments() {
     }
   };
 
-  return (
-    <div className="space-y-6 px-4 py-8">
-      <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">
-        All Scheduled Appointments
-      </h2>
+  // Filter appointments based on filter state
+  const now = new Date();
+  const filteredAppointments = appointments.filter(app => {
+    if (!app.timestamp) return false;
+    if (filter === "upcoming") {
+      return app.timestamp >= now;
+    } else {
+      return app.timestamp < now;
+    }
+  });
 
-      {appointments.length === 0 ? (
-        <p className="text-zinc-600 dark:text-zinc-300">No appointments found.</p>
+  return (
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight mb-2">
+            Scheduled Appointments
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Manage client appointments and meeting schedules
+          </p>
+        </div>
+        <div className="bg-white dark:bg-zinc-800 rounded-lg px-4 py-2 border border-zinc-200 dark:border-zinc-700">
+          <label htmlFor="appt-filter" className="mr-2 font-medium text-zinc-700 dark:text-zinc-300 text-sm">Show:</label>
+          <select
+            id="appt-filter"
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white text-sm"
+          >
+            <option value="upcoming">Upcoming Appointments</option>
+            <option value="past">Past Appointments</option>
+          </select>
+        </div>
+      </div>
+
+      {filteredAppointments.length === 0 ? (
+        <div className="bg-white dark:bg-zinc-800 rounded-xl p-8 text-center border border-zinc-200 dark:border-zinc-700">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-zinc-700 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-zinc-900 dark:text-white mb-1">No Appointments Found</h3>
+          <p className="text-zinc-600 dark:text-zinc-400">
+            {filter === 'upcoming' ? 'No upcoming appointments scheduled.' : 'No past appointments found.'}
+          </p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {appointments.map((app) => {
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredAppointments.map((app) => {
             const { date, time } = formatDateTime(app.timestamp);
             return (
               <div
                 key={app.id}
-                className="p-5 bg-white dark:bg-zinc-900/80 border border-purple-200 dark:border-purple-700 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+                className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden hover:shadow-lg transition-all duration-200"
               >
-                {/* User */}
-                <div className="mb-2">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">User</p>
-                  <p className="text-md font-semibold text-purple-700 dark:text-purple-300">
-                    {app.fullName}
-                  </p>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-300">
-                    {app.email}
-                  </p>
-                </div>
-
-                {/* Doctor */}
-                <div className="mb-2">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Doctor</p>
-                  <p className="text-sm text-zinc-800 dark:text-zinc-100">
-                    {app.doctor || "Not assigned"}
-                  </p>
-                </div>
-
-                {/* Date & Time */}
-                <div className="mb-2">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Date & Time</p>
-                  <p className="text-sm text-zinc-700 dark:text-zinc-200">
-                    {date} at {time}
-                  </p>
-                </div>
-
-                {/* Mode */}
-                {app.mode && (
-                  <div className="mb-2">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Mode</p>
-                    <p className="text-sm text-zinc-700 dark:text-zinc-200">{app.mode}</p>
-                  </div>
-                )}
-
-                {/* Purpose */}
-                {app.purpose && (
-                  <div className="mb-2">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Purpose</p>
-                    <p className="text-sm text-zinc-700 dark:text-zinc-200">{app.purpose}</p>
-                  </div>
-                )}
-
-                {/* Notes */}
-                {app.notes && (
-                  <div className="mb-2">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Notes</p>
-                    <p className="text-sm text-zinc-700 dark:text-zinc-200">{app.notes}</p>
-                  </div>
-                )}
-
-                {/* Google Meet Link */}
-                <div className="mb-2">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Google Meet Link</p>
-                  {app.meetLink ? (
-                    <a
-                      href={app.meetLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 dark:text-blue-400 underline"
-                    >
-                      Join Meet
-                    </a>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      <input
-                        type="text"
-                        placeholder="https://meet.google.com/..."
-                        value={meetLinks[app.id] || ""}
-                        onChange={(e) =>
-                          setMeetLinks({ ...meetLinks, [app.id]: e.target.value })
-                        }
-                        className="px-3 py-1 text-sm border rounded"
-                      />
-                      <button
-                        onClick={() => handleSendMeetLink(app.id)}
-                        className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                      >
-                        Send Meet Link
-                      </button>
+                {/* Header */}
+                <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">
+                          {app.fullName?.charAt(0)?.toUpperCase() || 'A'}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="text-white font-semibold text-lg">{app.fullName}</h3>
+                        <p className="text-purple-100 text-sm">{app.email}</p>
+                      </div>
                     </div>
-                  )}
+                    <button
+                      onClick={() => cancelAppointment(app.id)}
+                      className="p-2 rounded-lg bg-white/10 hover:bg-red-500/20 text-white hover:text-red-200 transition-colors"
+                      title="Cancel Appointment"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Cancel Button */}
-                <button
-                  onClick={() => cancelAppointment(app.id)}
-                  className="mt-3 flex items-center gap-1 text-sm text-red-600 hover:text-red-700 hover:underline transition-all"
-                >
-                  <Trash2 size={14} /> Cancel Appointment
-                </button>
+                {/* Content */}
+                <div className="p-6 space-y-4">
+                  {/* Appointment Details */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span className="font-medium text-zinc-700 dark:text-zinc-300">Date:</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">{date}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="font-medium text-zinc-700 dark:text-zinc-300">Time:</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">{time}</span>
+                    </div>
+                    {app.doctor && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span className="font-medium text-zinc-700 dark:text-zinc-300">Doctor:</span>
+                        <span className="text-zinc-600 dark:text-zinc-400">{app.doctor}</span>
+                      </div>
+                    )}
+                    {app.mode && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span className="font-medium text-zinc-700 dark:text-zinc-300">Mode:</span>
+                        <span className="text-zinc-600 dark:text-zinc-400">{app.mode}</span>
+                      </div>
+                    )}
+                    {app.purpose && (
+                      <div className="space-y-1">
+                        <span className="font-medium text-zinc-700 dark:text-zinc-300 text-sm">Purpose:</span>
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 bg-gray-50 dark:bg-zinc-700 p-2 rounded-md">
+                          {app.purpose}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Meet Link Section */}
+                  <div className="border-t border-gray-200 dark:border-zinc-600 pt-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span className="font-medium text-zinc-700 dark:text-zinc-300 text-sm">Google Meet:</span>
+                    </div>
+                    {app.meetLink ? (
+                      <a
+                        href={app.meetLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/40 transition-colors text-sm font-medium"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Join Meeting
+                      </a>
+                    ) : (
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          placeholder="https://meet.google.com/..."
+                          value={meetLinks[app.id] || ""}
+                          onChange={(e) =>
+                            setMeetLinks({ ...meetLinks, [app.id]: e.target.value })
+                          }
+                          className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-white"
+                        />
+                        <button
+                          onClick={() => handleSendMeetLink(app.id)}
+                          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                        >
+                          Send Meet Link
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             );
           })}

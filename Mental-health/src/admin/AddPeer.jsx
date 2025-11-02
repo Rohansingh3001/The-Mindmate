@@ -111,22 +111,52 @@ export default function AddPeer() {
     : groupedPeers;
 
   return (
-    <div className="min-h-screen py-12 px-6 bg-white dark:bg-zinc-900 text-gray-800 dark:text-white">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-zinc-800 shadow-xl rounded-xl p-8">
-        <h2 className="text-3xl font-bold text-center mb-8 text-purple-700 dark:text-purple-300">
-          {editId ? "✏️ Edit Peer Supporter" : "➕ Add Peer Supporter"}
-        </h2>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight mb-2">
+            {editId ? "Edit Peer Supporter" : "Peer Support Management"}
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            {editId ? "Update peer supporter information" : "Manage peer support specialists and their expertise areas"}
+          </p>
+        </div>
+      </div>
 
-        {/* Filter */}
-        <div className="mb-8">
-          <label className="block text-sm font-medium mb-2">Filter by Tag</label>
-          <select
-            value={filterTag}
-            onChange={(e) => setFilterTag(e.target.value)}
-            className="w-full md:max-w-xs px-4 py-2 rounded-md border dark:bg-zinc-700 dark:border-zinc-600"
-          >
-            <option value="">Show All</option>
-            {tagOptions.map((tag) => (
+      {/* Form Section */}
+      <div className="bg-white dark:bg-zinc-800 shadow-xl rounded-xl border border-zinc-200 dark:border-zinc-700">
+        <div className="p-6 border-b border-zinc-200 dark:border-zinc-700">
+          <h3 className="text-xl font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+            {editId ? (
+              <>
+                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit Peer Supporter
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add New Peer Supporter
+              </>
+            )}
+          </h3>
+        </div>
+
+        <div className="p-6">
+          {/* Filter */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Filter by Expertise</label>
+            <select
+              value={filterTag}
+              onChange={(e) => setFilterTag(e.target.value)}
+              className="w-full md:max-w-xs px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              <option value="">Show All Supporters</option>
+              {tagOptions.map((tag) => (
               <option key={tag} value={tag}>
                 {tag.toUpperCase()}
               </option>
@@ -165,6 +195,7 @@ export default function AddPeer() {
         <Button onClick={handleSubmit} className="w-full mb-6">
           {editId ? "Update Peer" : "Add Peer"}
         </Button>
+        </div>
       </div>
 
       {/* Peer Cards */}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
 
@@ -11,6 +11,7 @@ import UserRoutes from "../Routes/UserRoutes.jsx";
 
 function User() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [userDetails, setUserDetails] = useState(null);
   const [showGuide, setShowGuide] = useState(true);
 
@@ -21,7 +22,8 @@ function User() {
           name: user.displayName || "User",
           email: user.email,
         });
-        // Show feedback reminder toast
+        // REMOVE or COMMENT OUT the feedback reminder toast below to stop the popup notification:
+        /*
         toast((t) => (
           <span>
             <span className="text-lg mr-2">📝</span>
@@ -37,6 +39,7 @@ function User() {
             </button>
           </span>
         ), { duration: 8000 });
+        */
       } else {
         navigate("/login");
       }
@@ -61,8 +64,10 @@ function User() {
 
   return (
     <div className="bg-gradient-to-br from-white to-[#f0e9ff] dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100 relative">
-      <Navbar onLogout={handleLogout} onViewAccount={handleViewAccount} />
-
+      {/* Only show Navbar on home page (dashboard) */}
+      {location.pathname === '/user' && (
+        <Navbar onLogout={handleLogout} onViewAccount={handleViewAccount} />
+      )}
 
       <main className="flex flex-col w-full">
         <UserRoutes /> {/* ✅ Routes moved here */}

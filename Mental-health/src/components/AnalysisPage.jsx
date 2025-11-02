@@ -4,14 +4,13 @@ import { IoIosStats } from "react-icons/io";
 import { Sun, Moon } from "lucide-react";
 import { Card, CardContent } from "./ui/Card";
 import { format, isThisWeek, parseISO } from "date-fns";
+import { useTheme } from "../context/ThemeContext";
 
 export default function AnalysisPage() {
   const [moodLogs, setMoodLogs] = useState([]);
   const [journals, setJournals] = useState([]);
   const [appointments, setAppointments] = useState([]);
-  const [theme, setTheme] = useState(() =>
-    localStorage.theme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-  );
+  const { theme, toggleTheme } = useTheme();
 
   const navigate = useNavigate();
 
@@ -24,15 +23,6 @@ export default function AnalysisPage() {
     setJournals(Array.isArray(journalData) ? journalData : []);
     setAppointments(Array.isArray(appointmentData) ? appointmentData : []);
   }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.theme = theme;
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
 
   // Filter entries from this week
   const isEntryThisWeek = (entry) => {
@@ -65,39 +55,83 @@ export default function AnalysisPage() {
   ))];
 
   return (
-    <div className="min-h-screen px-4 py-8 bg-gradient-to-br from-white via-purple-100 to-purple-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100 animate-fade-in">
+    <div className="min-h-screen px-4 py-8 bg-slate-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       {/* Header */}
-      <header className="flex justify-between items-center mb-8">
+      <header className="flex justify-between items-center mb-8 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="px-3 py-1 text-sm bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-purple-300 rounded-lg shadow"
+            className="px-4 py-2 text-sm bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg shadow-sm transition-colors"
           >
             ← Go Back
           </button>
-          <IoIosStats className="text-purple-600 dark:text-purple-300" size={28} />
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Wellness Analysis</h1>
+          <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
+            <IoIosStats className="text-white" size={20} />
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Wellness Analysis</h1>
         </div>
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-full bg-purple-500 hover:bg-purple-600 text-white shadow"
+          className="p-3 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shadow-sm"
           aria-label="Toggle Theme"
         >
-          {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          {theme === "dark" ? <Sun className="w-5 h-5 text-slate-700 dark:text-slate-300" /> : <Moon className="w-5 h-5 text-slate-700 dark:text-slate-300" />}
         </button>
       </header>
 
       {/* Cards */}
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {/* Weekly Summary */}
-        <Card className="bg-white dark:bg-gray-800 border border-purple-300 dark:border-gray-600 rounded-2xl shadow-md hover:shadow-lg transition">
+        <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-md transition">
           <CardContent className="p-6 space-y-3">
-            <h2 className="text-lg font-semibold text-purple-700 dark:text-purple-300">This Week's Activity</h2>
-            <ul className="text-gray-700 dark:text-gray-300 text-sm space-y-1">
-              <li>🧠 Mood logs this week: <strong>{weeklyMoods.length}</strong></li>
-              <li>📓 Journals written: <strong>{weeklyJournals.length}</strong></li>
-              <li>🗓️ Sessions booked: <strong>{weeklyAppointments.length}</strong></li>
+                        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">This Week's Activity</h2>
+            <ul className="text-slate-700 dark:text-slate-300 text-sm space-y-2">
+              <li className="flex items-center gap-2">
+                <span className="text-indigo-600">🧠</span> Mood logs this week: <strong>{weeklyMoods.length}</strong>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-indigo-600">📓</span> Journals written: <strong>{weeklyJournals.length}</strong>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-indigo-600">🗓️</span> Sessions booked: <strong>{weeklyAppointments.length}</strong>
+              </li>
             </ul>
+          </CardContent>
+        </Card>
+
+        {/* Mood Trend */}
+        <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-md transition">
+          <CardContent className="p-6 space-y-4">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Mood Trend</h2>
+            <div className="text-sm text-slate-600 dark:text-slate-400">
+              {recentMoods.length > 0 ? (
+                <>
+                  You've recently felt:{" "}
+                  <span className="text-indigo-600 dark:text-indigo-400 font-medium">{moodSummary}</span>. Keep tracking your emotions regularly.
+                </>
+              ) : (
+                "You haven't logged any moods yet. Try reflecting on your day!"
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Journal Insights */}
+        <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-md transition xl:col-span-1 md:col-span-2">
+          <CardContent className="p-6 space-y-4">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Journal Reflections</h2>
+            <div className="text-sm text-slate-600 dark:text-slate-400">
+              {frequentTopics.length > 0 ? (
+                <>
+                  Topics frequently mentioned:{" "}
+                  <span className="font-medium text-indigo-600 dark:text-indigo-400">
+                    {frequentTopics.join(", ")}
+                  </span>. Consider exploring relaxation exercises, journaling prompts, or talking to a professional.
+                </>
+              ) : (
+                "Your journals are unique or haven't been analyzed yet. Keep writing to uncover insights!"
+              )}
+            </div>
           </CardContent>
         </Card>
 
