@@ -105,6 +105,11 @@ export default function Dashboard() {
   const [levelProgress, setLevelProgress] = useState(0);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showXPInfo, setShowXPInfo] = useState(false);
+  const [showMoodReasonModal, setShowMoodReasonModal] = useState(false);
+  const [moodReason, setMoodReason] = useState("");
+  const [selectedMoodData, setSelectedMoodData] = useState(null);
+  const [hasLoggedToday, setHasLoggedToday] = useState(false);
+  const [currentStreak, setCurrentStreak] = useState(0);
 
   // Initialize level tracking on component mount
   useEffect(() => {
@@ -271,6 +276,59 @@ export default function Dashboard() {
       });
   }, []);
 
+  // Check if user has logged mood today and calculate streak
+  const checkTodaysMoodLog = () => {
+    const moodLogs = JSON.parse(localStorage.getItem("mindmates.moodLogs") || "[]");
+    const today = new Date().toDateString();
+    
+    // Check if there's a log for today
+    const loggedToday = moodLogs.some(log => {
+      const logDate = new Date(log.timestamp).toDateString();
+      return logDate === today;
+    });
+    
+    setHasLoggedToday(loggedToday);
+    
+    // Calculate streak
+    const streak = calculateMoodStreak(moodLogs);
+    setCurrentStreak(streak);
+    
+    return loggedToday;
+  };
+
+  // Calculate mood logging streak
+  const calculateMoodStreak = (logs) => {
+    if (logs.length === 0) return 0;
+    
+    let streak = 0;
+    const sortedLogs = [...logs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    // Group logs by date
+    const logsByDate = {};
+    sortedLogs.forEach(log => {
+      const dateStr = new Date(log.timestamp).toDateString();
+      if (!logsByDate[dateStr]) {
+        logsByDate[dateStr] = true;
+      }
+    });
+    
+    // Check consecutive days starting from today
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    
+    while (true) {
+      const dateStr = currentDate.toDateString();
+      if (logsByDate[dateStr]) {
+        streak++;
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
+  };
+
   useEffect(() => {
     const moodLogs = JSON.parse(localStorage.getItem("mindmates.moodLogs") || "[]");
     const journals = JSON.parse(localStorage.getItem("mindmates.journals") || "[]");
@@ -283,6 +341,9 @@ export default function Dashboard() {
     }));
 
     setGreeting(greetings[Math.floor(Math.random() * greetings.length)]);
+    
+    // Check today's mood log and streak
+    checkTodaysMoodLog();
   }, []);
 
   useEffect(() => {
@@ -316,8 +377,31 @@ export default function Dashboard() {
 
 
   const handleMoodClick = (emoji, index) => {
+    // Check if user has already logged mood today
+    if (hasLoggedToday) {
+      toast.error("You've already logged your mood today! Come back tomorrow to continue your streak. 🔥", {
+        position: "top-center",
+        duration: 4000,
+        style: { background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)', color: 'white' }
+      });
+      return;
+    }
+    
+    // Store selected mood data and show the reason modal
+    setSelectedMoodData({ emoji, index, label: moodEmojis[index].label });
+    setShowMoodReasonModal(true);
+  };
+
+  const saveMoodWithReason = () => {
+    if (!selectedMoodData) return;
+
+    const { emoji, index } = selectedMoodData;
     const logs = JSON.parse(localStorage.getItem("mindmates.moodLogs") || "[]");
-    const newMoodLog = { mood: emoji, timestamp: new Date().toISOString() };
+    const newMoodLog = { 
+      mood: emoji, 
+      timestamp: new Date().toISOString(),
+      reason: moodReason.trim() || "No reason provided"
+    };
     const updatedLogs = [...logs, newMoodLog];
     localStorage.setItem("mindmates.moodLogs", JSON.stringify(updatedLogs));
     
@@ -326,11 +410,31 @@ export default function Dashboard() {
     
     setMood(emoji);
     setSelectedMoodIndex(index);
+    setHasLoggedToday(true);
     setStats((prev) => ({ ...prev, moodLogs: updatedLogs.length }));
-    toast.success(`Mood logged: ${moodEmojis[index].label} ${emoji}`, { 
-      position: "top-right",
-      style: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }
-    });
+    
+    // Calculate new streak
+    const newStreak = calculateMoodStreak(updatedLogs);
+    setCurrentStreak(newStreak);
+    
+    // Show success toast with streak info
+    if (newStreak > 1) {
+      toast.success(`🔥 ${newStreak} day streak! Mood logged: ${moodEmojis[index].label} ${emoji}`, { 
+        position: "top-center",
+        duration: 5000,
+        style: { background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 100%)', color: 'white', fontWeight: 'bold' }
+      });
+    } else {
+      toast.success(`Mood logged: ${moodEmojis[index].label} ${emoji}. Start your streak! 🎯`, { 
+        position: "top-right",
+        style: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }
+      });
+    }
+
+    // Reset and close modal
+    setShowMoodReasonModal(false);
+    setMoodReason("");
+    setSelectedMoodData(null);
 
     // Trigger recalculation after a short delay to ensure state updates
     setTimeout(() => {
@@ -810,36 +914,155 @@ export default function Dashboard() {
           )}
         </AnimatePresence>
 
+        {/* Mood Reason Modal */}
+        <AnimatePresence>
+          {showMoodReasonModal && selectedMoodData && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+              onClick={() => {
+                setShowMoodReasonModal(false);
+                setMoodReason("");
+                setSelectedMoodData(null);
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="text-center mb-6">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", delay: 0.2 }}
+                    className="text-6xl mb-4"
+                  >
+                    {selectedMoodData.emoji}
+                  </motion.div>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                    You're feeling {selectedMoodData.label.toLowerCase()}
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400">
+                    {selectedMoodData.label === "Happy" && "That's wonderful! What made you happy today?"}
+                    {selectedMoodData.label === "Sad" && "It's okay to feel sad. What's making you feel this way?"}
+                    {selectedMoodData.label === "Angry" && "Let's talk about it. What's bothering you?"}
+                    {selectedMoodData.label === "Neutral" && "Tell us more. What's on your mind today?"}
+                    {selectedMoodData.label === "Tired" && "Take it easy. What's making you feel tired?"}
+                  </p>
+                </div>
+
+                <div className="mb-6">
+                  <textarea
+                    value={moodReason}
+                    onChange={(e) => setMoodReason(e.target.value)}
+                    placeholder="Share your thoughts... (optional)"
+                    className="w-full p-4 rounded-xl bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
+                    rows="4"
+                    autoFocus
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowMoodReasonModal(false);
+                      setMoodReason("");
+                      setSelectedMoodData(null);
+                    }}
+                    className="flex-1 p-3 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveMoodWithReason}
+                    className="flex-1 p-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/30"
+                  >
+                    Save Mood
+                  </button>
+                </div>
+
+                <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
+                  💡 Tracking your feelings helps you understand your emotional patterns
+                </p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Dashboard Grid */}
         <section className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {/* Clean Mood Tracker */}
           <div className="md:col-span-2 xl:col-span-2 2xl:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
                   <Heart className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-slate-900 dark:text-white">Mood Tracker</h2>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">How are you feeling?</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    {hasLoggedToday ? "Today's mood logged ✓" : "How are you feeling today?"}
+                  </p>
                 </div>
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.moodLogs}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">logs</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">total logs</div>
               </div>
             </div>
+
+            {/* Streak Display */}
+            {currentStreak > 0 && (
+              <div className="mb-4 p-3 rounded-xl bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-800">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🔥</span>
+                    <div>
+                      <p className="text-sm font-bold text-orange-800 dark:text-orange-300">
+                        {currentStreak} Day Streak!
+                      </p>
+                      <p className="text-xs text-orange-700 dark:text-orange-400">
+                        {hasLoggedToday ? "Come back tomorrow!" : "Keep it going!"}
+                      </p>
+                    </div>
+                  </div>
+                  {currentStreak >= 7 && (
+                    <div className="px-3 py-1 rounded-lg bg-orange-500 text-white text-xs font-bold">
+                      Champion
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Status Banner */}
+            {hasLoggedToday && (
+              <div className="mb-4 p-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                <div className="flex items-center gap-2">
+                  <span className="text-green-600 dark:text-green-400">✓</span>
+                  <p className="text-sm text-green-800 dark:text-green-300 font-medium">
+                    Mood logged for today! See you tomorrow to continue your streak.
+                  </p>
+                </div>
+              </div>
+            )}
             
-            <div className="grid grid-cols-5 gap-3">
+            <div className={`grid grid-cols-5 gap-3 ${hasLoggedToday ? 'opacity-50 pointer-events-none' : ''}`}>
               {moodEmojis.map((moodData, index) => (
                 <button
                   key={index}
                   onClick={() => handleMoodClick(moodData.emoji, index)}
+                  disabled={hasLoggedToday}
                   className={`p-3 rounded-xl transition-all ${
                     selectedMoodIndex === index || mood === moodData.emoji
                       ? 'bg-indigo-600 text-white'
                       : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700'
-                  }`}
+                  } ${hasLoggedToday ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                 >
                   <div className="text-2xl mb-1">{moodData.emoji}</div>
                   <div className="text-xs font-medium">{moodData.label}</div>
@@ -847,10 +1070,10 @@ export default function Dashboard() {
               ))}
             </div>
             
-            {selectedMoodIndex >= 0 && (
-              <div className="mt-4 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                <p className="text-sm text-green-800 dark:text-green-300">
-                  Feeling {moodEmojis[selectedMoodIndex].label.toLowerCase()}? All emotions are valid. 💚
+            {!hasLoggedToday && selectedMoodIndex >= 0 && (
+              <div className="mt-4 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-blue-800 dark:text-blue-300">
+                  Feeling {moodEmojis[selectedMoodIndex].label.toLowerCase()}? All emotions are valid. �
                 </p>
               </div>
             )}

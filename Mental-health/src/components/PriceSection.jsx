@@ -12,7 +12,7 @@ export default function ServicesSection() {
         </h1>
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto text-center">
+      <div className="relative z-10 max-w-6xl mx-auto text-center blur-md select-none pointer-events-none">
         {/* Section Header */}
         <h2 className="text-4xl sm:text-5xl font-extrabold text-[#6a4eeb] mb-4">
           Mental Wellness, Accessible to All
@@ -116,6 +116,20 @@ export default function ServicesSection() {
                 Go Premium
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Coming Soon Overlay */}
+      <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-20">
+        <div className="bg-white px-10 py-8 sm:px-16 sm:py-12 rounded-3xl shadow-2xl text-center border-[6px] border-mindmate-600 transform hover:scale-105 transition-all duration-300">
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="text-3xl sm:text-5xl md:text-6xl font-black text-mindmate-600 drop-shadow-md">
+              Coming Soon! 🚀
+            </h3>
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
+              Will be available soon
+            </p>
           </div>
         </div>
       </div>
