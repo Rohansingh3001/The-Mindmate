@@ -51,14 +51,14 @@ function HeroSection() {
 
           <motion.p
             variants={fadeUp}
-            className="text-md sm:text-lg text-indigo-500 mt-4 font-medium tracking-wide"
+            className="text-md sm:text-lg text-mindmate-700 mt-4 font-semibold tracking-wide"
           >
             Because no one should have to fight their mental battles alone.
           </motion.p>
 
           <motion.p
             variants={fadeUp}
-            className="text-lg sm:text-xl mt-6 text-gray-600 max-w-md mx-auto lg:mx-0 leading-relaxed"
+            className="text-lg sm:text-xl mt-6 text-gray-700 max-w-md mx-auto lg:mx-0 leading-relaxed font-medium"
           >
             The MindMates blends cutting-edge AI with human empathy — offering
             teens and young adults someone to talk to, whenever they need it most.
@@ -74,7 +74,7 @@ function HeroSection() {
             <motion.button
               whileHover={{ scale: 1.06, boxShadow: "0px 0px 12px #8f71ff" }}
               whileTap={{ scale: 0.96 }}
-              className="bg-[#8f71ff] hover:bg-[#7b60e8] text-white text-lg px-6 py-3 rounded-xl shadow-lg transition-all w-full sm:w-auto"
+              className="bg-gradient-to-r from-mindmate-500 to-mindmate-600 hover:from-mindmate-600 hover:to-mindmate-700 text-white text-lg font-bold px-8 py-4 rounded-xl shadow-lg transition-all w-full sm:w-auto"
             >
               💬 Start Chatting
             </motion.button>
@@ -84,11 +84,11 @@ function HeroSection() {
             <motion.button
               whileHover={{
                 scale: 1.05,
-                backgroundColor: "#eeeaff",
+                backgroundColor: "#ffffff",
                 boxShadow: "0px 0px 8px #d1c6ff",
               }}
               whileTap={{ scale: 0.96 }}
-              className="border border-[#8f71ff] text-[#8f71ff] text-lg px-6 py-3 rounded-xl transition-all w-full sm:w-auto"
+              className="border-2 border-mindmate-600 bg-white text-mindmate-700 text-lg font-bold px-8 py-4 rounded-xl transition-all w-full sm:w-auto shadow-sm"
             >
               ✨ Learn More
             </motion.button>
