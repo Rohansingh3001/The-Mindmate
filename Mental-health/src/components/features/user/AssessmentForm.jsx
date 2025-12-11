@@ -261,7 +261,7 @@ export default function AssessmentForm() {
               <Lottie animationData={CelebrateAnim} loop={false} />
             </div>
 
-            <h2 className="text-3xl font-bold text-green-600 dark:text-green-400">You"re Doing Great! 🌟</h2>
+            <h2 className="text-3xl font-bold text-green-600 dark:text-green-400">You're Doing Great! 🌟</h2>
 
             <div className="w-full h-64">
               <ResponsiveContainer>
@@ -290,7 +290,7 @@ export default function AssessmentForm() {
             </div>
 
             <p className="text-xl font-semibold text-purple-700 dark:text-purple-300">
-              You"re {100 - totalPercent}% on the bright side today 💜
+              You're {100 - totalPercent}% on the bright side today 💜
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6">
@@ -304,7 +304,7 @@ export default function AssessmentForm() {
                 onClick={handleRetake}
                 className="bg-gray-200 hover:bg-gray-300 text-black dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 font-semibold py-2 px-6 rounded-xl transition shadow"
               >
-                Sumit Another Responce
+                Submit Another Response
               </button>
             </div>
           </div>

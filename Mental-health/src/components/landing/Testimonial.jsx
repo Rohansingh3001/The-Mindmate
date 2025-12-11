@@ -28,7 +28,7 @@ export default function Testimonial() {
     { name: "Aarav Mehta", feedback: "Amazing experience! Highly recommended." },
     { name: "Ishita Verma", feedback: "Super helpful and very easy to use." },
     { name: "Rahul Sharma", feedback: "This changed how I approach mental wellness." },
-    { name: "Priya Nair", feedback: "The MindMatess is a game-changer!" },
+    { name: "Priya Nair", feedback: "The MindMates is a game-changer!" },
     { name: "Kabir Rao", feedback: "Smooth UI and feels very personal." },
     { name: "Sneha Iyer", feedback: "I feel heard and supported here." },
     { name: "Ananya Das", feedback: "Love the animations and flow!" },

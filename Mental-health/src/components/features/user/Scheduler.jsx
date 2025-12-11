@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import { addDoc, collection } from 'firebase/firestore';
-import { db } from "../../../firebase';
+import { db } from "../../../firebase";
 import { toast } from 'react-toastify';
 import 'react-datepicker/dist/react-datepicker.css';
 

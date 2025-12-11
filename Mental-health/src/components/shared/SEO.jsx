@@ -1,5 +1,4 @@
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import React, { useEffect } from 'react';
 
 const SEO = ({
   title = 'The MindMates - Mental Health Support & Therapy Platform in India',
@@ -18,97 +17,70 @@ const SEO = ({
   const pageUrl = canonicalUrl || url;
   const pageTitle = title.includes('MindMates') ? title : `${title} | The MindMates`;
 
-  // Default structured data for Organization
-  const defaultSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'The MindMates',
-    url: 'https://themindmates.in',
-    logo: 'https://themindmates.in/logo.svg',
-    description: 'Professional mental health support and therapy platform in India',
-    address: {
-      '@type': 'PostalAddress',
-      addressCountry: 'IN',
-    },
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'Customer Support',
-      availableLanguage: ['English', 'Hindi'],
-    },
-    sameAs: [
-      // Add your social media profiles here
-      'https://www.facebook.com/themindmates',
-      'https://twitter.com/themindmates',
-      'https://www.instagram.com/themindmates',
-      'https://www.linkedin.com/company/themindmates',
-    ],
-  };
+  useEffect(() => {
+    // Update document title
+    document.title = pageTitle;
+    
+    // Update or create meta tags
+    const updateMetaTag = (name, content, isProperty = false) => {
+      const attribute = isProperty ? 'property' : 'name';
+      let element = document.querySelector(`meta[${attribute}="${name}"]`);
+      if (!element) {
+        element = document.createElement('meta');
+        element.setAttribute(attribute, name);
+        document.head.appendChild(element);
+      }
+      element.setAttribute('content', content);
+    };
 
-  return (
-    <Helmet>
-      {/* Primary Meta Tags */}
-      <title>{pageTitle}</title>
-      <meta name="title" content={pageTitle} />
-      <meta name="description" content={description} />
-      <meta name="keywords" content={keywords} />
-      <meta name="author" content={author} />
-      <link rel="canonical" href={pageUrl} />
+    // Basic meta tags
+    updateMetaTag('description', description);
+    updateMetaTag('keywords', keywords);
+    updateMetaTag('author', author);
+    
+    // Open Graph tags
+    updateMetaTag('og:title', pageTitle, true);
+    updateMetaTag('og:description', description, true);
+    updateMetaTag('og:url', pageUrl, true);
+    updateMetaTag('og:image', image, true);
+    updateMetaTag('og:type', type, true);
+    
+    // Twitter Card tags
+    updateMetaTag('twitter:card', 'summary_large_image');
+    updateMetaTag('twitter:title', pageTitle);
+    updateMetaTag('twitter:description', description);
+    updateMetaTag('twitter:image', image);
+    
+    // Canonical URL
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.setAttribute('href', pageUrl);
+    
+    // Article meta tags
+    if (article && publishedDate) {
+      updateMetaTag('article:published_time', publishedDate, true);
+    }
+    if (article && modifiedDate) {
+      updateMetaTag('article:modified_time', modifiedDate, true);
+    }
+    
+    // Schema.org structured data
+    if (schema) {
+      let scriptTag = document.querySelector('script[type="application/ld+json"]');
+      if (!scriptTag) {
+        scriptTag = document.createElement('script');
+        scriptTag.setAttribute('type', 'application/ld+json');
+        document.head.appendChild(scriptTag);
+      }
+      scriptTag.textContent = JSON.stringify(schema);
+    }
+  }, [pageTitle, description, keywords, author, pageUrl, image, type, article, publishedDate, modifiedDate, schema]);
 
-      {/* Open Graph / Facebook */}
-      <meta property="og:type" content={article ? 'article' : type} />
-      <meta property="og:url" content={pageUrl} />
-      <meta property="og:title" content={pageTitle} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={image} />
-      <meta property="og:image:alt" content={title} />
-      <meta property="og:site_name" content="The MindMates" />
-      <meta property="og:locale" content="en_IN" />
-      <meta property="og:locale:alternate" content="hi_IN" />
-
-      {article && publishedDate && (
-        <meta property="article:published_time" content={publishedDate} />
-      )}
-      {article && modifiedDate && (
-        <meta property="article:modified_time" content={modifiedDate} />
-      )}
-      {article && (
-        <meta property="article:section" content="Mental Health" />
-      )}
-
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:url" content={pageUrl} />
-      <meta name="twitter:title" content={pageTitle} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
-      <meta name="twitter:creator" content="@themindmates" />
-      <meta name="twitter:site" content="@themindmates" />
-
-      {/* Additional SEO Tags */}
-      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-      <meta name="googlebot" content="index, follow" />
-      <meta name="bingbot" content="index, follow" />
-      <meta name="language" content="English" />
-      <meta name="revisit-after" content="7 days" />
-      <meta name="distribution" content="global" />
-      <meta name="rating" content="general" />
-
-      {/* Geo Tags for India */}
-      <meta name="geo.region" content="IN" />
-      <meta name="geo.placename" content="India" />
-
-      {/* Mobile Optimization */}
-      <meta name="mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-      <meta name="theme-color" content="#9333ea" />
-
-      {/* Structured Data (JSON-LD) */}
-      <script type="application/ld+json">
-        {JSON.stringify(schema || defaultSchema)}
-      </script>
-    </Helmet>
-  );
+  return null;
 };
 
 export default SEO;

@@ -1,7 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useMemo, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import { HelmetProvider } from "react-helmet-async";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import { updateLastActive } from "./firebaseAuth";
@@ -94,10 +93,9 @@ function App() {
   }, [pathname]);
 
   return (
-    <HelmetProvider>
-      <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
-        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-        <div className="flex-1">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+      <div className="flex-1">
           <Routes>
           {/* Public */}
           <Route path="/" element={<Home />} />
@@ -145,10 +143,9 @@ function App() {
           <Route path="/scratch-card" element={<MentalHealthScratchCard />} />
         </Routes>
       </div>
-        {/* Footer */}
-        {!hideFooter && <Footer />}
-      </div>
-    </HelmetProvider>
+      {/* Footer */}
+      {!hideFooter && <Footer />}
+    </div>
   );
 }
 
