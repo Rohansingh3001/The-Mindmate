@@ -225,9 +225,15 @@ const InternProfile = () => {
                 <CheckCircle className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">Verified Intern</h3>
-              <p className="text-white/90 text-sm">
+              <p className="text-white/90 text-sm mb-4">
                 This person successfully completed their internship at MindMate and contributed to our mission of mental health support.
               </p>
+              {intern.certificateId && (
+                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 mt-4">
+                  <p className="text-white/80 text-xs mb-1">Certificate ID</p>
+                  <p className="text-white font-mono font-bold text-sm">{intern.certificateId}</p>
+                </div>
+              )}
             </motion.div>
 
             {/* Share Profile */}
