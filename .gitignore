@@ -1,3 +1,9 @@
 Mental-health/src/components/keep it mindpod
  
- .env
+.env
+
+# Documentation folder
+docs/
+
+# Intern documentation
+INTERN_LINKS.md

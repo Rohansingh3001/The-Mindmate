@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import SEO from "../components/shared/SEO";
 import ChatWindow from "../components/chat/ChatWindow";
 import { initChatConnection } from "../utils/chatHelpers";
 
@@ -45,19 +46,27 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
-      {/* Back Button */}
-      <div className="p-4 border-b bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-        <Link
-          to="/connect-peer"
-          className="text-purple-600 dark:text-purple-300 flex items-center gap-2"
-        >
-          <ArrowLeft size={20} /> Back
-        </Link>
-      </div>
+    <>
+      <SEO 
+        title="Peer Support Chat - Connect with Understanding Peers"
+        description="Chat with supportive peers who understand your mental health journey. The MindMates peer support provides safe, anonymous conversations with trained peer counselors."
+        keywords="peer support, peer counseling, mental health chat, anonymous support, peer-to-peer therapy, mental health community"
+        url={`https://themindmates.in/chat/${peerId}`}
+      />
+      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
+        {/* Back Button */}
+        <div className="p-4 border-b bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+          <Link
+            to="/connect-peer"
+            className="text-purple-600 dark:text-purple-300 flex items-center gap-2"
+          >
+            <ArrowLeft size={20} /> Back
+          </Link>
+        </div>
 
-      {/* Chat Window */}
-      <ChatWindow chatId={chatId} currentUser={currentUser} />
-    </div>
+        {/* Chat Window */}
+        <ChatWindow chatId={chatId} currentUser={currentUser} />
+      </div>
+    </>
   );
 }
