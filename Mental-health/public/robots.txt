@@ -1,0 +1,28 @@
+# robots.txt for themindmates.in
+
+User-agent: *
+Allow: /
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Disallow private/admin areas
+Disallow: /admin/
+Disallow: /user/
+Disallow: /chat/
+
+# Sitemap location
+Sitemap: https://themindmates.in/sitemap.xml
+
+# Crawl-delay (optional, adjust if needed)
+Crawl-delay: 10

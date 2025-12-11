@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
 
 // Components
-import Navbar from "../components/Navbar";
+import Navbar from "../components/shared/Navbar";
 import UserRoutes from "../Routes/UserRoutes.jsx";
  // ✅ Imported from routes folder
 
@@ -63,13 +63,13 @@ function User() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-white to-[#f0e9ff] dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100 relative">
-      {/* Only show Navbar on home page (dashboard) */}
-      {location.pathname === '/user' && (
+    <div className="min-h-screen bg-gradient-to-br from-white to-[#f0e9ff] dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100">
+      {/* Hide Navbar on dashboard routes - they have their own header */}
+      {!location.pathname.includes('/user/') && location.pathname !== '/user' && (
         <Navbar onLogout={handleLogout} onViewAccount={handleViewAccount} />
       )}
 
-      <main className="flex flex-col w-full">
+      <main className="w-full">
         <UserRoutes /> {/* ✅ Routes moved here */}
       </main>
     </div>

@@ -1,30 +1,31 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useMemo, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
+import { HelmetProvider } from "react-helmet-async";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import { updateLastActive } from "./firebaseAuth";
 
 // Auth & Home
-import LoginSignup from "./components/Authpage";
+import LoginSignup from "./components/auth/Authpage";
 import Home from "./pages/Home";
 
 // User & Features
 import User from "./pages/User";
-import AppointmentsPage from "./components/AppointmentsPage";
-import AnalysisPage from "./components/AnalysisPage";
-import JournalsPage from "./components/JournalsPage";
-import Exercises from "./components/Exercises";
-import SettingsPage from "./components/Settings";
-import AssessmentForm from "./components/AssessmentForm";
-import Topup from "./components/Topup";
+import AppointmentsPage from "./components/features/user/AppointmentsPage";
+import AnalysisPage from "./components/features/user/AnalysisPage";
+import JournalsPage from "./components/features/user/JournalsPage";
+import Exercises from "./components/features/user/Exercises";
+import SettingsPage from "./components/features/user/Settings";
+import AssessmentForm from "./components/features/user/AssessmentForm";
+import Topup from "./components/features/user/Topup";
 // Peer & Admin
-import PeerConnect from "./components/PeerConnect";
-import ConnectPeer from "./components/ConnectPeer";
+import PeerConnect from "./components/features/peer/PeerConnect";
+import ConnectPeer from "./components/features/peer/ConnectPeer";
 import ChatPage from "./pages/ChatPage";
 import PeerDashboard from "./pages/PeerDashboard";
 import AdminPanel from "./pages/AdminPanel";
-import PeerChatDemo from "./components/PeerChatDemo";
+import PeerChatDemo from "./components/features/peer/PeerChatDemo";
 
 // Company Info Pages
 import About from "./components/company/About";
@@ -39,17 +40,17 @@ import WellnessBlog from "./components/resources/WellnessBlog";
 import MentalHealthTips from "./components/resources/MentalHealthTips";
 
 // Gamification Features
-import GamifiedDashboard from "./components/GamifiedDashboard";
-import GamifiedJournal from "./components/GamifiedJournal";
-import MentalHealthQuests from "./components/MentalHealthQuests";
-import MoodGarden from "./components/MoodGarden";
-import MindfulnessChallenges from "./components/MindfulnessChallenges";
-import MentalHealthProgress from "./components/MentalHealthProgress";
-import MentalHealthScratchCard from "./components/MentalHealthScratchCard";
+import GamifiedDashboard from "./components/features/gamification/GamifiedDashboard";
+import GamifiedJournal from "./components/features/gamification/GamifiedJournal";
+import MentalHealthQuests from "./components/features/gamification/MentalHealthQuests";
+import MoodGarden from "./components/features/gamification/MoodGarden";
+import MindfulnessChallenges from "./components/features/gamification/MindfulnessChallenges";
+import MentalHealthProgress from "./components/features/gamification/MentalHealthProgress";
+import MentalHealthScratchCard from "./components/features/gamification/MentalHealthScratchCard";
 
 // Footer
-import Footer from "./components/Footer";
-import FormViewer from "./components/FormViewer";
+import Footer from "./components/landing/Footer";
+import FormViewer from "./components/features/user/FormViewer";
 
 function App() {
   const { pathname } = useLocation();
@@ -93,10 +94,11 @@ function App() {
   }, [pathname]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
-      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-      <div className="flex-1">
-        <Routes>
+    <HelmetProvider>
+      <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+        <div className="flex-1">
+          <Routes>
           {/* Public */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginSignup />} />
@@ -143,9 +145,10 @@ function App() {
           <Route path="/scratch-card" element={<MentalHealthScratchCard />} />
         </Routes>
       </div>
-      {/* Footer */}
-      {!hideFooter && <Footer />}
-    </div>
+        {/* Footer */}
+        {!hideFooter && <Footer />}
+      </div>
+    </HelmetProvider>
   );
 }
 
