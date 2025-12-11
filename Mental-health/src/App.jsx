@@ -31,6 +31,8 @@ import About from "./components/company/About";
 import Careers from "./components/company/Career";
 import PrivacyPolicy from "./components/company/PrivacyPolicy";
 import Contact from "./components/company/Contact";
+import InternProfile from "./pages/InternProfile";
+import InternshipPage from "./pages/InternshipPage";
 
 // Resources
 import FAQs from "./components/resources/FAQs";
@@ -126,6 +128,10 @@ function App() {
           <Route path="/careers" element={<Careers />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/contact" element={<Contact />} />
+          
+          {/* Internship */}
+          <Route path="/internship" element={<InternshipPage />} />
+          <Route path="/intern/:slug" element={<InternProfile />} />
 
           {/* Resources */}
           <Route path="/faqs" element={<FAQs />} />

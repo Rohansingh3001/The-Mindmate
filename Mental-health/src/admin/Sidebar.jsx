@@ -36,6 +36,7 @@ const navItems = [
   { label: "Appointments", icon: <CalendarCheck size={18} />, key: "appointments" },
   { label: "Schools", icon: <BarChart3 size={18} />, key: "schools" },
   { label: "Peer Support", icon: <MessageSquare size={18} />, key: "peer" },
+  { label: "Interns", icon: <UserCheck size={18} />, key: "interns" },
   { label: "Careers", icon: <Briefcase size={18} />, key: "career" },
   { label: "Forms", icon: <IoIosPaper size={18} />, key: "form" },
   { label: "Settings", icon: <FiSettings size={18} />, key: "manage" }
