@@ -224,15 +224,25 @@ const InternProfile = () => {
               <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Verified Intern</h3>
+              <h3 className="text-xl font-bold mb-2">✓ Verified Intern</h3>
               <p className="text-white/90 text-sm mb-4">
-                This person successfully completed their internship at The MindMate and contributed to our mission of mental health support.
+                Successfully completed internship at The MindMate and contributed to our mission of mental health support.
               </p>
               {intern.certificateId && (
-                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 mt-4">
-                  <p className="text-white/80 text-xs mb-1">Certificate ID</p>
-                  <p className="text-white font-mono font-bold text-sm">{intern.certificateId}</p>
-                </div>
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 1.1 }}
+                  className="bg-white rounded-xl p-4 mt-4 shadow-lg"
+                >
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Award className="w-5 h-5 text-purple-600" />
+                    <p className="text-purple-600 font-bold text-sm uppercase tracking-wide">Certificate ID</p>
+                  </div>
+                  <p className="text-gray-900 font-mono font-bold text-lg tracking-wider bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    {intern.certificateId}
+                  </p>
+                </motion.div>
               )}
             </motion.div>
 

@@ -40,15 +40,19 @@ const ManageInterns = () => {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
+        className="mb-8 bg-gradient-to-r from-purple-50 to-pink-50 rounded-3xl p-6 border border-purple-200"
       >
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg">
-            <Award className="w-6 h-6 text-white" />
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg">
+            <Award className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Manage Interns</h1>
-            <p className="text-gray-600">View and share verified intern profiles</p>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              Manage Interns
+            </h1>
+            <p className="text-gray-700 font-semibold text-lg">
+              View and share verified intern profiles
+            </p>
           </div>
         </div>
       </motion.div>
@@ -164,6 +168,19 @@ const ManageInterns = () => {
                 )}
               </div>
             </div>
+
+            {/* Certificate ID Badge */}
+            {intern.certificateId && (
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-3 mb-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Award className="w-4 h-4 text-purple-600" />
+                  <span className="text-xs text-purple-700 font-bold uppercase tracking-wide">Certificate ID</span>
+                </div>
+                <div className="font-mono font-bold text-sm bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  {intern.certificateId}
+                </div>
+              </div>
+            )}
 
             {/* Contact & Links */}
             <div className="flex flex-wrap gap-2 mb-4">
