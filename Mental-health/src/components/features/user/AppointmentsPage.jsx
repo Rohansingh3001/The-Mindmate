@@ -46,34 +46,34 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-// Custom calendar styles
+// Custom calendar styles - Light Mode
 const calendarStyles = `
   .rbc-calendar {
-    background: transparent;
-    color: #e2e8f0;
+    background: white;
+    color: #1e293b;
   }
   .rbc-header {
-    background: #475569;
-    color: #f1f5f9;
-    border-bottom: 1px solid #64748b;
+    background: #f8fafc;
+    color: #1e293b;
+    border-bottom: 1px solid #e2e8f0;
     padding: 12px;
     font-weight: 600;
   }
   .rbc-month-view {
-    background: transparent;
-    border: 1px solid #475569;
+    background: white;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
     overflow: hidden;
   }
   .rbc-month-row {
-    border-top: 1px solid #475569;
+    border-top: 1px solid #e2e8f0;
   }
   .rbc-day-bg {
-    background: #334155;
-    border-left: 1px solid #475569;
+    background: white;
+    border-left: 1px solid #e2e8f0;
   }
   .rbc-off-range-bg {
-    background: #1e293b;
+    background: #f8fafc;
   }
   .rbc-today {
     background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) !important;
@@ -82,7 +82,7 @@ const calendarStyles = `
     padding: 8px;
   }
   .rbc-date-cell button {
-    color: #f1f5f9;
+    color: #1e293b;
     font-weight: 600;
   }
   .rbc-today button {
@@ -90,7 +90,7 @@ const calendarStyles = `
     font-weight: 800;
   }
   .rbc-off-range button {
-    color: #64748b;
+    color: #94a3b8;
   }
   .rbc-current-time-indicator {
     background-color: #a855f7;
@@ -271,37 +271,62 @@ export default function AppointmentsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 flex flex-col">
       {/* 3-Column Layout */}
       <div className="flex flex-1">
         {/* Left Sidebar - Desktop Only */}
-        <DashboardSidebar />
+        <div className="hidden lg:block">
+          <DashboardSidebar />
+        </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-h-screen">
-          {/* Top Header */}
-          <DashboardTopHeader />
+        <div className="flex-1 flex flex-col min-h-screen w-full">
+          {/* Top Header - Hidden on mobile, shown on desktop */}
+          <div className="hidden lg:block">
+            <DashboardTopHeader />
+          </div>
+
+          {/* Mobile Header - Visible only on mobile - Premium Clean Design */}
+          <div className="lg:hidden sticky top-0 z-40 bg-white border-b border-gray-200 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <CalendarClock className="text-white" size={22} />
+                </div>
+                <div>
+                  <h1 className="text-base font-bold text-gray-900">Your Sessions</h1>
+                  <p className="text-xs text-gray-600">Manage your appointments</p>
+                </div>
+              </div>
+              {/* Stats indicator on mobile header */}
+              <div className="flex items-center gap-2">
+                <div className="px-3 py-1.5 rounded-lg bg-purple-50 border border-purple-200">
+                  <p className="text-xs font-bold text-purple-600">{stats.total} Total</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Appointments Content */}
-          <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto pb-24 lg:pb-6">
+          <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 overflow-y-auto pb-20 lg:pb-6">
             <div className="max-w-[1600px] mx-auto">
               
-              {/* Page Header */}
+              {/* Page Header - Desktop Only */}
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6"
+                className="mb-4 md:mb-6 hidden lg:block"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                       <CalendarClock className="text-white" size={24} />
                     </div>
                     <div>
-                      <h1 className="text-2xl md:text-3xl font-bold text-white">
+                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
                         Your Sessions
                       </h1>
-                      <p className="text-sm text-slate-300">
+                      <p className="text-sm text-gray-600">
                         Manage your therapy appointments
                       </p>
                     </div>
@@ -309,7 +334,7 @@ export default function AppointmentsPage() {
 
                   <button
                     onClick={() => setShowBookingForm(true)}
-                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold hover:shadow-xl hover:shadow-purple-500/30 hover:scale-105 transition-all flex items-center gap-2 shadow-lg"
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center gap-2"
                   >
                     <Plus size={20} />
                     <span>Book Session</span>
@@ -317,11 +342,22 @@ export default function AppointmentsPage() {
                 </div>
               </motion.div>
 
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {/* Mobile Book Button - Fixed at bottom */}
+              <div className="lg:hidden fixed bottom-20 right-4 z-30">
+                <button
+                  onClick={() => setShowBookingForm(true)}
+                  className="w-14 h-14 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center justify-center border-2 border-white"
+                >
+                  <Plus size={24} />
+                </button>
+              </div>
+
+              {/* Stats Cards - Mobile Optimized */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4 md:mb-6">
                 {[
                   { 
-                    label: "Total Sessions", 
+                    label: "Total", 
+                    fullLabel: "Total Sessions",
                     value: stats.total, 
                     icon: CalendarIcon, 
                     textColor: "text-purple-400",
@@ -329,7 +365,8 @@ export default function AppointmentsPage() {
                     iconColor: "text-purple-400"
                   },
                   { 
-                    label: "Online Sessions", 
+                    label: "Online", 
+                    fullLabel: "Online Sessions",
                     value: stats.online, 
                     icon: Video, 
                     textColor: "text-cyan-400",
@@ -338,6 +375,7 @@ export default function AppointmentsPage() {
                   },
                   { 
                     label: "In-Person", 
+                    fullLabel: "In-Person",
                     value: stats.offline, 
                     icon: MapPinIcon, 
                     textColor: "text-emerald-400",
@@ -345,7 +383,8 @@ export default function AppointmentsPage() {
                     iconColor: "text-emerald-400"
                   },
                   { 
-                    label: "This Week", 
+                    label: "Week", 
+                    fullLabel: "This Week",
                     value: stats.thisWeek, 
                     icon: Clock, 
                     textColor: "text-orange-400",
@@ -358,40 +397,43 @@ export default function AppointmentsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 + index * 0.05 }}
-                    className="bg-slate-700/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-600/50 shadow-lg hover:shadow-xl hover:bg-slate-700 transition-all hover:scale-105"
+                    className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-purple-200 hover:border-purple-300 transition-all"
                   >
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-slate-300 mb-2 font-medium">{stat.label}</p>
-                        <p className={`text-4xl font-extrabold ${stat.textColor}`}>
+                      <div className="flex-1">
+                        <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 font-medium">
+                          <span className="lg:hidden">{stat.label}</span>
+                          <span className="hidden lg:inline">{stat.fullLabel}</span>
+                        </p>
+                        <p className={`text-2xl sm:text-3xl md:text-4xl font-extrabold ${stat.textColor}`}>
                           {stat.value}
                         </p>
                       </div>
-                      <div className={`w-14 h-14 rounded-xl ${stat.bgColor} flex items-center justify-center shadow-lg border border-slate-600/30`}>
-                        <stat.icon className={stat.iconColor} size={28} strokeWidth={2.5} />
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl ${stat.bgColor} flex items-center justify-center border border-purple-200`}>
+                        <stat.icon className={`${stat.iconColor} w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7`} strokeWidth={2.5} />
                       </div>
                     </div>
                   </motion.div>
                 ))}
               </div>
 
-              {/* View Toggle & Search */}
+              {/* View Toggle & Search - Mobile Optimized */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6"
+                className="flex flex-col gap-3 mb-4 md:mb-6"
               >
                 {/* View Toggle */}
-                <div className="bg-slate-700/80 backdrop-blur-sm rounded-xl p-1 border border-slate-600/50 shadow-lg inline-flex">
+                <div className="bg-white rounded-xl p-1 border border-purple-200 inline-flex">
                   {["calendar", "list"].map((view) => (
                     <button
                       key={view}
                       onClick={() => setSelectedView(view)}
                       className={`px-6 py-2.5 rounded-lg font-bold transition-all ${
                         selectedView === view
-                          ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg"
-                          : "text-slate-300 hover:text-white hover:bg-slate-600/50"
+                          ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                       }`}
                     >
                       {view === "calendar" ? "Calendar" : "List"}
@@ -402,20 +444,20 @@ export default function AppointmentsPage() {
                 {/* Search and Filter */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     <input
                       type="text"
                       placeholder="Search sessions..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 pr-4 py-2.5 rounded-xl bg-slate-700/80 backdrop-blur-sm border border-slate-600/50 text-white placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all shadow-lg"
+                      className="pl-10 pr-4 py-2.5 rounded-xl bg-white border border-purple-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                     />
                   </div>
                   
                   <select
                     value={filterMode}
                     onChange={(e) => setFilterMode(e.target.value)}
-                    className="px-4 py-2.5 rounded-xl bg-slate-700/80 backdrop-blur-sm border border-slate-600/50 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all shadow-lg"
+                    className="px-4 py-2.5 rounded-xl bg-white border border-purple-200 text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   >
                     <option value="all">All Sessions</option>
                     <option value="online">Online Only</option>
@@ -432,13 +474,13 @@ export default function AppointmentsPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="bg-slate-700/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-600/50 shadow-xl"
+                    className="bg-white rounded-2xl p-6 border border-purple-200"
                   >
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                         <CalendarIcon className="text-white" size={24} />
                       </div>
-                      <h2 className="text-2xl font-bold text-white">Calendar View</h2>
+                      <h2 className="text-2xl font-bold text-gray-900">Calendar View</h2>
                     </div>
                     <div className="rounded-xl overflow-hidden">
                       <Calendar
@@ -465,21 +507,21 @@ export default function AppointmentsPage() {
                       <motion.div 
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-slate-700/80 backdrop-blur-sm rounded-2xl p-12 border border-slate-600/50 shadow-xl text-center"
+                        className="bg-white rounded-2xl p-12 border border-purple-200 text-center"
                       >
-                        <div className="w-20 h-20 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner border border-purple-500/30">
-                          <CalendarIcon className="text-purple-400" size={40} />
+                        <div className="w-20 h-20 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                          <CalendarIcon className="text-purple-600" size={40} />
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">
                           No Sessions Found
                         </h3>
-                        <p className="text-slate-300 mb-6">
+                        <p className="text-gray-600 mb-6">
                           {searchTerm || filterMode !== "all" ? "Try adjusting your filters" : "Book your first therapy session to get started"}
                         </p>
                         {!searchTerm && filterMode === "all" && (
                           <button
                             onClick={() => setShowBookingForm(true)}
-                            className="px-8 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold hover:shadow-xl hover:shadow-purple-500/30 hover:scale-105 transition-all shadow-lg"
+                            className="px-8 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold hover:from-purple-600 hover:to-pink-600 transition-all"
                           >
                             Book Your First Session
                           </button>
@@ -494,11 +536,11 @@ export default function AppointmentsPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className="bg-slate-700/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-600/50 shadow-lg hover:shadow-xl hover:border-slate-500 transition-all hover:scale-[1.02]"
+                            className="bg-white rounded-2xl p-6 border border-purple-200 hover:border-purple-300 transition-all"
                           >
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                               <div className="flex items-start gap-4">
-                                <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg ${
+                                <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${
                                   appt.mode === "Online" 
                                     ? "bg-gradient-to-br from-cyan-500 to-blue-600" 
                                     : "bg-gradient-to-br from-emerald-500 to-green-600"
@@ -509,28 +551,28 @@ export default function AppointmentsPage() {
                                 </div>
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-2">
-                                    <h3 className="text-lg font-bold text-white">
+                                    <h3 className="text-lg font-bold text-gray-900">
                                       Dr. {appt.doctor}
                                     </h3>
-                                    <span className={`px-3 py-1 rounded-lg text-xs font-bold shadow-md ${
+                                    <span className={`px-3 py-1 rounded-lg text-xs font-bold ${
                                       appt.mode === "Online" 
-                                        ? "bg-cyan-500/30 text-cyan-300 border border-cyan-500/50" 
-                                        : "bg-emerald-500/30 text-emerald-300 border border-emerald-500/50"
+                                        ? "bg-cyan-100 text-cyan-700 border border-cyan-200" 
+                                        : "bg-emerald-100 text-emerald-700 border border-emerald-200"
                                     }`}>
                                       {appt.mode}
                                     </span>
                                   </div>
-                                  <div className="flex flex-wrap gap-4 text-sm text-slate-300">
+                                  <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                                     <div className="flex items-center gap-2">
-                                      <CalendarIcon size={16} className="text-slate-400" />
+                                      <CalendarIcon size={16} className="text-gray-500" />
                                       <span className="font-medium">{format(appt.timestamp, "MMM dd, yyyy")}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                      <Clock size={16} className="text-slate-400" />
+                                      <Clock size={16} className="text-gray-500" />
                                       <span className="font-medium">{format(appt.timestamp, "hh:mm a")}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                      <User size={16} className="text-slate-400" />
+                                      <User size={16} className="text-gray-500" />
                                       <span className="font-medium">{appt.userName}</span>
                                     </div>
                                   </div>
@@ -540,7 +582,7 @@ export default function AppointmentsPage() {
                               {currentUser?.uid === appt.userId && (
                                 <button
                                   onClick={() => handleCancelAppointment(appt.id)}
-                                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-pink-600 text-white hover:shadow-xl hover:shadow-red-500/30 hover:scale-105 transition-all flex items-center gap-2 font-bold shadow-lg"
+                                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700 transition-all flex items-center gap-2 font-bold"
                                 >
                                   <XCircle size={18} />
                                   <span>Cancel</span>
@@ -556,27 +598,58 @@ export default function AppointmentsPage() {
             </div>
           </main>
 
-          {/* Bottom Navigation - Mobile Only */}
-          <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 z-40">
-            <div className="flex items-center justify-around py-3 px-4">
-              {bottomNavItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-                return (
-                  <button
-                    key={item.path}
-                    onClick={() => navigate(item.path)}
-                    className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all ${
-                      isActive
-                        ? 'bg-gradient-to-r from-mindmate-600 to-purple-600 text-white shadow-lg scale-110'
-                        : 'text-slate-600 dark:text-slate-400 hover:text-mindmate-600 dark:hover:text-mindmate-400'
-                    }`}
-                  >
-                    <Icon size={20} strokeWidth={2.5} />
-                    <span className="text-[10px] font-semibold">{item.label}</span>
-                  </button>
-                );
-              })}
+          {/* Bottom Navigation - Mobile Only - Enhanced */}
+          <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 px-3 pb-4 pointer-events-none">
+            <div className="bg-white dark:bg-gray-800 rounded-[24px] shadow-xl border border-gray-200 dark:border-gray-700 pointer-events-auto backdrop-blur-xl bg-white/95 dark:bg-gray-800/95">
+              <div className="flex items-center justify-around px-2 py-3">
+                {bottomNavItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <motion.button
+                      key={item.path}
+                      onClick={() => navigate(item.path)}
+                      whileTap={{ scale: 0.9 }}
+                      className="relative flex flex-col items-center gap-1 min-w-[60px] px-2 py-1"
+                    >
+                      {/* Active Indicator */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="appointmentsActiveTab"
+                          className="absolute -top-1 left-1/2 -translate-x-1/2 w-10 h-1 bg-purple-600 dark:bg-purple-400 rounded-full"
+                          initial={false}
+                          transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                        />
+                      )}
+                      
+                      {/* Icon Container */}
+                      <div
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-200 ${
+                          isActive
+                            ? 'bg-gradient-to-br from-purple-600 to-purple-500 dark:from-purple-500 dark:to-purple-600 shadow-lg scale-110'
+                            : 'bg-gray-100 dark:bg-gray-700'
+                        }`}
+                      >
+                        <Icon
+                          className={`w-6 h-6 transition-colors duration-200 ${
+                            isActive ? 'text-white' : 'text-gray-600 dark:text-gray-400'
+                          }`}
+                          strokeWidth={isActive ? 2.5 : 2}
+                        />
+                      </div>
+                      
+                      {/* Label */}
+                      <span
+                        className={`text-[10px] font-bold transition-colors duration-200 ${
+                          isActive ? 'text-purple-700 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </motion.button>
+                  );
+                })}
+              </div>
             </div>
           </nav>
         </div>
@@ -593,24 +666,24 @@ export default function AppointmentsPage() {
             onClick={() => setShowBookingForm(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 max-w-md w-full border border-slate-200/50 dark:border-slate-700/50 shadow-2xl max-h-[90vh] overflow-y-auto"
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full border border-gray-200 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-mindmate-600 to-purple-600 flex items-center justify-center shadow-lg">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
                     <Plus className="text-white" size={20} />
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                  <h2 className="text-2xl font-bold text-gray-900">
                     Book Session
                   </h2>
                 </div>
                 <button
                   onClick={() => setShowBookingForm(false)}
-                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all hover:scale-110"
+                  className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition-all"
                 >
                   <XCircle size={24} />
                 </button>
@@ -619,14 +692,14 @@ export default function AppointmentsPage() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Doctor Selection */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Select Therapist
                   </label>
                   <select
                     value={newAppt.doctor}
                     onChange={(e) => setNewAppt({ ...newAppt, doctor: e.target.value })}
                     required
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-mindmate-500 focus:border-transparent transition-all shadow-sm"
+                    className="w-full px-4 py-3 rounded-xl border border-purple-200 bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   >
                     <option value="">Choose a therapist...</option>
                     {doctorsList.map((doc) => (
@@ -639,7 +712,7 @@ export default function AppointmentsPage() {
 
                 {/* Date & Time */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Date & Time
                   </label>
                   <DatePicker
@@ -651,23 +724,23 @@ export default function AppointmentsPage() {
                     minDate={new Date()}
                     required
                     placeholderText="Select date and time"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-mindmate-500 focus:border-transparent transition-all shadow-sm"
+                    className="w-full px-4 py-3 rounded-xl border border-purple-200 bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   />
                 </div>
 
                 {/* Mode Selection */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
                     Session Mode
                   </label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => setNewAppt({ ...newAppt, mode: "Online" })}
-                      className={`p-5 rounded-xl border-2 transition-all shadow-sm ${
+                      className={`p-5 rounded-xl border-2 transition-colors ${
                         newAppt.mode === "Online"
-                          ? "border-mindmate-600 bg-gradient-to-br from-mindmate-50 to-purple-50 dark:from-mindmate-900/20 dark:to-purple-900/20 shadow-md scale-105"
-                          : "border-slate-200 dark:border-slate-700 hover:border-slate-300 hover:scale-105"
+                          ? "border-mindmate-600 bg-gradient-to-br from-mindmate-50 to-purple-50 dark:from-mindmate-900/20 dark:to-purple-900/20"
+                          : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
                       }`}
                     >
                       <Video className={`mx-auto mb-2 ${newAppt.mode === "Online" ? "text-mindmate-600 dark:text-mindmate-400" : "text-slate-400"}`} size={28} strokeWidth={2.5} />
@@ -678,10 +751,10 @@ export default function AppointmentsPage() {
                     <button
                       type="button"
                       onClick={() => setNewAppt({ ...newAppt, mode: "Offline" })}
-                      className={`p-5 rounded-xl border-2 transition-all shadow-sm ${
+                      className={`p-5 rounded-xl border-2 transition-colors ${
                         newAppt.mode === "Offline"
-                          ? "border-emerald-600 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 shadow-md scale-105"
-                          : "border-slate-200 dark:border-slate-700 hover:border-slate-300 hover:scale-105"
+                          ? "border-emerald-600 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20"
+                          : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
                       }`}
                     >
                       <MapPin className={`mx-auto mb-2 ${newAppt.mode === "Offline" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400"}`} size={28} strokeWidth={2.5} />
@@ -692,10 +765,10 @@ export default function AppointmentsPage() {
                   </div>
                 </div>
 
-                {/* Submit Button */}
+                {/* Submit Button - Clean Premium */}
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-mindmate-600 to-purple-600 text-white font-bold hover:shadow-xl hover:scale-105 disabled:from-slate-300 disabled:to-slate-300 dark:disabled:from-slate-700 dark:disabled:to-slate-700 disabled:cursor-not-allowed transition-all shadow-lg"
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-mindmate-600 to-purple-600 text-white font-bold hover:from-mindmate-700 hover:to-purple-700 disabled:from-slate-300 disabled:to-slate-300 dark:disabled:from-slate-700 dark:disabled:to-slate-700 disabled:cursor-not-allowed transition-colors"
                 >
                   Confirm Booking
                 </button>
@@ -714,12 +787,12 @@ export default function AppointmentsPage() {
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             className="fixed bottom-24 lg:bottom-6 right-6 z-50"
           >
-            <div className={`px-6 py-4 rounded-2xl shadow-2xl border-2 flex items-center gap-3 backdrop-blur-xl ${
+            <div className={`px-6 py-4 rounded-2xl border-2 flex items-center gap-3 ${
               toastType === "booked" 
-                ? "bg-gradient-to-r from-green-500 to-emerald-600 border-green-400 text-white shadow-green-500/50" 
+                ? "bg-gradient-to-r from-green-500 to-emerald-600 border-green-400 text-white" 
                 : toastType === "cancelled"
-                ? "bg-gradient-to-r from-orange-500 to-amber-600 border-orange-400 text-white shadow-orange-500/50"
-                : "bg-gradient-to-r from-red-500 to-pink-600 border-red-400 text-white shadow-red-500/50"
+                ? "bg-gradient-to-r from-orange-500 to-amber-600 border-orange-400 text-white"
+                : "bg-gradient-to-r from-red-500 to-pink-600 border-red-400 text-white"
             }`}>
               {toastType === "booked" && (
                 <>

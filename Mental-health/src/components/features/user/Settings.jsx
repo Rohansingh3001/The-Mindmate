@@ -69,98 +69,125 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-mindmate-50 via-white to-lavender-100/50 p-4 sm:p-6 lg:p-10 transition-colors duration-300">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/20 pb-20 lg:pb-0">
+      <div className="w-full">
         
-        {/* Header Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <button
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 font-semibold transition mb-4 bg-white px-4 py-2 rounded-xl shadow-sm"
-          >
-            <ArrowLeft size={16} /> {t("common.goBack")}
-          </button>
-          
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-xl">
-              <Shield className="text-white" size={32} />
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                {t("settings.title")}
+        {/* Mobile Header - Sticky - Premium Design */}
+        <div className="lg:hidden sticky top-0 z-40 bg-white/98 backdrop-blur-md border-b border-gray-200 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2.5 text-purple-600 hover:bg-purple-50 rounded-xl transition-all duration-200"
+            >
+              <ArrowLeft size={20} strokeWidth={2.5} />
+            </button>
+            <div className="flex items-center gap-2">
+              <Shield className="text-purple-600" size={20} />
+              <h1 className="text-lg font-bold text-gray-900">
+                Settings
               </h1>
-              <p className="text-gray-600 mt-1 text-lg">
-                {t("settings.subtitle")}
-              </p>
             </div>
+            <div className="w-10"></div>
           </div>
-        </motion.div>
+        </div>
 
-        {/* User Profile Card */}
-        {user && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-3xl p-6 shadow-xl border border-purple-200 mb-6"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                {user.displayName?.charAt(0).toUpperCase() || "U"}
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-gray-900">
-                  {user.displayName || "User"}
-                </h3>
-                <p className="text-sm text-gray-600 flex items-center gap-2 mt-1">
-                  <Mail size={14} />
-                  {user.email}
-                </p>
-              </div>
-              <button className="px-6 py-3 bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 text-purple-700 rounded-xl font-bold transition-all shadow-md text-sm">
-                {t("settings.editProfile")}
+        {/* Desktop & Tablet Layout - Premium Design */}
+        <div className="hidden lg:block p-8 lg:p-12">
+          <div className="max-w-6xl mx-auto">
+            {/* Header Section - Desktop */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-10"
+            >
+              <button
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 font-semibold transition-all mb-6 bg-white px-5 py-2.5 rounded-xl border border-gray-200 hover:border-gray-300"
+              >
+                <ArrowLeft size={16} strokeWidth={2.5} /> {t("common.goBack")}
               </button>
-            </div>
-          </motion.div>
-        )}
+              
+              <div className="flex items-center gap-5 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <Shield className="text-white" size={36} strokeWidth={2} />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-900 mb-1">
+                    {t("settings.title")}
+                  </h1>
+                  <p className="text-gray-600 text-base">
+                    {t("settings.subtitle")}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
 
-        {/* Settings Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Content Container */}
+        <div className="max-w-6xl mx-auto px-4 lg:px-6">{/* Mobile & Tablet/Desktop content will go here */}
+
+          {/* User Profile Card - Premium Design */}
+          {user && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl lg:rounded-2xl p-5 sm:p-6 lg:p-7 border border-gray-200 mb-5 lg:mb-7"
+            >
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-3xl sm:text-4xl font-bold flex-shrink-0">
+                  {user.displayName?.charAt(0).toUpperCase() || "U"}
+                </div>
+                <div className="flex-1 text-center sm:text-left w-full">
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+                    {user.displayName || "User"}
+                  </h3>
+                  <p className="text-sm text-gray-600 flex items-center gap-2 justify-center sm:justify-start">
+                    <Mail size={16} />
+                    <span className="truncate">{user.email}</span>
+                  </p>
+                </div>
+                <button className="w-full sm:w-auto px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-xl font-semibold transition-all text-sm whitespace-nowrap border border-gray-200">
+                  {t("settings.editProfile")}
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Settings Grid - Mobile First */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
           
           {/* Left Column - Appearance & Preferences */}
           <div className="lg:col-span-2 space-y-6">
             
-            {/* Appearance Section */}
+            {/* Appearance Section - Premium Design */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white rounded-3xl p-6 shadow-xl border border-purple-200"
+              className="bg-white rounded-2xl p-5 sm:p-6 lg:p-7 border border-gray-200"
             >
               <SectionHeader icon={<Palette />} title={t("settings.appearance")} subtitle={t("settings.appearance.subtitle")} />
               
-              <div className="space-y-6 mt-6">
+              <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
                 {/* Theme */}
                 <SettingBlock icon={<Sun />} label={t("settings.theme")}>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     {["light", "dark", "system"].map((mode) => (
                       <button
                         key={mode}
                         onClick={() => updateSetting("theme", mode)}
-                        className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 text-sm font-bold transition-all duration-200 ${
+                        className={`flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border-2 text-xs sm:text-sm font-bold transition-all duration-200 ${
                           settings.theme === mode
                             ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white border-purple-600 shadow-lg"
                             : "bg-purple-50 border-purple-200 text-purple-700 hover:border-purple-400 hover:bg-purple-100"
                         }`}
                       >
-                        {mode === "light" && <Sun size={24} />}
-                        {mode === "dark" && <Moon size={24} />}
-                        {mode === "system" && <Monitor size={24} />}
-                        <span className="text-xs">
+                        {mode === "light" && <Sun size={18} className="sm:w-6 sm:h-6" />}
+                        {mode === "dark" && <Moon size={18} className="sm:w-6 sm:h-6" />}
+                        {mode === "system" && <Monitor size={18} className="sm:w-6 sm:h-6" />}
+                        <span className="text-[10px] sm:text-xs">
                           {t(`settings.theme.${mode}`)}
                         </span>
                       </button>
@@ -177,12 +204,12 @@ export default function Settings() {
               </div>
             </motion.div>
 
-            {/* Experience Section */}
+            {/* Experience Section - Premium Design */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white rounded-3xl p-6 shadow-xl border border-purple-200"
+              className="bg-white rounded-2xl p-5 sm:p-6 lg:p-7 border border-gray-200"
             >
               <SectionHeader icon={<Smartphone />} title={t("settings.experience")} subtitle={t("settings.experience.subtitle")} />
               
@@ -236,12 +263,12 @@ export default function Settings() {
           {/* Right Column - Notifications & Privacy */}
           <div className="space-y-6">
             
-            {/* Notifications Section */}
+            {/* Notifications Section - Premium Design */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-white rounded-3xl p-6 shadow-xl border border-purple-200"
+              className="bg-white rounded-2xl p-5 sm:p-6 lg:p-7 border border-gray-200"
             >
               <SectionHeader icon={<Bell />} title={t("settings.notifications")} subtitle={t("settings.notifications.subtitle")} />
               
@@ -266,12 +293,12 @@ export default function Settings() {
               </div>
             </motion.div>
 
-            {/* Privacy Section */}
+            {/* Privacy Section - Premium Design */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="bg-white rounded-3xl p-6 shadow-xl border border-purple-200"
+              className="bg-white rounded-2xl p-5 sm:p-6 lg:p-7 border border-gray-200"
             >
               <SectionHeader icon={<Lock />} title={t("settings.privacy")} subtitle={t("settings.privacy.subtitle")} />
               
@@ -285,55 +312,57 @@ export default function Settings() {
                   compact
                 />
 
-                <button className="w-full px-4 py-3 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-xl font-bold transition text-sm flex items-center justify-center gap-2 shadow-sm">
+                <button className="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition text-sm flex items-center justify-center gap-2 border border-gray-200">
                   <Shield size={16} />
                   {t("settings.privacyPolicy")}
                 </button>
 
-                <button className="w-full px-4 py-3 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-xl font-bold transition text-sm flex items-center justify-center gap-2 shadow-sm">
+                <button className="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition text-sm flex items-center justify-center gap-2 border border-gray-200">
                   <Info size={16} />
                   {t("settings.terms")}
                 </button>
               </div>
             </motion.div>
 
-            {/* Account Actions */}
+            {/* Account Actions - Premium Design */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-white rounded-3xl p-6 shadow-xl border border-purple-200"
+              className="bg-white rounded-2xl p-5 sm:p-6 lg:p-7 border border-gray-200"
             >
               <SectionHeader icon={<User />} title={t("settings.account")} subtitle={t("settings.account.subtitle")} />
               
               <div className="space-y-3 mt-6">
-                <button className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                <button className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
                   <Lock size={16} />
                   {t("settings.changePassword")}
                 </button>
 
                 <button
                   onClick={handleLogout}
-                  className="w-full px-4 py-3 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                  className="w-full px-4 py-3 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
                 >
                   <LogOut size={16} />
                   {t("nav.logout")}
                 </button>
               </div>
             </motion.div>
-          </div>
-        </div>
+          </div>{/* End Right Column */}
+        </div>{/* End Settings Grid */}
 
-        {/* App Version Footer */}
+        {/* App Version Footer - Premium Design */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
-          className="mt-8 text-center text-sm text-gray-600 bg-white rounded-2xl p-4 shadow-lg border border-purple-200"
+          className="mt-6 lg:mt-8 text-center text-xs sm:text-sm text-gray-500 bg-white rounded-xl p-3 sm:p-4 border border-gray-200"
         >
           <p className="font-semibold">{t("brand.name")} v2.0.0 • {t("brand.footer")}</p>
         </motion.div>
-      </div>
+
+        </div>{/* End Content Container */}
+      </div>{/* End Desktop Wrapper */}
     </div>
   );
 }
@@ -381,7 +410,7 @@ function SettingBlock({ icon, label, description, children }) {
 
 function ToggleBlock({ icon, label, description, checked, onToggle, compact }) {
   return (
-    <div className={`flex items-start justify-between gap-4 ${!compact && "py-4 border-b border-purple-200"}`}>
+    <div className={`flex items-start justify-between gap-4 ${!compact && "py-4 border-b border-gray-200"}`}>
       <div className="flex items-start gap-3 flex-1">
         <div className={`${compact ? "mt-1" : "mt-0.5"}`}>
           {React.cloneElement(icon, { className: "text-purple-600", size: 18 })}
@@ -404,9 +433,9 @@ function ToggleBlock({ icon, label, description, checked, onToggle, compact }) {
           checked={checked}
           onChange={onToggle}
         />
-        <div className={`w-12 h-6 rounded-full p-0.5 transition-all duration-300 shadow-inner ${checked ? "bg-gradient-to-r from-purple-600 to-pink-600" : "bg-gray-300"}`}>
+        <div className={`w-12 h-6 rounded-full p-0.5 transition-all duration-300 ${checked ? "bg-gradient-to-r from-purple-600 to-pink-600" : "bg-gray-300"}`}>
           <div
-            className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+            className={`w-5 h-5 bg-white rounded-full transform transition-transform duration-300 ${
               checked ? "translate-x-6" : "translate-x-0"
             }`}
           />
