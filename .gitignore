@@ -5,5 +5,6 @@ Mental-health/src/components/keep it mindpod
 # Documentation folder
 docs/
 
-# Intern documentation
-INTERN_LINKS.md
+# All markdown files
+*.md
+**/*.md
